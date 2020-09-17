@@ -38,8 +38,8 @@ census1980$year <- 1980
 
 #ACS data is split into three separate files for size, but the indices are 
 #identical
-acs_start <- c(1, 5,13,23,25,30,34,44,45,48,49,50,51,56,60,63,71,77,83,86,90,93,94,97,100,103,107,109)
-acs_end   <- c(4,12,22,24,29,33,43,44,47,48,49,50,54,58,62,65,74,80,85,89,92,93,96,99,102,106,108,111)
+acs_start <- c(1, 5,13,23,25,30,34,44,45,48,49,50,51,56,60,63,71,75,83,86,90,93,94,97,100,103,107,109)
+acs_end   <- c(4,12,22,24,29,33,43,44,47,48,49,50,54,58,62,65,74,76,85,89,92,93,96,99,102,106,108,111)
 acs_names <- c("year","serial","hhwt","statefip","metarea","pernum","perwt",
                "sex","age","marst","marrno","marrinyr","yrmarr","raced",
                "hispand","bpl","yrimmig","language","educd","pernum_sp",
