@@ -1,5 +1,5 @@
 # Input Directory
 
-This directory should contain unedited data files directly from the source. I typically put different data sources into different sub-directories and include any relevant data documentation in the same directory. 
+All of the data for this project come from Census and American Community Survey (ACS) extracts from [IPUMS](https://usa.ipums.org). Data come in gzipped fixed-width format files. The ACS data is split into several smaller extracts by year to avoid problems with GitHub's file size limits.
 
-Following the guidelines of [Code and Data](https://web.stanford.edu/~gentzkow/research/CodeAndData.xhtml#magicparlabel-270), this directory is dedicated to raw data from other sources ONLY. Datasets in this input directory should NEVER be edited. If newer data extracts are used, older raw data should just be replaced and changes commmitted. Constructed datasets should NEVER be placed in this directory. 
+All raw data is gzipped to keep file size down. 

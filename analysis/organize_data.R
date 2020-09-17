@@ -21,76 +21,91 @@ source(here("analysis","useful_functions.R"))
 
 # Read in the 1980 Data ---------------------------------------------------
 
-# 1980 data is in a fixed-width format gzipped file. I am going to use the
-# read_fwf function in the readr library rather than the vanilla read.fwf
-# function because read_fwf allows more options to only read in certain
-# variables from the full list and it is also much faster.
-census1980 <- read_fwf(here("analysis","input","census1980","usa_00074.dat.gz"), 
-                       col_positions = fwf_positions(start = c(1, 7,15,25,33,37,47,48,51,52,53,56,60,63,71,75,83,86,90,93,94,97,100,103,107,109),
-                                                     end   = c(4,14,24,27,36,46,47,50,51,52,54,58,62,65,74,76,85,89,92,93,96,99,102,106,108,111),
-                                                     col_names = c("year","hhid","hhwt","metarea",
-                                                                   "pernum","perwt","sex",
-                                                                   "age","marst","marrno",
-                                                                   "agemarr","raced","hispand",
-                                                                   "bpl","yrimmig","language",
-                                                                   "educd","pernum_sp","age_sp",
-                                                                   "marrno_sp","raced_sp","hispand_sp",
-                                                                   "bpl_sp","yrimmig_sp","language_sp",
-                                                                   "educd_sp")),
-                       col_types = cols(.default = "i"), #ensure that all variables are read in as integers
+
+census1980 <- read_fwf(here("analysis","input","census1980","usa_00097.dat.gz"), 
+                       col_positions = fwf_positions(start = c(1, 9,19,21,28,32,42,43,46,47,48,51,55,58,66,70,78,81,85,88,89,92,95, 98,102,104),
+                                                     end   = c(8,18,20,23,31,41,42,45,46,47,49,53,57,60,69,71,80,84,87,88,91,94,97,101,103,106),
+                                                     col_names = c("serial","hhwt","statefip","metarea",
+                                                                   "pernum","perwt","sex","age","marst","marrno",
+                                                                   "agemarr","raced","hispand","bpl","yrimmig",
+                                                                   "language","educd","pernum_sp","age_sp","marrno_sp",
+                                                                   "raced_sp","hispand_sp","bpl_sp","yrimmig_sp",
+                                                                   "language_sp","educd_sp")),
+                       col_types = cols(.default = "i"),
                        progress = FALSE)
+#we had to cut out year for size reasons
+census1980$year <- 1980
 
-acs0816 <- read_fwf(here("analysis","input","acs0816","usa_00073.dat.gz"),
-                    col_positions = fwf_positions(start = c(1, 7,15,25,31,35,45,46,49,50,51,52,57,61,64,72,76,84,87,91,94,95, 99,102,105,108,112,114),
-                                                  end   = c(4,14,24,29,34,44,45,48,49,50,51,55,59,63,66,75,77,86,90,93,94,98,101,104,107,111,113,116),
-                                                  col_names = c("year","hhid","hhwt","metarea",
-                                                                "pernum","perwt","sex",
-                                                                "age","marst","marrno","marrinyr",
-                                                                "yrmarr","raced","hispand",
-                                                                "bpl","yrimmig","language",
-                                                                "educd","pernum_sp","age_sp",
-                                                                "marrno_sp","yrmarr_sp","raced_sp","hispand_sp",
-                                                                "bpl_sp","yrimmig_sp","language_sp",
-                                                                "educd_sp")),
-                    col_types = cols(.default = "i"), #ensure that all variables are read in as integers
-                    progress = FALSE)
+#ACS data is split into three separate files for size, but the indices are 
+#identical
+acs_start <- c(1, 5,13,23,25,30,34,44,45,48,49,50,51,56,60,63,71,77,83,86,90,93,94,97,100,103,107,109)
+acs_end   <- c(4,12,22,24,29,33,43,44,47,48,49,50,54,58,62,65,74,80,85,89,92,93,96,99,102,106,108,111)
+acs_names <- c("year","serial","hhwt","statefip","metarea","pernum","perwt",
+               "sex","age","marst","marrno","marrinyr","yrmarr","raced",
+               "hispand","bpl","yrimmig","language","educd","pernum_sp",
+               "age_sp","marrno_sp","raced_sp","hispand_sp","bpl_sp",
+               "yrimmig_sp","language_sp","educd_sp")
+
+acs <- rbind(read_fwf(here("analysis","input","acs1418","usa_00094.dat.gz"),
+                      col_positions = fwf_positions(start = acs_start,
+                                                    end   = acs_end,
+                                                    col_names = acs_names),
+                      col_types = cols(.default = "i"), 
+                      progress = FALSE),
+             read_fwf(here("analysis","input","acs1418","usa_00095.dat.gz"),
+                      col_positions = fwf_positions(start = acs_start,
+                                                    end   = acs_end,
+                                                    col_names = acs_names),
+                      col_types = cols(.default = "i"), 
+                      progress = FALSE),
+             read_fwf(here("analysis","input","acs1418","usa_00096.dat.gz"),
+                      col_positions = fwf_positions(start = acs_start,
+                                                    end   = acs_end,
+                                                    col_names = acs_names),
+                      col_types = cols(.default = "i"), 
+                      progress = FALSE))
 
 
-
-# Code Variables ----------------------------------------------------------------
+# Code Variables -------------------------------------------------------------
 
 census1980 <- code_census_variables(census1980)
-acs0816 <- code_census_variables(acs0816)
+acs <- code_census_variables(acs)
 
 #Check Yourself Before You Wreck Yourself
-table(census1980$race, droplevels(as.factor(census1980$raced)), exclude=NULL)
-table(census1980$race, census1980$hispand, exclude=NULL)
-
-table(census1980$race_sp, droplevels(as.factor(census1980$raced_sp)), exclude=NULL)
-table(census1980$race_sp, census1980$hispand_sp, exclude=NULL)
+table(census1980$raced, census1980$race, exclude=NULL)
+table(census1980$hispand, census1980$race, exclude=NULL)
+table(acs$raced, acs$race, exclude=NULL)
+table(acs$hispand, acs$race, exclude=NULL)
 
 table(census1980$educd, census1980$educ, exclude=NULL)
 table(census1980$educd_sp, census1980$educ_sp, exclude=NULL)
+table(acs$educd, acs$educ, exclude=NULL)
+table(acs$educd_sp, acs$educ_sp, exclude=NULL)
+
+#check whether is_single is working correctly
+table(census1980$marst, is_single(census1980$marst), exclude=NULL)
+table(acs$marst, is_single(acs$marst), exclude=NULL)
 
 # Duration of Marriage ----------------------------------------------------
 
 #This variable is defined differently in the two datasets so I need to 
 #create it separately
-
 census1980$dur_mar <- ifelse(census1980$agemarr==0, 
-                             NA, 
-                             census1980$age-census1980$agemarr)
+                             NA, census1980$age-census1980$agemarr)
+tapply(census1980$dur_mar, census1980$marst, mean)
 
-acs0816$dur_mar <- ifelse(acs0816$marst>3 | acs0816$marst==0,
-                          NA,
-                          acs0816$year - acs0816$yrmarr)
+acs$dur_mar <- ifelse(acs$yrmarr==0,
+                      NA, acs$year - acs$yrmarr)
+tapply(acs$dur_mar, acs$marst, mean)
 
 # Create Counterfactual Unions -------------------------------------------------------
 
-markets1980 <- create_unions(census1980, 5, 25)
-markets0816 <- create_unions(acs0816, 5, 25)
+#important to use five year windows to fix intervalled year of migration
+#data for census 1980
+markets_census <- create_unions(census1980, 5, 25)
+markets_acs <- create_unions(acs, 5, 25)
 
 
-save(markets1980, file=here("analysis","output","markets1980.RData"))
-save(markets0816, file=here("analysis","output","markets0816.RData"))
+save(markets_census, file=here("analysis","output","markets_census.RData"))
+save(markets_acs, file=here("analysis","output","markets_acs.RData"))
 
