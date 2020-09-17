@@ -238,7 +238,7 @@ add_vars <- function(markets) {
 code_race_pentagon <- function(race) {
   race_pent <- ifelse(is.na(race), NA, 
                       ifelse(race=="Chinese" | race=="Japanese" | race=="Korean" |
-                               race=="Filipino", "Asian", 
+                               race=="Filipino" | race=="Vietnamese", "Asian", 
                              ifelse(race=="Mexican" | race=="Cuban" | 
                                       race=="Puerto Rican", "Hispanic",
                                     as.character(race))))
