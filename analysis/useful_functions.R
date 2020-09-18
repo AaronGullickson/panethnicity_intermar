@@ -68,36 +68,58 @@ code_census_variables <- function(census) {
 
 code_race <- function(raced, hispand) {
   # We want to take the raced and hispand variables and code them into a combined
-  # race variable with the following categories:
+  # race variable. We want categories to be large enough to sustain an analysis.
+  # We will use the following categories based on this criteria. I looked at
+  # case counts on IPUMS to ascertain this. The general benchmarks is over 10,000
+  # in a given ACS year, aalthough Japanese is a little lower than this.
   # - White (raced 100)
   # - Black (raced 200)
-  # - American Indian (raced 300) - Removed for sample size issues
-  # - Chinese (raced 400)
+  # - Indigenous (raced 300 (American Indian) and raced 630 (Native Hawaiian))
+  # - Chinese (raced 400 and 410 Chinese and Tawaiianese respectively)
   # - Japanese (raced 500)
   # - Korean (raced 620)
   # - Vietnamese (raced 640)
   # - Filipino (raced 600)
-  # - Native Hawaiian (raced 630)  - Removed for sample size issues
   # - Mexican (hispand 100)
-  # - Cuban (hispand 300)
   # - Puerto Rican (hispand 200)
-  # Any other cases should be treated as missing values
-  race <- ifelse(hispand>=400, NA, 
-                 ifelse(hispand==100, "Mexican",
-                        ifelse(hispand==300, "Cuban",
-                               ifelse(hispand==200, "Puerto Rican",
-                                      ifelse(raced==100, "White",
-                                             ifelse(raced==200, "Black",
-                                                    ifelse(raced==400, "Chinese",
-                                                           ifelse(raced==500, "Japanese",
-                                                                  ifelse(raced==620, "Korean",
-                                                                         ifelse(raced==600, "Filipino",
-                                                                                ifelse(raced==640, "Vietnamese",
-                                                                                       ifelse(raced==610, "Asian Indian", NA))))))))))))
+  # - Cuban (hispand 300)
+  # - Guatemalan (raced 412)
+  # - Salvadorian (raced 416)
+  # - Colombian (raced 423)
+  # - Dominican (raced 460)
+  # Any other cases should be treated as missing values.
+  #Note that I cannot get Guatemalan, Salvadorian, Colombian, and Dominican in
+  #1980 data so that when using comparisons I will need a separate ACS data which
+  #leaves these categories out
+  race <- case_when(
+    hispand==100 ~ "Mexican",
+    hispand==200 ~ "Puerto Rican",
+    hispand==300 ~ "Cuban",
+    hispand==412 ~ "Guatemalan",
+    hispand==416 ~ "Salvadorian",
+    hispand==423 ~ "Colombian",
+    hispand==460 ~ "Dominican",
+    #hispand>=400 ~ NA_character_,
+    raced==100 ~ "White",
+    raced==200 ~ "Black",
+    (raced>=300 & raced<400) | raced==630 ~ "Indigenous",
+    raced==400 | raced==410 ~ "Chinese",
+    raced==500 ~ "Japanese",
+    raced==620 ~ "Korean",
+    raced==600 ~ "Filipino",
+    raced==640 ~ "Vietnamese",
+    raced==610 ~ "Asian Indian",
+    TRUE ~ NA_character_
+  )
+  
   race <- factor(race, 
-                 levels=c("White","Black","Chinese","Japanese","Korean",
-                          "Filipino","Vietnamese","Asian Indian", "Mexican",
-                          "Cuban","Puerto Rican"))
+                 levels=c("White","Black","Indigenous","Chinese","Japanese",
+                          "Korean","Filipino","Vietnamese","Asian Indian", 
+                          "Mexican","Cuban","Puerto Rican","Dominican",
+                          "Guatemalan","Salvadorian","Colombian"))
+  
+  table(raced, hispand, race)
+  
   return(race)
 }
 
@@ -108,14 +130,13 @@ code_educ <- function(educd) {
   # - High school diploma
   # - Some college, but less than a four year degree
   # - Four year college degree or more
-  educ <- ifelse(educd<60, "no hs diploma",
-                 ifelse(educd<=65, "hs diploma",
-                        ifelse(educd<=90, "some college",
-                               ifelse(educd<=999, "four-year degree", 
+  educ <- ifelse(educd<60, "LHS",
+                 ifelse(educd<=65, "HS",
+                        ifelse(educd<=90, "SC",
+                               ifelse(educd<=999, "C", 
                                       NA))))
   educ <- factor(educ,
-                 levels=c("no hs diploma","hs diploma",
-                          "some college","four-year degree"),
+                 levels=c("LHS","HS","SC","C"),
                  ordered=TRUE)
   return(educ)
 }
@@ -202,30 +223,46 @@ add_vars <- function(markets) {
   markets$agediff <- markets$ageh-markets$agew
   
   #birthplace endogamy
-  markets$bpl.endog <- markets$bplh==markets$bplw
+  markets$bpl_endog <- markets$bplh==markets$bplw
   
   #language endogamy 
-  markets$language.endog <- markets$languageh==markets$languagew
+  markets$language_endog <- markets$languageh==markets$languagew
   
   #educational hypergamy/hypogamy
   markets$hypergamy <- markets$educh > markets$educw
   markets$hypogamy <- markets$educh < markets$educw
   
+  #educational crossing
+  markets$edcross_hs <- (markets$educh>="HS" & markets$educw<"HS") | 
+    (markets$educw>="HS" & markets$educh<"HS")
+  markets$edcross_sc <- (markets$educh>="SC" & markets$educw<"SC") | 
+    (markets$educw>="SC" & markets$educh<"SC")
+  markets$edcross_c <- (markets$educh>="C" & markets$educw<"C") | 
+    (markets$educw>="C" & markets$educh<"C")
+  
   #create racial exogamy terms
+  
+  #full racial exogamy blocks
+  markets$race_exog_full <- createExogamyTerms(markets$raceh, 
+                                               markets$racew, 
+                                               symmetric=TRUE)
+  
+  
+  #restricted to pentagon plus Asian/Asian and Hispanic/Hispanic intermarriage
   markets$raceh_pent <- code_race_pentagon(markets$raceh)
   markets$racew_pent <- code_race_pentagon(markets$racew)
-  markets$race.exog <- createExogamyTerms(markets$raceh_pent, 
+  markets$race_exog_pent <- createExogamyTerms(markets$raceh_pent, 
                                           markets$racew_pent, 
                                           symmetric=TRUE)
   #now replace endogamy with ethnic intermarriage for Asian and Hispanic groups
-  lvls_tmp <- levels(markets$race.exog)
-  markets$race.exog <- as.character(markets$race.exog)
-  markets$race.exog <- ifelse(markets$raceh_pent=="Asian" & markets$racew_pent=="Asian" &
+  lvls_tmp <- levels(markets$race_exog_pent)
+  markets$race_exog_pent <- as.character(markets$race_exog_pent)
+  markets$race_exog_pent <- ifelse(markets$raceh_pent=="Asian" & markets$racew_pent=="Asian" &
                                 markets$raceh!=markets$racew, "Asian.Asian", 
                               ifelse(markets$raceh_pent=="Hispanic" & markets$racew_pent=="Hispanic" &
                                        markets$raceh!=markets$racew, "Hispanic.Hispanic",
-                                     markets$race.exog))
-  markets$race.exog <- factor(markets$race.exog,
+                                     markets$race_exog_pent))
+  markets$race_exog_pent <- factor(markets$race_exog_pent,
                               levels=c(lvls_tmp,
                                        "Asian.Asian","Hispanic.Hispanic"))
   #test
@@ -237,13 +274,16 @@ add_vars <- function(markets) {
 #code race back into the racial pentagon, plus Asian Indian
 code_race_pentagon <- function(race) {
   race_pent <- ifelse(is.na(race), NA, 
-                      ifelse(race=="Chinese" | race=="Japanese" | race=="Korean" |
-                               race=="Filipino" | race=="Vietnamese", "Asian", 
+                      ifelse(race=="Chinese" | race=="Japanese" | 
+                               race=="Korean" | race=="Filipino" | 
+                               race=="Vietnamese", "Asian", 
                              ifelse(race=="Mexican" | race=="Cuban" | 
-                                      race=="Puerto Rican", "Hispanic",
+                                      race=="Puerto Rican" | race=="Guatemalan" |
+                                      race=="Salvadorian" | race=="Dominican" |
+                                      race=="Colombian", "Hispanic",
                                     as.character(race))))
   race_pent <- factor(race_pent, 
-                      levels=c("White","Black","Asian","Hispanic",
+                      levels=c("White","Black","Indigenous","Asian","Hispanic",
                                "Asian Indian"))
   return(race_pent)
 }

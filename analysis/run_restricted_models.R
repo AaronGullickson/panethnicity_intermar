@@ -6,25 +6,28 @@ load(here("analysis","output","markets_acs.RData"))
 
 with(subset(markets_census, choice),
      table(raceh, racew))
-with(subset(markets_acs, choice),
+with(subset(markets_acs_shortrace, choice),
+     table(raceh, racew))
+with(subset(markets_acs_fullrace, choice),
      table(raceh, racew))
 
 #add variables
 markets_census <- add_vars(markets_census)
-markets_acs <- add_vars(markets_acs)
+markets_acs_shortrace <- add_vars(markets_acs_shortrace)
 
 # Run Models --------------------------------------------------------------
 
 #baseline model
 
 formula_full <- formula(choice~agediff+I(agediff^2)+ #husband-wife age difference
-                          bpl.endog+language.endog+ #language and birthplace endogamy
+                          bpl_endog+language_endog+ #language and birthplace endogamy
                           hypergamy+hypogamy+ #education parameters
-                          race.exog+ #gender-symmetric racial exogamy
+                          edcross_hs+edcross_sc+edcross_c+
+                          race_exog_pent+ #gender-symmetric racial exogamy
                           strata(group))
 
 model_census <- clogit(formula_full, data=markets_census)
-model_acs <- clogit(formula_full, data=markets_acs)
+model_acs <- clogit(formula_full, data=markets_acs_shortrace)
 
 library(tibble)
 coefs <- rbind(tibble(variable=names(coef(model_census)),

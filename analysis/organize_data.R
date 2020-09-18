@@ -19,6 +19,8 @@ library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 
+set.seed(39)
+
 # Read in the 1980 Data ---------------------------------------------------
 
 
@@ -102,10 +104,20 @@ tapply(acs$dur_mar, acs$marst, mean)
 
 #important to use five year windows to fix intervalled year of migration
 #data for census 1980
+census1980$race <- droplevels(census1980$race)
+census1980$race_sp <- droplevels(census1980$race_sp)
 markets_census <- create_unions(census1980, 5, 25)
-markets_acs <- create_unions(acs, 5, 25)
+
+#for the ACS, first calculate one based on the full racial categories
+markets_acs_fullrace <- create_unions(acs, 5, 25)
+#and then calculate one after removing the Hispanic categories not available
+#in 1980
+acs$race <- factor(acs$race, levels=levels(census1980$race))
+acs$race_sp <- factor(acs$race_sp, levels=levels(census1980$race))
+markets_acs_shortrace <- create_unions(acs, 5, 25)
 
 
 save(markets_census, file=here("analysis","output","markets_census.RData"))
-save(markets_acs, file=here("analysis","output","markets_acs.RData"))
+save(markets_acs_fullrace, markets_acs_shortrace, 
+     file=here("analysis","output","markets_acs.RData"))
 

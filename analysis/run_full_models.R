@@ -9,30 +9,24 @@ source(here("analysis","useful_functions.R"))
 load(here("analysis","output","markets_census.RData"))
 load(here("analysis","output","markets_acs.RData"))
 
-with(subset(markets_census, choice),
-     table(raceh, racew))
-with(subset(markets_acs, choice),
+with(subset(markets_acs_fullrace, choice),
      table(raceh, racew))
 
 #add variables
-markets_acs <- add_vars(markets_acs)
-
-#try full racial exogamy terms for ACS
-markets_acs$race.exog.full <- createExogamyTerms(markets_acs$raceh, 
-                                                 markets_acs$racew, 
-                                                 symmetric=TRUE)
+markets_acs_fullrace <- add_vars(markets_acs_fullrace)
 
 #run the model
 model_acs_full <- clogit(choice~agediff+I(agediff^2)+ #husband-wife age difference
-                           bpl.endog+language.endog+ #language and birthplace endogamy
+                           bpl_endog+language_endog+ #language and birthplace endogamy
                            hypergamy+hypogamy+ #education parameters
-                           race.exog.full+ #gender-symmetric racial exogamy
-                           strata(group), data=markets_acs)
+                           edcross_hs+edcross_sc+edcross_c+
+                           race_exog_full+ #gender-symmetric racial exogamy
+                           strata(group), data=markets_acs_fullrace)
 
 #summarize as distances
 coefs <- coef(model_acs_full)
-coefs <- coefs[grepl("race.exog.full",names(coefs))]
-temp <- gsub("race.exog.full","",names(coefs))
+coefs <- coefs[grepl("race_exog_full",names(coefs))]
+temp <- gsub("race_exog_full","",names(coefs))
 temp <- strsplit(temp, "\\.")
 race1 <- sapply(temp, function(x) {x[1]})
 race2 <- sapply(temp, function(x) {x[2]})
