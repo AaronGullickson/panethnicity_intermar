@@ -26,6 +26,17 @@ formula_full <- formula(choice~agediff+I(agediff^2)+ #husband-wife age differenc
 model_census <- clogit(formula_full, data=markets_census)
 model_acs <- clogit(formula_full, data=markets_acs)
 
+#try full racial exogamy terms for ACS
+markets_acs$race.exog.full <- createExogamyTerms(markets_acs$raceh, 
+                                                 markets_acs$racew, 
+                                                 symmetric=TRUE)
+
+model_acs_full <- clogit(choice~agediff+I(agediff^2)+ #husband-wife age difference
+                           bpl.endog+language.endog+ #language and birthplace endogamy
+                           hypergamy+hypogamy+ #education parameters
+                           race.exog.full+ #gender-symmetric racial exogamy
+                           strata(group), data=markets_acs)
+
 library(tibble)
 coefs <- rbind(tibble(variable=names(coef(model_census)),
                       coef=coef(model_census),
