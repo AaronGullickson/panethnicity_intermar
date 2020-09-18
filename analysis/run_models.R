@@ -1,93 +1,52 @@
-
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
-load(here("analysis","output","markets1980.RData"))
-load(here("analysis","output","markets0816.RData"))
+load(here("analysis","output","markets_census.RData"))
+load(here("analysis","output","markets_acs.RData"))
+
+with(subset(markets_census, choice),
+     table(raceh, racew))
+with(subset(markets_acs, choice),
+     table(raceh, racew))
 
 #add variables
-markets1980 <- add_vars(markets1980)
-markets0816 <- add_vars(markets0816)
+markets_census <- add_vars(markets_census)
+markets_acs <- add_vars(markets_acs)
 
 # Run Models --------------------------------------------------------------
 
 #baseline model
-formula.base <- formula(choice~agediff+I(agediff^2)+
-                          bpl.endog+language.endog+
-                          hypergamy+hypogamy+strata(group))
 
-formula.full <- formula(choice~agediff+I(agediff^2)+ #husband-wife age difference
+formula_full <- formula(choice~agediff+I(agediff^2)+ #husband-wife age difference
                           bpl.endog+language.endog+ #language and birthplace endogamy
                           hypergamy+hypogamy+ #education parameters
                           race.exog+ #gender-symmetric racial exogamy
                           strata(group))
 
-system.time(model.base.clogit <- clogit(formula.full, data=markets0816))
-system.time(model.base.clogit.1980 <- clogit(formula.full, data=markets1980))
-
-model.full.clogit.1980 <- clogit(formula.full, data=markets1980)
-model.full.clogit.0816 <- clogit(formula.full, data=markets0816)
+model_census <- clogit(formula_full, data=markets_census)
+model_acs <- clogit(formula_full, data=markets_acs)
 
 library(tibble)
-coefs <- rbind(tibble(variable=names(coef(model.full.clogit.1980)),
-                      coef=coef(model.full.clogit.1980),
+coefs <- rbind(tibble(variable=names(coef(model_census)),
+                      coef=coef(model_census),
                       year=1980),
-               tibble(variable=names(coef(model.full.clogit.0816)),
-                      coef=coef(model.full.clogit.0816),
+               tibble(variable=names(coef(model_acs)),
+                      coef=coef(model_acs),
                       year=2016))
 library(ggplot2)
+library(ggrepel)
 ggplot(coefs, aes(x=reorder(variable, coef, max), 
                   y=coef, 
                   color=as.factor(year)))+
   geom_point()+
-  coord_flip()
+  coord_flip()+
+  theme(legend.position = "bottom")
 
-
-createDistanceMatrix <- function(model, groups, varName="race.exog") {
-  
-  #TODO: for loop bad, figure out better way
-  tab <- matrix(0, length(groups), length(groups))
-  for(i in 1:length(groups)) {
-    for(j in 1:length(groups)) {
-      if(i>=j) {
-        next
-      }
-      group1 <- groups[i]
-      group2 <- groups[j]
-      tab[i,j] <- summary(model)$coef[paste(varName,paste(group1,group2,sep="."),sep=""),"coef"]
-      
-    }
-  }
-  tab <- t(tab)
-  rownames(tab) <- colnames(tab) <- groups
-  
-  #multiply by -1 aand exponentiate, to get it back to original scale
-  #of distance
-  tab <- exp(-1 * tab)
-  return(as.dist(tab))
-  
-}
-
-distance <- createDistanceMatrix(model.exog, groups=c("White","Black","Chinese","Japanese","Korean","Filipino","Mexican","Cuban","Puerto Rican"))
-hc <- hclust(distance, method="average")
-plot(as.dendrogram(hc), 
-     las=1, xlab="", ylab="distance")
-abline(h=1, lty=3, col="red")
-
-distance <- createDistanceMatrix(model.exog, groups=c("White","Black","Chinese","Japanese","Korean","Filipino","Asian Indian","Mexican","Cuban","Puerto Rican"))
-hc <- hclust(distance, method="average")
-plot(as.dendrogram(hc), 
-     las=1, xlab="", ylab="distance")
-abline(h=1, lty=3, col="red")
-
-  distance <- createDistanceMatrix(model.exog, groups=c("Chinese","Japanese","Korean","Filipino","Mexican"))
-hc <- hclust(distance, method="average")
-plot(as.dendrogram(hc), 
-     las=1, xlab="", ylab="distance")
- abline(h=1, lty=3, col="red")
- 
- distance <- createDistanceMatrix(model.exog, groups=c("White","Black","Mexican","Cuban","Puerto Rican"))
- hc <- hclust(distance, method="average")
- plot(as.dendrogram(hc), 
-      las=1, xlab="", ylab="distance")
- abline(h=1, lty=3, col="red")
+coefs <- tibble(variable=names(coef(model_census)), 
+                coef80=coef(model_census),
+                coef16=coef(model_acs))
+ggplot(coefs, aes(x=coef80, y=coef16))+
+  geom_abline(slope=1, linetype=2)+
+  geom_point()+
+  geom_text_repel(aes(label=variable))+
+  theme_bw()
