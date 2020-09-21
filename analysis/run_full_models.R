@@ -11,9 +11,11 @@ load(here("analysis","output","markets_acs.RData"))
 
 with(subset(markets_acs_fullrace, choice),
      table(raceh, racew))
+with(subset(markets_acs_shortrace, choice),
+     table(raceh, racew))
 
 #add variables
-markets_acs_fullrace <- add_vars(markets_acs_fullrace)
+markets_acs_shortrace <- add_vars(markets_acs_shortrace)
 
 #run the model
 model_acs_full <- clogit(choice~agediff+I(agediff^2)+ #husband-wife age difference
@@ -21,28 +23,4 @@ model_acs_full <- clogit(choice~agediff+I(agediff^2)+ #husband-wife age differen
                            hypergamy+hypogamy+ #education parameters
                            edcross_hs+edcross_sc+edcross_c+
                            race_exog_full+ #gender-symmetric racial exogamy
-                           strata(group), data=markets_acs_fullrace)
-
-#summarize as distances
-coefs <- coef(model_acs_full)
-coefs <- coefs[grepl("race_exog_full",names(coefs))]
-temp <- gsub("race_exog_full","",names(coefs))
-temp <- strsplit(temp, "\\.")
-race1 <- sapply(temp, function(x) {x[1]})
-race2 <- sapply(temp, function(x) {x[2]})
-groups <- unique(c(race1,race2))
-tab <- matrix(0, length(groups), length(groups))
-rownames(tab) <- colnames(tab) <- groups
-for(i in 1:length(race1)) {
-  tab[race1[i], race2[i]] <- coefs[i]
-  tab[race2[i], race1[i]] <- coefs[i]
-}
-tab <- exp(-1 * tab)
-dist <- as.dist(tab)
-
-
-hc <- hclust(dist, method="average")
-plot(as.dendrogram(hc), 
-     las=1, xlab="", ylab="distance")
-abline(h=1, lty=3, col="red")
-
+                           strata(group), data=markets_acs_shortrace)
