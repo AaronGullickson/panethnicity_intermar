@@ -19,25 +19,35 @@ markets_acs_shortrace <- add_vars(markets_acs_shortrace)
 
 #baseline model
 
-formula_full <- formula(choice~agediff+I(agediff^2)+ #husband-wife age difference
-                          bpl_endog+language_endog+ #language and birthplace endogamy
-                          hypergamy+hypogamy+ #education parameters
-                          edcross_hs+edcross_sc+edcross_c+
-                          race_exog_pent+ #gender-symmetric racial exogamy
-                          strata(group))
+#estimate model without birthplace and language endogamy
+formula_baseline <- formula(choice~agediff+I(agediff^2)+
+                              hypergamy+hypogamy+
+                              edcross_hs+edcross_sc+edcross_c+
+                              race_exog_pent+ 
+                              strata(group))
+formula_bpl_endog <- update(formula_baseline, .~.+bpl_endog)
+formula_lang_endog <- update(formula_baseline, .~.+language_endog)
+formula_full <- update(formula_bpl_endog, .~.+language_endog)
 
-model_census <- clogit(formula_full, data=markets_census)
-model_acs <- clogit(formula_full, data=markets_acs_shortrace)
 
-coefs <- rbind(tibble(variable=names(coef(model_census)),
-                      coef=coef(model_census),
-                      year=1980),
-               tibble(variable=names(coef(model_acs)),
-                      coef=coef(model_acs),
-                      year=2016))
-ggplot(coefs, aes(x=reorder(variable, coef, max), 
-                  y=coef, 
-                  color=as.factor(year)))+
-  geom_point()+
-  coord_flip()+
-  theme(legend.position = "bottom")
+model_census1 <- clogit(formula_baseline, data=markets_census)
+model_census2 <- clogit(formula_bpl_endog, data=markets_census)
+model_census3 <- clogit(formula_lang_endog, data=markets_census)
+model_census4 <- clogit(formula_full, data=markets_census)
+
+model_acs1 <- clogit(formula_baseline, data=markets_acs_shortrace)
+model_acs2 <- clogit(formula_bpl_endog, data=markets_acs_shortrace)
+model_acs3 <- clogit(formula_lang_endog, data=markets_acs_shortrace)
+model_acs4 <- clogit(formula_full, data=markets_acs_shortrace)
+
+#saving the model summary output should be fine
+models_census_summary <- lapply(list(model_census1, model_census2, 
+                                    model_census3, model_census4),
+                               summary)
+models_acs_summary <- lapply(list(model_acs1, model_acs2, 
+                                  model_acs3, model_acs4),
+                             summary)
+
+save(models_census_summary, models_acs_summary,
+     file=here("analysis","output","models_restricted.RData"))
+
