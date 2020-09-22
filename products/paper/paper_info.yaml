@@ -1,12 +1,12 @@
 ---
-title: "The Title"
+title: "Changes in Pan-Ethnicity and Racial Boundaries in the US Based on Interracial Marriage Patterns, 1980-2018"
 author:
 - affiliation: University of Oregon, Sociology
   name: Aaron Gullickson
-- affiliation: Some Research University
-  name: My co-author
-keywords: keywords
+#- affiliation: Some Research University
+#  name: My co-author
+#keywords: keywords
 #FYI: the thanks and abstract are easier to view and edit in Atom which does proper linewrapping
-thanks: Thanks to people and stuff
+#thanks: Thanks to people and stuff
 abstract: This is a test abstract
 ---
