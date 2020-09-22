@@ -12,9 +12,103 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 source("check_packages.R")
 source("useful_functions.R")
+load(here("analysis","output","models_restricted.RData"))
 ```
 
-# Introduction
-<a href="#top">Back to top</a>
 
-Use this R Markdown to perform the main analysis for the project. I use this basically as a lab notebook. It contains the main analysis and a variety of sensitivity analysis. The code in this documents serves as a baseline for the eventual tables and figures that will go into the paper. At the same time it will serve as a record of all supplementary analyses performed. 
+```{r}
+#extract coefficicent values
+get_coefs <- function(x) {
+  return(coef(x)[,c(1,3)])
+}
+temp <- lapply(models_census_summary, get_coefs)
+coef_table <- NULL
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="Census 1980"))
+}
+temp <- lapply(models_acs_summary, get_coefs)
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="ACS 2014-18"))
+}
+coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
+#fix up the names
+temp_names <- unique(coef_table$variable)
+better_names <- c("age difference", "age difference squared",
+                  "female educational hypergamy", "female educational hypogamy",
+                  "educational crossing LHS/HS", "educational crossing HS/SC",
+                  "educational crossing SC/C", "Black/White","Indigenous/White",
+                  "Asian/White","Hispanic/White","Asian Indian/White",
+                  "Black/Indigenous","Black/Asian","Black/Hispanic",
+                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Hispanic",
+                  "Indigenous/Asian Indian","Asian/Hispanic","Asian/Asian Indian",
+                  "Hispanic/Asian Indian","Asian ethnic exogamy",
+                  "Hispanic ethnic exogamy", "birthplace endogamy",
+                  "language endogamy")
+names(better_names) <- temp_names
+coef_table$variable <- better_names[coef_table$variable]
+coef_table$model <- factor(coef_table$model,
+                           levels=paste("Model",1:4),
+                           labels=c("Baseline", "+ birthplace endogamy",
+                                    "+ language endogamy", "+ both"))
+coef_table$data <- factor(coef_table$data,
+                          levels=c("Census 1980", "ACS 2014-18"))
+```
+  
+```{r}
+ggplot(subset(coef_table, 
+              variable=="Asian ethnic exogamy" | 
+                variable=="Hispanic ethnic exogamy"), 
+       aes(x=variable, y=exp(coef), color=model))+
+  facet_wrap(~data)+
+  coord_flip()+
+  geom_point()+
+  labs(x=NULL, 
+       y="odds ratio of union formation for Hispanic/Asian\nethnic intermarriage relative to ethnic endogamy")+
+  scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  #scale_color_manual(values=wes_palette("Moonrise2"))+
+  theme_bw()+
+  theme(legend.position = "bottom")
+```
+  
+```{r}
+#need a reworked dataset for arrows - try tidyverse style
+temp <- coef_table %>%
+  filter(model=="+ both") %>%
+  dcast(variable+racial_exog~data, value.var="coef") %>%
+  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18`)
+
+#reorder based on ACS values
+temp$variable <- reorder(temp$variable, temp$coef.acs, max)
+coef_table$variable <- factor(coef_table$variable,
+                              levels=levels(temp$variable))
+
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(temp, racial_exog), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60", alpha=0.6)+
+  coord_flip()+
+  scale_y_log10()+
+  scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  #scale_color_manual(values=wes_palette("Moonrise2"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source")+
+  theme_bw()
+
+```
+

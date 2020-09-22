@@ -7,7 +7,7 @@
 
 #add new packages to the chain here
 packages = c("here","readr","ggplot2","texreg","devtools","dplyr","tibble",
-             "survival","bife")
+             "survival","bife", "LaCroixColoR", "wesanderson")
 
 package.check <- lapply(packages, FUN = function(x) {
   if (!require(x, character.only = TRUE)) {
