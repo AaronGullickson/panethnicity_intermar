@@ -36,6 +36,21 @@
 \usepackage{float}
 \usepackage{dcolumn}
 
+%for kableExtra
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+
 \newcommand*{\authorfont}{\fontfamily{phv}\selectfont}
 $if(fontfamily)$
 \usepackage[$fontfamilyoptions$]{$fontfamily$}
@@ -97,9 +112,6 @@ $endif$
 $if(verbatim-in-note)$
 \usepackage{fancyvrb}
 $endif$
-$if(tables)$
-\usepackage{longtable,booktabs}
-$endif$
 
 $if(graphics)$
 \usepackage{graphicx}
@@ -157,12 +169,6 @@ $endif$
 %    \section*{{\normalsize{\refname}}}%
 %}%
 %\makeatother
-
-%put figures and tables only at the top and bottom
-\makeatletter
-\renewcommand{\fps@figure}{tb}
-\renewcommand{\fps@table}{tb}
-\makeatother
 
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{setspace}
