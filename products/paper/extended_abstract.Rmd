@@ -1,9 +1,9 @@
 ---
 output:
   pdf_document:
-    pandoc_args: './paper_info.yaml'
     citation_package: natbib
     fig_caption: yes
+    pandoc_args: ./paper_info.yaml
     template: ./resources/aog-latex-ms.tex
   word_document:
     pandoc_args: './paper_info.yaml'
@@ -115,16 +115,20 @@ The model estimates the log-odds that a given match is the real match as a funct
 
 To address interracial and interethnic marriage, I first code respondents into racial categories. For the non-Hispanic and non-Asian groups, I use the categories of White, Black, and Indigenous. The Indigenous category includes both American Indian and Pacific Islander groups. For the Hispanic and Asian groups, I use the most common national-origin groups from the hispanicity and race questions, respectively, that are identifiable in both datasets. For Asians, I identify respondents as Chinese, Japanese, Korean, Filipino, Vietnamese, or Asian Indian. For Hispanics, I identify respondents as Mexican, Cuban, and Puerto Rican because these are the only three specific national origin categories available in the Census 1980 data. All respondents who do not fall into any of these categories, including multiracial respondents, are dropped from the analysis. In total I have `r prettyNum(sum(markets_census$choice), big.mark=",")` and `r prettyNum(sum(markets_acs_shortrace$choice), big.mark=",")` actual marriages in Census 1980 and the ACS 2014-18 data, respectively. Tables 1 and 2 show the cross-tabulation of race of spouces for these marriages.
 
-```{r}
+```{r tab-census}
 tab <- with(subset(markets_census, choice),
             table(raceh, racew))
 colnames(tab) <- substr(colnames(tab), 1,1)
-knitr::kable(tab, caption="Cross-tabulation of husband's race (row) by wife's race (column) among couples married in the last five years, Census 1980")
+kable(tab, longtable=FALSE, booktabs=TRUE, format="latex",
+      caption = "Cross-tabulation of husband's race (row) by wife's race (column) among couples married in the last five years, Census 1980")
+```
+
+```{r tab-acs}
 tab <- with(subset(markets_acs_shortrace, choice),
             table(raceh, racew))
 colnames(tab) <- substr(colnames(tab), 1,1)
-knitr::kable(tab, 
-             caption="Cross-tabulation of husband's race (row) by wife's race (column) among couples married in the last five years, ACS 2014-18")
+kable(tab, longtable=FALSE, booktabs=TRUE, format="latex",
+      caption="Cross-tabulation of husband's race (row) by wife's race (column) among couples married in the last five years, ACS 2014-18")
 ```
 
 To model patterns of interracial marriage. I first create dummy variables indicating specific racially exogamous unions using large pan-ethnic groupings (e.g. Black/White, Asian/White, Black/Hispanic). I then include separate dummy variables for marriages where both partners belong to different Asian or Hispanic ethnic groups (e.g. Chinese/Japanese, Mexican/Cuban). The latter terms measure the strength of ethnic exogamy within the large pan-ethnic Asian and Hispanic groups. Additionally, because of prior work suggesting that Asian Indians do not fit well within existing American racial classifications [@morning_racial_2001], I include separate parameters measuring intermarriage between Asian Indians and all other groups. 
