@@ -158,6 +158,12 @@ $endif$
 %}%
 %\makeatother
 
+%put figures and tables only at the top and bottom
+\makeatletter
+\renewcommand{\fps@figure}{tb}
+\renewcommand{\fps@table}{tb}
+\makeatother
+
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{setspace}
 
