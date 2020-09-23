@@ -23,7 +23,7 @@ biblio-style: ./resources/ajs.bst
 # chunk option eval to toggle between running with and without 
 # compiling R code chunks
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, 
-                      warning = FALSE, eval = TRUE, fig.height=4)
+                      warning = FALSE, eval = TRUE, fig.height=3.75)
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
@@ -118,7 +118,7 @@ To address interracial and interethnic marriage, I first code respondents into r
 ```{r tab-census}
 tab <- with(subset(markets_census, choice),
             table(raceh, racew))
-colnames(tab) <- substr(colnames(tab), 1,1)
+colnames(tab) <- substr(colnames(tab), 1,2)
 kable(tab, longtable=FALSE, booktabs=TRUE, format="latex",
       caption = "Cross-tabulation of husband's race (row) by wife's race (column) among couples married in the last five years, Census 1980")
 ```
@@ -126,7 +126,7 @@ kable(tab, longtable=FALSE, booktabs=TRUE, format="latex",
 ```{r tab-acs}
 tab <- with(subset(markets_acs_shortrace, choice),
             table(raceh, racew))
-colnames(tab) <- substr(colnames(tab), 1,1)
+colnames(tab) <- substr(colnames(tab), 1,2)
 kable(tab, longtable=FALSE, booktabs=TRUE, format="latex",
       caption="Cross-tabulation of husband's race (row) by wife's race (column) among couples married in the last five years, ACS 2014-18")
 ```
