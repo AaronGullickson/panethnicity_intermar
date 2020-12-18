@@ -26,7 +26,7 @@ Font-awesome icons ie github or twitter
 Google fonts api stuff
 -->
 <link href='https://fonts.googleapis.com/css?family=Indie Flower' rel='stylesheet'>
-<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
 
 <!--
 Here are the required style attributes for css to make this poster work :)
@@ -145,7 +145,7 @@ column-rule-style: solid;
 column-rule-color: black;
 -webkit-column-gap: 50%;
 background-color: #ffffff;
-font-family: Raleway;
+font-family: Lato;
 color: #000000;
 }
 span.citation {
@@ -211,7 +211,7 @@ height: 32in;
 position: absolute;
 margin-left: calc(46in / 4);
 background-color: #23395b;
-color: #FFFFFF90;
+color: #FFFF0090;
 font-family: Indie Flower;
 background-image: linear-gradient(#23395b 50%, #23395b);
 }
@@ -321,12 +321,29 @@ Aaron Gullickson<sup> 1, <a class="orcid" href="https://orcid.org/0000-0001-7237
 <h2>Methods</h2>
 <p>I use a counterfactual marriage model:</p>
 <ol style="list-style-type: decimal">
-<li>For each real union, I sample 50 alternate partners for one spouse from the same metropolitan area.</li>
+<li>I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines.</li>
+<li>For each real union, I sample 25 alternate partners for one randomly determined spouse from the same state of residence.</li>
 <li>I use a conditional logit model to predict which union is the real union based on partner characteristics.</li>
 <li>In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.</li>
 </ol>
-<p><br>
-<br></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Data source</th>
+<th align="right">Number of actual unions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Census 1980</td>
+<td align="right">288,377</td>
+</tr>
+<tr class="even">
+<td align="left">ACS 2014-18</td>
+<td align="right">486,271</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="do-language-and-birthplace-endogamy-matter" class="section level2">
 <h2>Do Language and Birthplace Endogamy Matter?</h2>

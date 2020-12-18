@@ -16,7 +16,8 @@ main_findings:
 logoright_name: '![](https://raw.githubusercontent.com/brentthorne/posterdown/master/images/qr-code-black.png){.main-img-right}'
 main_picwidth: 90%
 main_textsize: "90px"
-font_family: "Raleway"
+main_textcol: "#FFFF0090"
+font_family: "Lato"
 main_fontfamily: "Indie Flower"
 primary_colour: "#23395b"
 secondary_colour: "#23395b"
@@ -43,7 +44,7 @@ knitr::opts_chunk$set(results = 'asis',
 options(knitr.table.format = "html")
 library(ggplot2)
 library(showtext)
-font_add_google("Raleway")
+font_add_google("Lato")
 font_add_google("Indie Flower")
 showtext_auto()
 library(here)
@@ -132,13 +133,14 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
            alpha = 0.4, color=NA, fill="#EAEBEE")+
   coord_flip()+
   scale_y_log10()+
-  scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  scale_color_manual(values=c("red","#FFFF00"))+
+  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
   #scale_color_manual(values=wes_palette("Moonrise2"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially\nendogamous union, logarithmic scale",
        color="data source")+
   theme_bw()+
-  theme(text = element_text(colour="#EAEBEE", family="Raleway"),
+  theme(text = element_text(colour="#EAEBEE", family="Lato"),
         axis.line = element_line(colour="#EAEBEE", size = 2),
         axis.ticks = element_line(colour="#EAEBEE", size = 1),
         axis.title = element_text(size=40),
@@ -172,12 +174,15 @@ The 1980 Census data and American Community Survey since 2013 both measure the d
 
 I use a counterfactual marriage model:
 
-1. For each real union, I sample 50 alternate partners for one spouse from the same metropolitan area. 
+1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines. 
+1. For each real union, I sample 25 alternate partners for one randomly determined spouse from the same state of residence. 
 2. I use a conditional logit model to predict which union is the real union based on partner characteristics.
 3. In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.
 
-<br>
-<br>
+| Data source | Number of actual unions |    
+|:------------|------------------------:|
+| Census 1980 | 288,377                 |
+| ACS 2014-18 | 486,271                 |
 
 ## Do Language and Birthplace Endogamy Matter?
 
@@ -195,7 +200,7 @@ ggplot(subset(coef_table,
   labs(x=NULL, 
        y="odds ratio of union formation for Hispanic/Asian\nethnic intermarriage relative to ethnic endogamy")+
   theme_bw()+
-  theme(#text = element_text(family="Raleway"),
+  theme(#text = element_text(family="Lato"),
         axis.text = element_text(size=14),
         strip.text= element_text(size=14, color="#EAEBEE"),
         strip.background = element_rect(fill = "#23395b",colour = NA),
