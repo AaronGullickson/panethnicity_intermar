@@ -158,7 +158,8 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
         panel.background = element_rect(fill = "#23395b",colour = NA),
         plot.background = element_rect(fill = "#23395b",colour = NA),
         legend.background = element_rect(fill = "#23395b",colour = NA),
-        legend.key = element_rect(fill = "#23395b",colour = NA), legend.position = "bottom")
+        legend.key = element_rect(fill = "#23395b",colour = NA), 
+        legend.position = "bottom")
 dev.off()
 ```
 
