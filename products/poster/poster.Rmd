@@ -167,9 +167,9 @@ dev.off()
 
 The 1980 Census data and American Community Survey since 2013 both measure the duration of current marriages allowing us to reliably measure changes in assortative mating patterns across the two time periods. For this project, I utilize these two data points to address the following questions: 
 
-1. How has the likelihood of interracial marriage changed among newly-wed couples across the time periods? 
-2. How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?  
-3. How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?
+* How has the likelihood of interracial marriage changed among newly-wed couples across the time periods? 
+* How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?  
+* How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?
 
 ## Methods
 
@@ -186,9 +186,6 @@ I use a counterfactual marriage model:
 | ACS 2014-18 | 486,271                 |
 
 ## Do Language and Birthplace Endogamy Matter?
-
-Yes, language and birthplace endogamy reduce the tendency toward pan-ethnic intermarriage, but more so for Asians than Hispanics. Figure \@ref(fig:panethnic-coef-fig) shows how the pan-ethnic exogamy terms change as I add controls for birthplace and language endogamy.
-
 
 ```{r panethnic-coef-fig, fig.cap="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.", dpi=300}
 ggplot(subset(coef_table, 
@@ -208,12 +205,21 @@ ggplot(subset(coef_table,
         axis.title = element_text(size=18))
 ```
 
+* Language and birthplace endogamy strongly reduce the tendency toward pan-ethnic intermarriage for Asians.
+* Birthplace endogamy slightly reduced the tendency toward pan-ethnic intermarriage among Hispanics, but language endogamy has no effect, likely due to the dominance of Spanish and English. 
+
 ## Additional Findings
 
-### A Black/Non-Black Divide
+### Persistent Black/non-Black divide
 
-Black/White interracial marriage increased substantially in likelihood but all intermarriages involving a black spouse remain the least likely form of union.
+Black/White interracial marriage increased substantially in likelihood but all intermarriages involving a black spouse remain the least likely form of union overall.
 
-### Increasing Boundaries for Indigenous and Asian Indian populations 
+### Growing boundaries for Indigenous and Asian Indian populations 
 
-These are the only groups for which intermarriage systematically declined over the time period, although this may be driven in part by issues of identification and measurement.
+Intermarriage declined systematically over the time period for Asian Indians and Indigenous populations. However this decline may be driven in part by issues of identification and measurement for these groups.
+
+## Notes
+
+* This poster was prepared for the Population Association of America Annual Meeting, 2021. 
+
+* [Click here](https://aarongullickson.netlify.app/) or use the QR code to get the full paper associated with this poster. 
