@@ -202,7 +202,7 @@ ggplot(subset(coef_table,
         axis.text = element_text(size=14),
         strip.text= element_text(size=14, color="#EAEBEE"),
         strip.background = element_rect(fill = "#23395b",colour = NA),
-        axis.title = element_text(size=18))
+        axis.title = element_text(size=16))
 ```
 
 * Language and birthplace endogamy strongly reduce the tendency toward pan-ethnic intermarriage for Asians.
