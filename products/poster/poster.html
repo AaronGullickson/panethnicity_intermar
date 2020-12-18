@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018</title>
+
+<script src="poster_files/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+
+
+
+<!--
+Font-awesome icons ie github or twitter
+-->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/brands.css" integrity="sha384-n9+6/aSqa9lBidZMRCQHTHKJscPq6NW4pCQBiMmHdUCvPN8ZOg2zJJTkC7WIezWv" crossorigin="anonymous">
+
+<!--
+Google fonts api stuff
+-->
+<link href='https://fonts.googleapis.com/css?family=Indie Flower' rel='stylesheet'>
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+
+<!--
+Here are the required style attributes for css to make this poster work :)
+-->
+<style>
+@page {
+size: 46in 32in;
+margin: 0;
+padding: 0;
+background-color: #ffffff;
+}
+body {
+margin: 0px;
+padding: 0px;
+width: 46in;
+height: 32in;
+text-align: justify;
+font-size: 45px;
+background-color: #FFFFFF;
+color: #000000;
+}
+/* RMarkdown Class Styles */
+/* center align leaflet map,
+from https://stackoverflow.com/questions/52112119/center-leaflet-in-a-rmarkdown-document */
+.html-widget {
+margin: auto;
+position: sticky;
+margin-top: 2cm;
+margin-bottom: 2cm;
+}
+.leaflet.html-widget.html-widget-static-bound.leaflet-container.leaflet-touch.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom {
+position: sticky;
+width: 100%;
+}
+pre.sourceCode.r {
+background-color: #dddddd40;
+border-radius: 4mm;
+padding: 4mm;
+width: 75%;
+margin: auto;
+margin-top: 1em;
+margin-bottom: 1em;
+/* align-items: center; */
+}
+code.sourceCode.r{
+background-color: transparent;
+font-size: 20pt;
+border-radius: 2mm;
+}
+code {
+font-size: 25pt;
+font-family: monospace;
+background-color: #23395b24;
+color: #23395b;
+padding: 1.2mm;
+line-height: 1;
+border-radius: 2mm;
+}
+caption {
+margin-bottom: 10px;
+font-size: 20pt;
+font-style: italic;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #23395b20;
+}
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td{
+  border-spacing: 0;
+  font-size: 40%;
+  border-style: none;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 1em;
+  padding-left: 1em;
+  line-height: 1em;
+}
+table {
+  margin: auto;
+}
+th {
+  padding-left: 5mm;
+  padding-right: 5mm;
+}
+.caption {
+font-size: 20pt;
+font-style: italic;
+padding-top: 0;
+}
+.references {
+font-size: 20px;
+line-height: 90%;
+}
+/* Create three unequal columns that floats next to each other */
+.column {
+float: left;
+padding: 0px;
+}
+.outer {
+width: 46in;
+height: 32in;
+-webkit-column-count: 2; /* Chrome, Safari, Opera */
+-moz-column-count: 2; /* Firefox */
+column-count: 2;
+-webkit-column-fill: auto;
+-moz-column-fill: auto;
+column-fill: auto;
+-webkit-column-rule-width: 50%;
+-moz-column-rule-width: 50%;
+column-rule-width: 50%;
+-webkit-column-rule-style: solid;
+-moz-column-rule-style: solid;
+column-rule-style: solid;
+-webkit-column-rule-color: black;
+-moz-column-rule-color: black;
+column-rule-color: black;
+-webkit-column-gap: 50%;
+background-color: #ffffff;
+font-family: Raleway;
+color: #000000;
+}
+span.citation {
+  color: #23395b;
+  font-weight: bold;
+}
+a {
+text-decoration: none;
+color: #23395b;
+}
+#title {
+font-size: 60pt;
+text-align: left;
+margin: 0;
+line-height: 90%;
+border-bottom: 0;
+}
+#author {
+color: #23395b;
+margin: 0;
+line-height: 90%;
+font-size: 1.17em;
+}
+#affiliation {
+padding-top: 1em;
+color: #00000060;
+font-style: italic;
+font-size: 25px;
+margin: 0;
+}
+sup {
+color: #EAEBEE;
+}
+.affiliation sup {
+font-size: 20px;
+}
+.author sup {
+font-size: 30px;
+}
+.author_extra {
+color: #23395b;
+margin: 0;
+line-height: 85%;
+font-size: 35px;
+}
+.outer h1 {
+text-align: center;
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+}
+.outer h2 {
+text-align: center;
+}
+.outer p {
+color: #000000;
+}
+.outer ol {
+text-align: left;
+}
+.main {
+width: calc(46in / 2);
+height: 32in;
+position: absolute;
+margin-left: calc(46in / 4);
+background-color: #23395b;
+color: #FFFFFF90;
+font-family: Indie Flower;
+background-image: linear-gradient(#23395b 50%, #23395b);
+}
+.main strong {
+color: #FFFFFF;
+}
+img.main-img-left {
+width: 20%;
+left: 0.5in;
+bottom: 0.2in;
+position: absolute;
+}
+img.main-img-right {
+width: 18%;
+right: 0.5in;
+bottom: 0.2in;
+position: absolute;
+}
+.main p {
+padding-top: 20%;
+font-size: 90px;
+text-align: left;
+}
+.fab {
+color: #00000060;
+font-size: 25px;
+}
+.twitter, i {
+color: #00000060;
+font-size: 35px;
+text-decoration: none;
+}
+a.email {
+text-decoration: none;
+color: #00000060;
+font-size: 35px;
+}
+.envelope {
+color: #00000060;
+font-size: 5px;
+text-decoration: none;
+}
+.poster_wrap {
+width: 46in;
+height: 32in;
+padding: 0cm;
+background-color: #ffffff;
+}
+span > #tab:mytable {
+  font-weight: bold;
+}
+.section {
+  padding-left: 10mm;
+  padding-right: 10mm;
+}
+.main p {
+  padding-left: 30mm;
+  padding-right: 30mm;
+}
+.main_pic {
+  width: 90%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.orcid img {
+  width: 3%;
+}
+</style>
+</head>
+<body>
+
+
+<div class="poster_wrap">
+<div class="column outer">
+<br>
+<div class="title section">
+<h1 id="title">Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018</h1>
+<br>
+<h3 id="author" class="author">
+
+Aaron Gullickson<sup> 1, <a class="orcid" href="https://orcid.org/0000-0001-7237-8131"><img src="https://raw.githubusercontent.com/brentthorne/posterdown/master/images/orcid.jpg"></a></sup><br>
+<a class="twitter" href="https://mobile.twitter.com/AaronGullickson"><i class="fab fa-twitter"></i>&nbsp;&nbsp;@AaronGullickson</a><br>
+
+<a class='envelope'><i class="fas fa-envelope"></i></a> <a href="mailto:aarong@uoregon.edu" class="email">aarong@uoregon.edu</a> <br>
+</h3>
+
+<h5 id="author_extra" class="author_extra">
+</h5>
+
+<p id="affiliation" class="affiliation">
+<sup>1</sup> Department of Sociology, University of Oregon
+</p>
+
+</div>
+<div id="research-questions" class="section level2">
+<h2>Research Questions</h2>
+<p>The 1980 Census data and American Community Survey since 2013 both measure the duration of current marriages allowing us to reliably measure changes in assortative mating patterns across the two time periods. For this project, I utilize these two data points to address the following questions:</p>
+<ol style="list-style-type: decimal">
+<li>How has the likelihood of interracial marriage changed among newly-wed couples across the time periods?</li>
+<li>How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?<br />
+</li>
+<li>How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?</li>
+</ol>
+</div>
+<div id="methods" class="section level2">
+<h2>Methods</h2>
+<p>I use a counterfactual marriage model:</p>
+<ol style="list-style-type: decimal">
+<li>For each real union, I sample 50 alternate partners for one spouse from the same metropolitan area.</li>
+<li>I use a conditional logit model to predict which union is the real union based on partner characteristics.</li>
+<li>In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.</li>
+</ol>
+<p><br>
+<br></p>
+</div>
+<div id="do-language-and-birthplace-endogamy-matter" class="section level2">
+<h2>Do Language and Birthplace Endogamy Matter?</h2>
+<p>Yes, language and birthplace endogamy reduce the tendency toward pan-ethnic intermarriage, but more so for Asians than Hispanics. Figure <a href="#fig:panethnic-coef-fig">1</a> shows how the pan-ethnic exogamy terms change as I add controls for birthplace and language endogamy.</p>
+<div class="figure" style="text-align: center"><span id="fig:panethnic-coef-fig"></span>
+<img src="poster_files/figure-html/panethnic-coef-fig-1.png" alt="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses." width="100%" />
+<p class="caption">
+Figure 1: Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.
+</p>
+</div>
+</div>
+<div id="additional-findings" class="section level2">
+<h2>Additional Findings</h2>
+<div id="a-blacknon-black-divide" class="section level3">
+<h3>A Black/Non-Black Divide</h3>
+<p>Black/White interracial marriage increased substantially in likelihood but all intermarriages involving a black spouse remain the least likely form of union.</p>
+</div>
+<div id="increasing-boundaries-for-indigenous-and-asian-indian-populations" class="section level3">
+<h3>Increasing Boundaries for Indigenous and Asian Indian populations</h3>
+<p>These are the only groups for which intermarriage systematically declined over the time period, although this may be driven in part by issues of identification and measurement.</p>
+</div>
+</div>
+
+</div>
+<div class="main">
+<p>Asian ethnic exogamy increased substantially over time while Hispanic ethnic exogamy was static.<br><br> <img src="big_splash.svg" /></p>
+
+<img src="https://raw.githubusercontent.com/brentthorne/posterdown/master/images/qr-code-black.png" class="main-img-right" />
+</div>
+</div>
+
+
+
+</body>
+</html>

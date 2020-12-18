@@ -1,0 +1,213 @@
+---
+title: Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018
+author:
+  - name: Aaron Gullickson
+    affil: 1
+    twitter: AaronGullickson
+    email: aarong@uoregon.edu
+    orcid: 0000-0001-7237-8131
+    main: true
+affiliation:
+  - num: 1
+    address: Department of Sociology, University of Oregon
+main_findings:
+  - 'Asian ethnic exogamy increased substantially over time while Hispanic ethnic exogamy was static.'
+  - '![](big_splash.svg)'
+logoright_name: '![](https://raw.githubusercontent.com/brentthorne/posterdown/master/images/qr-code-black.png){.main-img-right}'
+main_picwidth: 90%
+main_textsize: "90px"
+font_family: "Raleway"
+main_fontfamily: "Indie Flower"
+primary_colour: "#23395b"
+secondary_colour: "#23395b"
+accent_colour: "#EAEBEE"
+title_textsize: "60pt"
+output: 
+  posterdown::posterdown_betterland:
+    self_contained: false
+    pandoc_args: --mathjax
+    highlight: haddock
+    number_sections: false
+link-citations: true
+bibliography: ../project.bib
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(results = 'asis',
+                      echo = FALSE,
+                      warning = FALSE,
+                      tidy = FALSE,
+                      message = FALSE,
+                      fig.align = 'center',
+                      out.width = "100%")
+options(knitr.table.format = "html")
+library(ggplot2)
+library(showtext)
+font_add_google("Raleway")
+font_add_google("Indie Flower")
+showtext_auto()
+library(here)
+source(here("analysis","check_packages.R"))
+source(here("analysis","useful_functions.R"))
+load(here("analysis","output","models_restricted.RData"))
+```
+
+```{r coef-table}
+#extract coefficicent values
+get_coefs <- function(x) {
+  return(coef(x)[,c(1,3)])
+}
+temp <- lapply(models_census_summary, get_coefs)
+coef_table <- NULL
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="Census 1980"))
+}
+temp <- lapply(models_acs_summary, get_coefs)
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="ACS 2014-18"))
+}
+coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
+#fix up the names
+temp_names <- unique(coef_table$variable)
+better_names <- c("age difference", "age difference squared",
+                  "female educational hypergamy", "female educational hypogamy",
+                  "educational crossing LHS/HS", "educational crossing HS/SC",
+                  "educational crossing SC/C", "Black/White","Indigenous/White",
+                  "Asian/White","Hispanic/White","Asian Indian/White",
+                  "Black/Indigenous","Black/Asian","Black/Hispanic",
+                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Hispanic",
+                  "Indigenous/Asian Indian","Asian/Hispanic",
+                  "Asian/Asian Indian","Hispanic/Asian Indian",
+                  "Asian ethnic exogamy","Hispanic ethnic exogamy", 
+                  "birthplace endogamy","language endogamy")
+names(better_names) <- temp_names
+coef_table$variable <- better_names[coef_table$variable]
+coef_table$model <- factor(coef_table$model,
+                           levels=paste("Model",1:4),
+                           labels=c("Baseline", "+ birthplace endogamy",
+                                    "+ language endogamy", "+ both"))
+coef_table$data <- factor(coef_table$data,
+                          levels=c("Census 1980", "ACS 2014-18"))
+```
+
+```{r bigsplash, include=FALSE}
+#create the splash image figure here
+temp <- coef_table %>%
+  filter(model=="+ both") %>%
+  dcast(variable+racial_exog~data, value.var="coef") %>%
+  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18`)
+
+#reorder based on ACS values
+temp$variable <- reorder(temp$variable, temp$coef.acs, max)
+coef_table$variable <- factor(coef_table$variable,
+                              levels=levels(temp$variable))
+#put in missing values for two cases in temp to get rid of really small
+#arrows
+temp$coef.census <- ifelse(abs(temp$coef.census-temp$coef.acs)<.1, NA,
+                           temp$coef.census)
+
+svg('big_splash.svg', height=17, width=20, pointsize=12)
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2, color="#EAEBEE", size=2)+
+  geom_segment(data=subset(temp, racial_exog), size=2,
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="#EAEBEE")+
+  geom_point(aes(color=data), size=8)+
+  annotate("rect", xmin = 13.5, xmax = 14.5, ymin = 0, ymax = 1.5,
+           alpha = 0.4, color=NA, fill="#EAEBEE")+
+  annotate("rect", xmin = 16.5, xmax = 17.5, ymin = 0, ymax = 1.5,
+           alpha = 0.4, color=NA, fill="#EAEBEE")+
+  coord_flip()+
+  scale_y_log10()+
+  scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  #scale_color_manual(values=wes_palette("Moonrise2"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially\nendogamous union, logarithmic scale",
+       color="data source")+
+  theme_bw()+
+  theme(text = element_text(colour="#EAEBEE", family="Raleway"),
+        axis.line = element_line(colour="#EAEBEE", size = 2),
+        axis.ticks = element_line(colour="#EAEBEE", size = 1),
+        axis.title = element_text(size=40),
+        axis.text = element_text(size=30, colour="#EAEBEE"),
+        plot.title = element_text(size=60, hjust=0),
+        plot.title.position = "panel",
+        plot.subtitle = element_text(size=40, hjust=0),
+        plot.caption = element_text(size=30, hjust=1, vjust=1),
+        plot.caption.position = "panel",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        legend.title = element_text(size=40),
+        legend.text = element_text(size=30),
+        panel.border = element_rect(fill=NA, colour=NA),
+        panel.background = element_rect(fill = "#23395b",colour = NA),
+        plot.background = element_rect(fill = "#23395b",colour = NA),
+        legend.background = element_rect(fill = "#23395b",colour = NA),
+        legend.key = element_rect(fill = "#23395b",colour = NA), legend.position = "bottom")
+dev.off()
+```
+
+## Research Questions
+
+The 1980 Census data and American Community Survey since 2013 both measure the duration of current marriages allowing us to reliably measure changes in assortative mating patterns across the two time periods. For this project, I utilize these two data points to address the following questions: 
+
+1. How has the likelihood of interracial marriage changed among newly-wed couples across the time periods? 
+2. How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?  
+3. How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?
+
+## Methods
+
+I use a counterfactual marriage model:
+
+1. For each real union, I sample 50 alternate partners for one spouse from the same metropolitan area. 
+2. I use a conditional logit model to predict which union is the real union based on partner characteristics.
+3. In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.
+
+<br>
+<br>
+
+## Do Language and Birthplace Endogamy Matter?
+
+Yes, language and birthplace endogamy reduce the tendency toward pan-ethnic intermarriage, but more so for Asians than Hispanics. Figure \@ref(fig:panethnic-coef-fig) shows how the pan-ethnic exogamy terms change as I add controls for birthplace and language endogamy.
+
+
+```{r panethnic-coef-fig, fig.cap="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.", dpi=300}
+ggplot(subset(coef_table, 
+              variable=="Asian ethnic exogamy" | 
+                variable=="Hispanic ethnic exogamy"), 
+       aes(x=model, y=exp(coef)))+
+  facet_grid(data~variable)+
+  coord_flip()+
+  geom_point(size=4, color="#23395b")+
+  labs(x=NULL, 
+       y="odds ratio of union formation for Hispanic/Asian\nethnic intermarriage relative to ethnic endogamy")+
+  theme_bw()+
+  theme(#text = element_text(family="Raleway"),
+        axis.text = element_text(size=14),
+        strip.text= element_text(size=14, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA),
+        axis.title = element_text(size=18))
+```
+
+## Additional Findings
+
+### A Black/Non-Black Divide
+
+Black/White interracial marriage increased substantially in likelihood but all intermarriages involving a black spouse remain the least likely form of union.
+
+### Increasing Boundaries for Indigenous and Asian Indian populations 
+
+These are the only groups for which intermarriage systematically declined over the time period, although this may be driven in part by issues of identification and measurement.
