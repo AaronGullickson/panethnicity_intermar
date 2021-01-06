@@ -3,10 +3,7 @@
 % Steven V. Miller. Information can be found here:
 %  http://svmiller.com/blog/2016/02/svm-r-markdown-manuscript/
 %
-% I added the use of raggedright to the anonymous option
-% because journals,  the ability to put all the footnotes
-% in endnotes, and the ability to manually adjust
-% the starting page from the YAML header.
+% I added in a few other features.
 %
 % Here are the options that you can define in the YAML
 % header.
@@ -15,9 +12,10 @@
 % fontsize - self-explanatory (e.g. 10pt, 11pt)
 % anonymous - true/false. If true, names will be supressed and the
 %                       text will be double-spaced and ragged
-%                       right. For submission.
+%                       right with a separate page for title and abstract.
 % endnotes - true/false. If true, the footnotes will be put in a
 %                   section at the end just ahead of the references.
+% endfloat - move all tables and figures to the end of the document
 % keywords - self-explanatory
 % thanks - shows up as a footnote to the title on page 1
 % abstract - self explanatory
@@ -36,34 +34,6 @@
 \usepackage{float}
 \usepackage{dcolumn}
 
-%for kableExtra
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{array}
-\usepackage{multirow}
-\usepackage{wrapfig}
-\usepackage{float}
-\usepackage{colortbl}
-\usepackage{pdflscape}
-\usepackage{tabu}
-\usepackage{threeparttable}
-\usepackage{threeparttablex}
-\usepackage[normalem]{ulem}
-\usepackage{makecell}
-
-%for huxtable
-\usepackage{adjustbox}
-\usepackage{calc}
-\usepackage{caption}
-\usepackage{colortbl}
-\usepackage{graphicx}
-\usepackage{hhline}
-\usepackage{hyperref}
-\usepackage{multirow}
-\usepackage{siunitx}
-\usepackage{tabularx}
-\usepackage{wrapfig}
-
 \newcommand*{\authorfont}{\fontfamily{phv}\selectfont}
 $if(fontfamily)$
 \usepackage[$fontfamilyoptions$]{$fontfamily$}
@@ -72,10 +42,8 @@ $else$
 $endif$
 
 
-  \usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
-  \usepackage[utf8]{inputenc}
-
-
+\usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
+\usepackage[utf8]{inputenc}
 
 \usepackage{abstract}
 \renewcommand{\abstractname}{}    % clear the title
@@ -124,6 +92,9 @@ $highlighting-macros$
 $endif$
 $if(verbatim-in-note)$
 \usepackage{fancyvrb}
+$endif$
+$if(tables)$
+\usepackage{longtable,booktabs}
 $endif$
 
 $if(graphics)$
@@ -221,6 +192,10 @@ $if(endnotes)$\let\footnote=\endnote
 }
 $endif$
 
+$if(endfloat)$
+  \usepackage[notablist,nofiglist,noheads,tablesfirst]{endfloat}
+$endif$
+
 \newlength{\normalparindent}
 \setlength{\normalparindent}{\parindent}
 
@@ -237,6 +212,8 @@ $endif$
 %$endif$
 
 $if(pagenumber)$\setcounter{page}{$pagenumber$}$endif$
+
+\pagenumbering{gobble}
 
 $if(title)$
 % \maketitle
@@ -299,7 +276,7 @@ $endif$
 
 \vskip 6.5pt
 
-\noindent $if(anonymous)$\doublespacing\raggedright\setlength{\parindent}{\normalparindent}$else$$if(spacing)$\$spacing$spacing$endif$$endif$ $body$
+\noindent $if(anonymous)$\newpage\doublespacing\raggedright\setlength{\parindent}{\normalparindent}$else$$if(spacing)$\$spacing$spacing$endif$$endif$ $body$
 
 $if(endnotes)$\theendnotes$endif$
 
@@ -322,3 +299,7 @@ $for(include-after)$
 $include-after$
 $endfor$
 \end{document}
+
+$if(endfloat)$
+\processdelayedfloats
+$endif$
