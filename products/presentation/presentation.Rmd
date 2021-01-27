@@ -279,11 +279,58 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ---
 
-## How to M
+## How Do We Measure Prevalence of Intermarriage?
+
+### Traditional Approach: Log-Linear Models
+
 
 ---
 
-## A Test
+## A Counterfactual Approach
+
+---
+
+## Illustration of Counterfactual Approach
+
+---
+
+## Age Graph Showing What You Can Do
+
+---
+
+## Data Sources
+
+### Census 1980
+
+### ACS 2013-18
+
+---
+
+## Block diagram of interracial marriage
+
+---
+
+## What does the model control for?
+
+- Age differences
+- Education differences
+- Birthplace endogamy
+- Language endogamy
+- Native/immigrant preferences
+
+---
+
+## Figure showing the effects of language/birthplace controls
+
+---
+
+## Full figure
+
+???
+
+- show where pan-ethnic parameters line up
+- black intermarriage still the most likely although gains over time
+- only decreases are for Indigenous and Asian Indian populations
 
 ```{r}
 callout <- tibble(x=5, y=1, angle=45, 
@@ -325,3 +372,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
         legend.key = element_rect(fill = "#EAEBEE",colour = NA), 
         legend.position = "bottom")
 ```
+
+--- 
+
+## Conclusions
