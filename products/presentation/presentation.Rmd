@@ -19,11 +19,13 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(fig.retina = 3, message=FALSE, warning=FALSE, echo=FALSE,
                       fig.width=13, fig.height=6.5, fig.align="center")
-library(dplyr)
-library(knitr)
-library(texreg)
-library(ggplot2)
-library(kableExtra)
+library(here)
+source(here("analysis","check_packages.R"))
+source(here("analysis","useful_functions.R"))
+library(glue)
+library(xkcd)
+library(ggtext)
+load(here("analysis","output","models_restricted.RData"))
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
@@ -34,6 +36,13 @@ style_mono_light(base_color="#23395b",
   text_font_google   = google_font("Open Sans", "400", "400i"),
   code_font_google   = google_font("Fira Mono")
 )
+library(showtext)
+## Loading Google fonts (https://fonts.google.com/)
+font_add_google("Gochi Hand", "gochi")
+font_add_google("Schoolbell", "bell")
+
+## Automatically use showtext to render text
+showtext_auto()
 ```
 
 ```{r custom-ggtheme, include=FALSE}
@@ -50,103 +59,269 @@ theme_myslides <- theme_xaringan(background_color = "#EAEBEE")+
 theme_set(theme_myslides)
 ```
 
-## Basic Bullet Points
+```{r coef-table}
+#extract coefficicent values
+get_coefs <- function(x) {
+  return(coef(x)[,c(1,3)])
+}
+temp <- lapply(models_census_summary, get_coefs)
+coef_table <- NULL
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="Census 1980"))
+}
+temp <- lapply(models_acs_summary, get_coefs)
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="ACS 2014-18"))
+}
+coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
+#fix up the names
+temp_names <- unique(coef_table$variable)
+better_names <- c("age difference", "age difference squared",
+                  "female educational hypergamy", "female educational hypogamy",
+                  "educational crossing LHS/HS", "educational crossing HS/SC",
+                  "educational crossing SC/C", "Black/White","Indigenous/White",
+                  "Asian/White","Hispanic/White","Asian Indian/White",
+                  "Black/Indigenous","Black/Asian","Black/Hispanic",
+                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Hispanic",
+                  "Indigenous/Asian Indian","Asian/Hispanic",
+                  "Asian/Asian Indian","Hispanic/Asian Indian",
+                  "Asian ethnic exogamy","Hispanic ethnic exogamy", 
+                  "birthplace endogamy","language endogamy")
+names(better_names) <- temp_names
+coef_table$variable <- better_names[coef_table$variable]
+coef_table$model <- factor(coef_table$model,
+                           levels=paste("Model",1:4),
+                           labels=c("Baseline", "+ birthplace endogamy",
+                                    "+ language endogamy", "+ both"))
+coef_table$data <- factor(coef_table$data,
+                          levels=c("Census 1980", "ACS 2014-18"))
+```
 
-This is an example of a basic slide with just text and bullet points on it. The `--` makes the bullet points appear one by one. 
+## Shifting Boundaries in Interracial Marriage
 
---
+```{r bigsplash}
+#create the splash image figure here
+temp <- coef_table %>%
+  filter(model=="+ both") %>%
+  dcast(variable+racial_exog~data, value.var="coef") %>%
+  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18`)
 
-- Bullet 1
+#reorder based on ACS values
+temp$variable <- reorder(temp$variable, temp$coef.acs, max)
+coef_table$variable <- factor(coef_table$variable,
+                              levels=levels(temp$variable))
+#put in missing values for two cases in temp to get rid of really small
+#arrows
+temp$coef.census <- ifelse(abs(temp$coef.census-temp$coef.acs)<0,
+                           temp$coef.census-0.01,
+                           temp$coef.census+0.01)
 
---
+temp$coef.census <- ifelse(abs(temp$coef.census-temp$coef.acs)<.1, NA,
+                           temp$coef.census)
 
-- Bullet 2
 
---
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2, color="#EAEBEE", size=2)+
+  geom_point(aes(color=data), size=6)+
+  geom_segment(data=subset(temp, racial_exog), size=2, alpha=0.7, linetype=1,
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="#808080")+
+  annotate("rect", xmin = 13.5, xmax = 14.5, ymin = 0, ymax = 1.5,
+           alpha = 0.4, color=NA, fill="#18273F")+
+  annotate("rect", xmin = 16.5, xmax = 17.5, ymin = 0, ymax = 1.5,
+           alpha = 0.4, color=NA, fill="#18273F")+
+  coord_flip()+
+  scale_y_log10()+
+  scale_color_manual(values=c("red","#FFFF00"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
+       color="data source")+
+  theme_bw()+
+  theme(text = element_text(colour="#000000"),
+        axis.line = element_line(colour="#000000", size = 1),
+        axis.ticks = element_line(colour="#000000", size = 1),
+        axis.title = element_text(size=20),
+        axis.text = element_text(size=16),
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=16),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.border = element_rect(fill=NA, colour=NA),
+        panel.background = element_rect(fill = "#EAEBEE",colour = NA),
+        plot.background = element_rect(fill = "#EAEBEE",colour = NA),
+        legend.background = element_rect(fill = "#EAEBEE",colour = NA),
+        legend.key = element_rect(fill = "#EAEBEE",colour = NA), 
+        legend.position = "bottom")
+```
 
-- Bullet 3
+???
+
+- Sneak Preview: Showing you the punchline figure at the beginning. 
+- Obviously a lot going on here that I will get into in the talk
+  - Changes across two points in time in "racial" boundaries
+  - if you look carefully not all of these boundaries would be classified as race or at least "big" race
+- Lot of interesting stuff here that I will highlight later
 
 ---
 
-## Split a Slide
+## Two Projects
 
-You can use `.pull-left[]` and `.pull-right[]` to split slide in two.
+???
+
+- Combination of two different projects
+- The first project is the development of a new(ish) approach to modeling assortative mating
+  - An intuitive alternative to the traditional log-linear approach
+  - Happy to say that I now have an article forthcoming in *Demographic Research* that outlines the new technique
+- The second project looks at changes in interracial marriage in the United States
+  - Made possible by recent changes in Census questions that allow us to measure timing of marriage
+  - looking at two points in time (1980 and 2013-2018)
+  - Specific focus on questions of pan-ethnicity
 
 --
 
 .pull-left[
-### A Point
-- Unfortunately, you cannot make
-- bullet points appear sequentially within
-- sub-frames
+### A New Approach to Modeling The Process of Partner Selection
+.center[
+![Why Him?](images/whyhim.jpg)
+]
 ]
 
 --
 
 .pull-right[
-LaTex style equations work well:
+### Empirical Analysis of Changes in Interracial Marriage from 1980-2018
+.center[
+#### Census 1980
+![Census 1980 Question](images/census1980.png)
+#### ACS 2013
+![ACS 2013 Question](images/acs2013.png)
 
-$$\hat{y}_i=\beta_0+\beta_1x_i$$
 ]
-
+]
 
 ---
 
-## A Neat Figure
+## Why Should We Care About Interracial Marriage?
+
+???
+
+- Measure of social boundaries
+  - long considered the best indicator of the strength of social boundaries that define and separate groups
+  - committed intergroup interaction in the most intimate realm of life
+  - extensive work on the assimilation of Euroethnics, for example, has used intermarriage as a key signifier, but also as a causal mechanism...
+- Challenge
+  - Measure of existing strength but also presents an incipient challenge to existing boundaries. 
+  - mixed-race children in the next generation. How will they be identified and classified? Be clear its a challenge but not an insurmountable one to existing systems (i.e. one-drop rule).
+  - integrates extended family/kin networks. 
+
+--
+
+.pull-left[
+### Measure of Social Boundaries
+![Guess Who's Coming to Dinner?](images/coming_dinner.jpg)
+]
+
+--
+
+.pull-right[
+### Challenge to Existing Boundaries
+![Mixed Race Family](images/mixed_race_family.jpg)
+]
+
+---
+
+.center[
+![](images/pentagon_5.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_4.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_3.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_2.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_1.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_0.svg)
+]
+
+---
+
+## How to M
+
+---
+
+## A Test
 
 ```{r}
-ggplot(mpg, aes(displ, hwy, colour = class)) + 
-  geom_point()+
-  labs(title="A scatterplot", subtitle = "A subtitle", caption="A caption")+
-  scale_xaringan_color_discrete()
-```
-
----
-
-## Half-sized figure
-
-.pull-left[
-```{r, fig.width=6.5}
-ggplot(mpg, aes(displ, hwy, colour = class)) + 
-  geom_point()
-```
-]
-
-.pull-right[
-To make a figure take up half slide, set `fig.width` to 6.5 and  use `pull-left` and `pull-right` to add comments or other details on the other side (or put two figures side by side).
-]
-
----
-
-## Slide with a regression model using texreg
-
-.knitreg[
-```{r results="asis"}
-model1 <- lm(Fertility~Agriculture, data=swiss)
-model2 <- update(model1, .~.+Education)
-model3 <- update(model2, .~.+Catholic)
-htmlreg(list(model1, model2, model3),
-        custom.coef.names=c("Intercept",
-                            "Percent in agriculture",
-                            "Percent with primary education",
-                            "Percent Catholic"),
-        custom.gof.names = c("R-squared","N"),
-        caption="OLS regression models predicting fertility index in Swiss cantons",
-        caption.above=TRUE,
-        digits=2,
-        star.symbol='&#42;',
-        custom.note = "%stars. Standard errors in parenthesis.",
-        include.adjrs=FALSE, include.rmse=FALSE,
-        doctype = FALSE)
-```
-]
-
----
-
-## Slide with table using kable and kableExtra
-
-```{r, results='asis'}
-dt <- mtcars[1:5, 1:6]
-kable(dt, caption="Car info") %>% 
-  kable_material()
+callout <- tibble(x=5, y=1, angle=45, 
+                  label="<span style='font-family: serif;'>Generic serif text</span>")
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2, color="#EAEBEE", size=2)+
+  geom_point(aes(color=data), size=6)+
+  geom_segment(data=subset(temp, racial_exog), size=2, alpha=0.7, linetype=1,
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="#808080")+
+  annotate(geom="text", x=14, y=0.02, 
+           label="Annotation text\nAnnotation text\ntext", 
+           colour="#23395b", size=7, family="gochi", angle=330)+
+  geom_curve(x=14, xend=14, y=log(0.02, 10), yend=log(0.2, 10), 
+             color="black")+
+  coord_flip()+
+  scale_y_log10()+
+  scale_color_manual(values=c("red","#FFFF00"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
+       color="data source")+
+  theme_bw()+
+  theme(text = element_text(colour="#000000"),
+        axis.line = element_line(colour="#000000", size = 1),
+        axis.ticks = element_line(colour="#000000", size = 1),
+        axis.title = element_text(size=20),
+        axis.text = element_text(size=16),
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=16),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.border = element_rect(fill=NA, colour=NA),
+        panel.background = element_rect(fill = "#EAEBEE",colour = NA),
+        plot.background = element_rect(fill = "#EAEBEE",colour = NA),
+        legend.background = element_rect(fill = "#EAEBEE",colour = NA),
+        legend.key = element_rect(fill = "#EAEBEE",colour = NA), 
+        legend.position = "bottom")
 ```
