@@ -40,6 +40,7 @@ library(showtext)
 ## Loading Google fonts (https://fonts.google.com/)
 font_add_google("Gochi Hand", "gochi")
 font_add_google("Schoolbell", "bell")
+font_add_google("Indie Flower", "indie-flower")
 
 ## Automatically use showtext to render text
 showtext_auto()
@@ -47,15 +48,26 @@ showtext_auto()
 
 ```{r custom-ggtheme, include=FALSE}
 theme_myslides <- theme_xaringan(background_color = "#EAEBEE")+
-  theme(axis.title = element_text(size=20),
-        axis.text = element_text(size=12),
-        plot.title = element_text(size=24, hjust=0),
+  theme(plot.title = element_text(size=24, hjust=0),
         plot.title.position = "panel",
         plot.subtitle = element_text(size=16, hjust=0),
         plot.caption = element_text(size=14, hjust=1, vjust=1),
         plot.caption.position = "panel",
+        text = element_text(colour="#000000"),
+        axis.title = element_text(size=20),
+        axis.line = element_line(colour="#000000", size = 1),
+        axis.ticks = element_line(colour="#000000", size = 1),
+        axis.text = element_text(size=16),
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=16),
         panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), panel.border = element_rect(fill=NA))
+        panel.grid.minor = element_blank(), 
+        panel.border = element_rect(fill=NA, colour=NA),
+        panel.background = element_rect(fill = "#EAEBEE",colour = NA),
+        plot.background = element_rect(fill = "#EAEBEE",colour = NA),
+        legend.background = element_rect(fill = "#EAEBEE",colour = NA),
+        legend.key = element_rect(fill = "#EAEBEE",colour = NA), 
+        legend.position = "bottom")
 theme_set(theme_myslides)
 ```
 
@@ -148,23 +160,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
   scale_color_manual(values=c("red","#FFFF00"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
-       color="data source")+
-  theme_bw()+
-  theme(text = element_text(colour="#000000"),
-        axis.line = element_line(colour="#000000", size = 1),
-        axis.ticks = element_line(colour="#000000", size = 1),
-        axis.title = element_text(size=20),
-        axis.text = element_text(size=16),
-        legend.title = element_text(size=20),
-        legend.text = element_text(size=16),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), 
-        panel.border = element_rect(fill=NA, colour=NA),
-        panel.background = element_rect(fill = "#EAEBEE",colour = NA),
-        plot.background = element_rect(fill = "#EAEBEE",colour = NA),
-        legend.background = element_rect(fill = "#EAEBEE",colour = NA),
-        legend.key = element_rect(fill = "#EAEBEE",colour = NA), 
-        legend.position = "bottom")
+       color="data source")
 ```
 
 ???
@@ -195,7 +191,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 .pull-left[
 ### A New Approach to Modeling The Process of Partner Selection
 .center[
-![Why Him?](images/whyhim.jpg)
+![Why Him?](images/whyhim.png)
 ]
 ]
 
@@ -281,29 +277,140 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ## How Do We Measure Prevalence of Intermarriage?
 
-### Traditional Approach: Log-Linear Models
+--
 
+.pull-left[
+### Log-Linear Models
+
+We first create a cross-tabulation of husbands' and wives' characteristics:
+
+|           |W Group 1|W Group 2|W Group 3|
+|-----------|---------|---------|---------|
+|H Group 1  | $F_{11}$| $F_{12}$| $F_{13}$|
+|H Group 2  | $F_{21}$| $F_{22}$| $F_{23}$|
+|H Group 3  | $F_{31}$| $F_{32}$| $F_{33}$|
+
+We then predict the counts within each cell by maginal and joint parameters:
+
+$$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
+]
+
+--
+
+.pull-right[
+### Benefits and Drawbacks
+
+`r emo::ji("+1")` Marginal distributions account for group size<br>
+`r emo::ji("-1")` The *unmarried exclusion bias*<br>
+`r emo::ji("-1")` Assumes a single marriage market<br>
+`r emo::ji("-1")` Non-intuitive and complex<br>
+`r emo::ji("-1")` Handles quantitative variables (e.g. age) poorly<br>
+]
 
 ---
 
 ## A Counterfactual Approach
 
+--
+
+1. For each actual union, randomly choose one spouse.
+
+--
+
+2. For the chosen spouse, sample $j$ alternate partners that are drawn from the population of **single and recently married** individuals from the **same geographic** region.
+
+--
+
+3. Use a conditional logit model to look at how partner characteristics affect the likelihood of the actual union within the choice set. Examples could be:
+  - age differences
+  - educational homogamy, hypergamy, and hypogamy
+  - racial exogamy
+  - language endogamy
+
+--
+
+#### Benefits and Drawbacks of this Approach
+
+`r emo::ji("+1")` Implicitly addresses "supply" issue in partner characteristics through sampling<br>
+`r emo::ji("+1")` Allows for a tight specification of the marriage market<br>
+`r emo::ji("+1")` Includes the single population in the pool of potential partners<br>
+`r emo::ji("+1")` Easy to model using standard linear model framework<br>
+`r emo::ji("-1")` Computationally intensive to sample partners<br>
+`r emo::ji("-1")` Requires detailed marriage formation data
+
 ---
 
-## Illustration of Counterfactual Approach
+.center[
+![](images/counter_diagram1.svg)
+]
 
 ---
 
-## Age Graph Showing What You Can Do
+.center[
+![](images/counter_diagram2.svg)
+]
+
+---
+
+.center[
+![](images/counter_diagram3.svg)
+]
+
+
+---
+
+## How Do Partner Age Differences Affect Likelihood of Marriage?
+
+```{r age-graph}
+agediff <- seq(from=-20, to=20, by=0.1)
+age_linear <- coef_table$coef[coef_table$variable=="age difference" &
+                                coef_table$model=="+ both" &
+                                coef_table$data=="ACS 2014-18"]
+age_squared <- coef_table$coef[coef_table$variable=="age difference squared" &
+                                coef_table$model=="+ both" &
+                                coef_table$data=="ACS 2014-18"]
+
+odds <- exp(age_linear*agediff+
+              age_squared*(agediff^2))
+max_age_diff <- age_linear/(-2*age_squared)
+
+ggplot(data.frame(agediff, odds), aes(x=agediff, y=odds))+
+  geom_line(size=2)+
+  scale_y_continuous(breaks = c(0,0.25,0.5,0.75,1,1.25))+
+  geom_vline(xintercept = max_age_diff, linetype=1, color="red",
+             size=3)+
+  geom_hline(yintercept = 1, size=1, linetype=3)+
+  geom_vline(xintercept = 0, size=1, linetype=3)+
+  annotate("text", x=11, y=0.5, 
+           label="Likelihood is maximized when\nhusband is 2.16 years older than wife",
+           size=7, family="indie-flower", angle=9, color="grey35")+
+  labs(x="Husband's age minus wife's age", 
+       y="Odds of union relative to partners of the same age")
+```
 
 ---
 
 ## Data Sources
 
-### Census 1980
+.pull-left[
+#### Census 1980
+![Blondie](images/blondie.jpg)
+#### American Community Survey 2014-18
+![Justin Beiber](images/beiber.png)
+]
 
-### ACS 2013-18
+--
 
+.pull-right[
+### Constructing Analytical Data
+- Marriages restricted to:
+    - Those formed within the last five years.
+    - Both spouses were present in the same state for the last five years.
+- Pool of eligible partners restricted to:
+    - Currently single individuals and those married in the last five years.
+    - Present in the same state for the last five years.
+- I sample 25 alternative partners for one randomly selected marriage partner to create choice sets.
+]
 ---
 
 ## Block diagram of interracial marriage
