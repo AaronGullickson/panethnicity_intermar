@@ -26,6 +26,9 @@ library(glue)
 library(xkcd)
 library(ggtext)
 library(ggforce)
+library(ggalt)
+library(ggstance)
+library(kableExtra)
 load(here("analysis","output","models_restricted.RData"))
 ```
 
@@ -103,12 +106,12 @@ better_names <- c("age difference", "age difference squared",
                   "female educational hypergamy", "female educational hypogamy",
                   "educational crossing LHS/HS", "educational crossing HS/SC",
                   "educational crossing SC/C", "Black/White","Indigenous/White",
-                  "Asian/White","Hispanic/White","Asian Indian/White",
-                  "Black/Indigenous","Black/Asian","Black/Hispanic",
-                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Hispanic",
-                  "Indigenous/Asian Indian","Asian/Hispanic",
-                  "Asian/Asian Indian","Hispanic/Asian Indian",
-                  "Asian ethnic exogamy","Hispanic ethnic exogamy", 
+                  "Asian/White","Latino/White","Asian Indian/White",
+                  "Black/Indigenous","Black/Asian","Black/Latino",
+                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Latino",
+                  "Indigenous/Asian Indian","Asian/Latino",
+                  "Asian/Asian Indian","Latino/Asian Indian",
+                  "Asian ethnic exogamy","Latino ethnic exogamy", 
                   "birthplace endogamy","language endogamy")
 names(better_names) <- temp_names
 coef_table$variable <- better_names[coef_table$variable]
@@ -157,7 +160,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
            alpha = 0.4, color=NA, fill="#18273F")+
   coord_flip()+
   scale_y_log10()+
-  scale_color_manual(values=c("red","#ffd800"))+
+  scale_color_manual(values=c("red","#f4c430"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
@@ -282,7 +285,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 We first create a cross-tabulation of husbands' and wives' characteristics:
 
 |           |W Group 1|W Group 2|W Group 3|
-|-----------|---------|---------|---------|
+|-----------|--------:|--------:|--------:|
 |H Group 1  | $F_{11}$| $F_{12}$| $F_{13}$|
 |H Group 2  | $F_{21}$| $F_{22}$| $F_{23}$|
 |H Group 3  | $F_{31}$| $F_{32}$| $F_{33}$|
@@ -406,11 +409,49 @@ ggplot(data.frame(agediff, odds), aes(x=agediff, y=odds))+
 - Pool of eligible partners restricted to:
     - Currently single individuals and those married in the last five years.
     - Present in the same state for the last five years.
-- I sample 25 alternative partners for one randomly selected marriage partner to create choice sets.
+- I sample 25 alternative partners **from same state** for one randomly selected marriage partner to create choice sets.
 ]
+
 ---
 
-## Block diagram of interracial marriage
+## Block Coding Interracial Marriage
+
+```{r block_diagram}
+x <- rbind(c("Endogamous",rep("",11)),
+           c("Black/White","Endogamous",rep("",10)),
+           c("Indigenous/White","Indigenous/Black","Endogamous",rep("",9)),
+           c("Asian/White","Asian/Black","Asian/Indigenous","Endogamous",rep("",8)),
+           c("Asian/White","Asian/Black","Asian/Indigenous","Asian Exogamy","Endogamous",rep("",7)),
+           c("Asian/White","Asian/Black","Asian/Indigenous","Asian Exogamy","Asian Exogamy","Endogamous",rep("",6)),
+           c("Asian/White","Asian/Black","Asian/Indigenous","Asian Exogamy","Asian Exogamy", "Asian Exogamy","Endogamous",rep("",5)),
+           c("Asian/White","Asian/Black","Asian/Indigenous","Asian Exogamy","Asian Exogamy", "Asian Exogamy", "Asian Exogamy","Endogamous",rep("",4)),
+           c("Asian Indian/White","Asian Indian/Black","Asian Indian/Indigenous",rep("Asian Indian/Asian",5),"Endogamous",rep("",3)),
+           c("Latino/White","Latino/Black","Latino/Indigenous",rep("Latino/Asian",5), "Latino/Asian Indian","Endogamous",rep("",2)),
+           c("Latino/White","Latino/Black","Latino/Indigenous",rep("Latino/Asian",5), "Latino/Asian Indian","Latino Exogamy", "Endogamous",rep("",1)),
+           c("Latino/White","Latino/Black","Latino/Indigenous",rep("Latino/Asian",5), "Latino/Asian Indian","Latino Exogamy", "Latino Exogamy", "Endogamous"))
+colnames(x) <- rownames(x) <- c("White","Black","Indigenous",
+                                "Chinese","Japanese","Korean","Filipino","Vietnamese","Asian Indian",
+                                "Mexican","Cuban","Puerto Rican")
+x %>%
+  kbl(align="c") %>%
+  kable_classic(full_width = F) %>%
+  kable_styling(font_size=12) %>% 
+  row_spec(0, bold = T, background=rep("#EAEBEE",13)) %>%
+  column_spec(1, bold = T, border_right = T, background=rep("#EAEBEE",13)) %>%
+  column_spec(2, background=c("grey","#e31a1c","#1f78b4",rep("#4daf4a",5),"#54278f",rep("#ff7f00",3))) %>%
+  column_spec(3, background=c("#EAEBEE","grey","#a6cee3",rep("#b2df8a",5),"#6a51a3",rep("#fdbf6f",3))) %>%
+  column_spec(4, background=c(rep("#EAEBEE",2),"grey",rep("#78c679",5),"#807dba",rep("#cc4c02",3))) %>%
+  column_spec(5, background=c(rep("#EAEBEE",3),"grey",rep("#f7fcb9",4),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(6, background=c(rep("#EAEBEE",4),"grey",rep("#f7fcb9",3),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(7, background=c(rep("#EAEBEE",5),"grey",rep("#f7fcb9",2),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(8, background=c(rep("#EAEBEE",6),"grey",rep("#f7fcb9",1),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(9, background=c(rep("#EAEBEE",7),"grey","#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(10, background=c(rep("#EAEBEE",8),"grey",rep("#bcbddc",3))) %>%
+  column_spec(11, background=c(rep("#EAEBEE",9),"grey",rep("#fee391",2))) %>%
+  column_spec(12, background=c(rep("#EAEBEE",10),"grey","#fee391")) %>%
+  column_spec(13, background=c(rep("#EAEBEE",11),"grey"))
+```
+
 
 ---
 
@@ -424,20 +465,118 @@ ggplot(data.frame(agediff, odds), aes(x=agediff, y=odds))+
 
 ---
 
-## Figure showing the effects of language/birthplace controls
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+```{r fig_asian_exog_controls0}
+ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, size=2, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, size=2, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)), size=2,
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=c("red","#f4c430"))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy")
+```
 
 ---
 
-## Full figure
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
 
-```{r}
+```{r fig_asian_exog_controls1}
+ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, size=2, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, size=2, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)), size=2,
+                   position=position_dodgev(height=0.5))+
+  geom_ellipse(aes(x0=0.27, y0=1, a=0.05, b=0.5, angle=0),
+               size=2, color="#23395b")+
+  scale_color_manual(values=c("red","#f4c430"))+
+  scale_x_continuous(limits=c(0,1))+
+  annotate("text", x=0.62, y=1.5, 
+           label="Without accounting for language and birthplace\nendogamy, exogamy is low and unchanging.",
+           size=7, family="indie-flower", angle=9, color="grey35")+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy")
+```
+
+---
+
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+```{r fig_asian_exog_controls2}
+ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, size=2, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, size=2, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)), size=2,
+                   position=position_dodgev(height=0.5))+
+  geom_ellipse(aes(x0=0.7, y0=4, a=0.35, b=0.25, angle=-30),
+               size=2, color="#23395b")+
+  scale_color_manual(values=c("red","#f4c430"))+
+  scale_x_continuous(limits=c(0,1))+
+  annotate("text", x=0.7, y=3, 
+           label="Accounting for language and birthplace endogamy,\nAsian ethnic exogamy is substantial and increasing\nover time.",
+           size=7, family="indie-flower", angle=-9, color="grey35")+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy")
+```
+
+---
+
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+```{r fig_asian_exog_controls3}
+ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, size=2, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, size=2, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)), size=2,
+                   position=position_dodgev(height=0.5))+
+  geom_ellipse(aes(x0=0.62, y0=3, a=0.35, b=0.17, angle=-30),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=0.4, y0=2, a=0.35, b=0.13, angle=-30),
+               size=2, color="#23395b")+
+  scale_color_manual(values=c("red","#f4c430"))+
+  scale_x_continuous(limits=c(0,1))+
+  annotate("text", x=0.7, y=1.75, 
+           label="Language endogamy has a larger\neffect than birthplace endogamy.",
+           size=7, family="indie-flower", angle=9, color="grey35")+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy")
+```
+
+---
+
+## Latino Ethnic Exogamy is Unaffected by Language and Birthplace Endogamy
+
+```{r fig_latino_exog_controls}
+ggplot(subset(coef_table, variable=="Latino ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, size=2, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, size=2, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)), size=2,
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=c("red","#f4c430"))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Latino ethnic intermarriage relative to ethnic endogamy")
+```
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+```{r fullfig_acs}
 ggplot(subset(coef_table, racial_exog & model=="+ both" & data=="ACS 2014-18"), 
        aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
   geom_point(aes(color=data), size=6)+
   coord_flip()+
-  scale_y_log10(limits=c(0.007,1.3))+
-  scale_color_manual(values=c("#ffd800"))+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("#f4c430"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
@@ -445,16 +584,16 @@ ggplot(subset(coef_table, racial_exog & model=="+ both" & data=="ACS 2014-18"),
 
 ---
 
-## Full figure
+## Racial and Ethnic Exogamy Based on Full Models
 
-```{r}
+```{r fullfig_bothdata}
 ggplot(subset(coef_table, racial_exog & model=="+ both"), 
        aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
   geom_point(aes(color=data), size=6)+
   coord_flip()+
-  scale_y_log10(limits=c(0.007,1.3))+
-  scale_color_manual(values=c("red","#ffd800"))+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
@@ -462,9 +601,9 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ---
 
-## Full figure
+## Racial and Ethnic Exogamy Based on Full Models
 
-```{r}
+```{r fullfig_arrows}
 ggplot(subset(coef_table, racial_exog & model=="+ both"), 
        aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
@@ -475,8 +614,8 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
                arrow = arrow(length = unit(0.02, "npc")),
                color="#808080")+
   coord_flip()+
-  scale_y_log10(limits=c(0.007,1.3))+
-  scale_color_manual(values=c("red","#ffd800"))+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
@@ -484,9 +623,9 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ---
 
-## Full figure
+## Racial and Ethnic Exogamy Based on Full Models
 
-```{r}
+```{r fullfig_ethnic_exog_callout}
 ggplot(subset(coef_table, racial_exog & model=="+ both"), 
        aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
@@ -504,8 +643,8 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
            label="Asian ethnic exogamy has increased\nsubstantially over time while Latino\nethnic exogamy has remained rarer.",
            size=7, family="indie-flower", angle=9, color="grey35")+
   coord_flip()+
-  scale_y_log10(limits=c(0.007,1.3))+
-  scale_color_manual(values=c("red","#ffd800"))+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
@@ -513,9 +652,9 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ---
 
-## Full figure
+## Racial and Ethnic Exogamy Based on Full Models
 
-```{r}
+```{r fullfig_latino_exog_callout}
 ggplot(subset(coef_table, racial_exog & model=="+ both"), 
        aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
@@ -533,20 +672,119 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
            label="Latino ethnic exogamy is actually now\nslightly less common than Latino/White\nracial exogamy.",
            size=7, family="indie-flower", angle=9, color="grey35")+
   coord_flip()+
-  scale_y_log10(limits=c(0.007,1.3))+
-  scale_color_manual(values=c("red","#ffd800"))+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
 ```
 
-???
+---
 
-- show where pan-ethnic parameters line up
-- black intermarriage still the most likely although gains over time
-- only decreases are for Indigenous and Asian Indian populations
+## Racial and Ethnic Exogamy Based on Full Models
 
+```{r fullfig_asian_indian_callout}
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
+  geom_point(aes(color=data), size=6)+
+  geom_segment(data=subset(df_arrows, racial_exog), size=2, alpha=0.7, linetype=1,
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="#808080")+
+  geom_ellipse(aes(x0=12, y0=exp(-1.53), a=0.5, b=0.25, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=17, y0=exp(-0.38), a=0.5, b=0.25, angle=0),
+               size=2, color="#23395b")+
+  annotate("text", x=13, y=0.04, 
+           label="Asian/Asian Indian exogamy remains much\nrarer than Asian ethnic exogamy.",
+           size=7, family="indie-flower", angle=9, color="grey35")+
+  coord_flip()+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
+       color="data source")
+```
 
---- 
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+```{r fullfig_black_callout}
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
+  geom_point(aes(color=data), size=6)+
+  geom_segment(data=subset(df_arrows, racial_exog), size=2, alpha=0.7, linetype=1,
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="#808080")+
+  geom_ellipse(aes(x0=1, y0=exp(-3.08), a=0.5, b=0.25, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=2, y0=exp(-2.99), a=0.5, b=0.25, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=3, y0=exp(-3.75), a=0.55, b=0.52, angle=0, m1=4),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=4, y0=exp(-2.9), a=0.5, b=0.25, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=8, y0=exp(-2.62), a=0.55, b=0.35, angle=0, m1=4),
+               size=2, color="#23395b")+
+  annotate("text", x=10, y=0.025, 
+           label="Black exogamy remains the rarest form of\nexogamy, despite some significant increases\nover time.",
+           size=7, family="indie-flower", angle=9, color="grey35")+
+  coord_flip()+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
+       color="data source")
+```
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+```{r fullfig_indig_indian_callout}
+ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=1, size=2, color="grey80")+
+  geom_point(aes(color=data), size=6)+
+  geom_segment(data=subset(df_arrows, racial_exog), size=2, alpha=0.7, linetype=1,
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="#808080")+
+  geom_ellipse(aes(x0=1, y0=exp(-3.08), a=0.5, b=0.2, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=5, y0=exp(-1.79), a=0.5, b=0.4, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=6, y0=exp(-1.89), a=0.5, b=0.3, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=7, y0=exp(-1.02), a=0.55, b=0.573, angle=0, m1=3),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=9, y0=exp(-1.5), a=0.5, b=0.2, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=10, y0=exp(-1.43), a=0.55, b=0.25, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=12, y0=exp(-1.53), a=0.5, b=0.2, angle=0),
+               size=2, color="#23395b")+
+  geom_ellipse(aes(x0=13, y0=exp(-1.57), a=0.55, b=0.1, angle=0,),
+               size=2, color="#23395b")+
+  annotate("text", x=11, y=0.03, 
+           label="All cases of a decline in exogamy involve either\nthe Indigenous or Asian Indian categories. This\nmight be a measurement issue.",
+           size=7, family="indie-flower", angle=9, color="grey35")+
+  coord_flip()+
+  scale_y_log10(limits=c(0.007,1.35))+
+  scale_color_manual(values=c("red","#f4c430"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
+       color="data source")
+```
+
+---
 
 ## Conclusions
+

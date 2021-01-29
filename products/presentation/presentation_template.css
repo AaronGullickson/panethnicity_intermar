@@ -28,6 +28,15 @@ iframe {
   height: 85%;
 }
 
+.remark-slide table {
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+table {
+  spacing: 0;
+}
+
 div.knitreg 
 {
     text-align: center;

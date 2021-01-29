@@ -4,8 +4,6 @@
     <title>Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018</title>
     <meta charset="utf-8" />
     <meta name="author" content="Aaron Gullickson" />
-    <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-    <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
     <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
@@ -29,209 +27,536 @@ class: center, middle, inverse, title-slide
 
 
 
-## Basic Bullet Points
 
-This is an example of a basic slide with just text and bullet points on it. The `--` makes the bullet points appear one by one. 
 
---
+## Shifting Boundaries in Interracial Marriage
 
-- Bullet 1
+&lt;img src="presentation_files/figure-html/bigsplash-1.png" width="936" style="display: block; margin: auto;" /&gt;
 
---
+???
 
-- Bullet 2
-
---
-
-- Bullet 3
+- Sneak Preview: Showing you the punchline figure at the beginning. 
+- Obviously a lot going on here that I will get into in the talk
+  - Changes across two points in time in "racial" boundaries
+  - if you look carefully not all of these boundaries would be classified as race or at least "big" race
+- Lot of interesting stuff here that I will highlight later
 
 ---
 
-## Split a Slide
+## Two Projects
 
-You can use `.pull-left[]` and `.pull-right[]` to split slide in two.
+???
+
+- Combination of two different projects
+- The first project is the development of a new(ish) approach to modeling assortative mating
+  - An intuitive alternative to the traditional log-linear approach
+  - Happy to say that I now have an article forthcoming in *Demographic Research* that outlines the new technique
+- The second project looks at changes in interracial marriage in the United States
+  - Made possible by recent changes in Census questions that allow us to measure timing of marriage
+  - looking at two points in time (1980 and 2013-2018)
+  - Specific focus on questions of pan-ethnicity
 
 --
 
 .pull-left[
-### A Point
-- Unfortunately, you cannot make
-- bullet points appear sequentially within
-- sub-frames
+### A New Approach to Modeling The Process of Partner Selection
+.center[
+![Why Him?](images/whyhim.png)
+]
 ]
 
 --
 
 .pull-right[
-LaTex style equations work well:
-
-`$$\hat{y}_i=\beta_0+\beta_1x_i$$`
+### Empirical Analysis of Changes in Interracial Marriage from 1980-2018
+.center[
+![Census 1980 Question](images/census1980.png)
+![ACS 2013 Question](images/acs2020.png)
+]
 ]
 
-
 ---
 
-## A Neat Figure
+## Why Should We Care About Interracial Marriage?
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="936" style="display: block; margin: auto;" /&gt;
+???
 
----
+- Measure of social boundaries
+  - long considered the best indicator of the strength of social boundaries that define and separate groups
+  - committed intergroup interaction in the most intimate realm of life
+  - extensive work on the assimilation of Euroethnics, for example, has used intermarriage as a key signifier, but also as a causal mechanism...
+- Challenge
+  - Measure of existing strength but also presents an incipient challenge to existing boundaries. 
+  - mixed-race children in the next generation. How will they be identified and classified? Be clear its a challenge but not an insurmountable one to existing systems (i.e. one-drop rule).
+  - integrates extended family/kin networks. 
 
-## Half-sized figure
+--
 
 .pull-left[
-&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="468" style="display: block; margin: auto;" /&gt;
+### Measure of Social Boundaries
+![Guess Who's Coming to Dinner?](images/coming_dinner.jpg)
 ]
+
+--
 
 .pull-right[
-To make a figure take up half slide, set `fig.width` to 6.5 and  use `pull-left` and `pull-right` to add comments or other details on the other side (or put two figures side by side).
+### Challenge to Existing Boundaries
+![Mixed Race Family](images/mixed_race_family.jpg)
 ]
 
 ---
 
-## Slide with a regression model using texreg
-
-.knitreg[
-
-&lt;table cellspacing="0" align="center" style="border: none;"&gt;
-&lt;caption align="top" style="margin-bottom:0.3em;"&gt;OLS regression models predicting fertility index in Swiss cantons&lt;/caption&gt;
-&lt;tr&gt;
-&lt;th style="text-align: left; border-top: 2px solid black; border-bottom: 1px solid black; padding-right: 12px;"&gt;&lt;b&gt;&lt;/b&gt;&lt;/th&gt;
-&lt;th style="text-align: left; border-top: 2px solid black; border-bottom: 1px solid black; padding-right: 12px;"&gt;&lt;b&gt;Model 1&lt;/b&gt;&lt;/th&gt;
-&lt;th style="text-align: left; border-top: 2px solid black; border-bottom: 1px solid black; padding-right: 12px;"&gt;&lt;b&gt;Model 2&lt;/b&gt;&lt;/th&gt;
-&lt;th style="text-align: left; border-top: 2px solid black; border-bottom: 1px solid black; padding-right: 12px;"&gt;&lt;b&gt;Model 3&lt;/b&gt;&lt;/th&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;Intercept&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;60.30&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;84.08&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;86.23&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(4.25)&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(5.78)&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(4.73)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;Percent in agriculture&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;0.19&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;-0.07&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;-0.20&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(0.08)&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(0.08)&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(0.07)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;Percent with primary education&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;-0.96&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;-1.07&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(0.19)&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(0.16)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;Percent Catholic&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;0.15&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;&lt;/td&gt;
-&lt;td style="padding-right: 12px; border: none;"&gt;(0.03)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="border-top: 1px solid black;"&gt;R-squared&lt;/td&gt;
-&lt;td style="border-top: 1px solid black;"&gt;0.12&lt;/td&gt;
-&lt;td style="border-top: 1px solid black;"&gt;0.45&lt;/td&gt;
-&lt;td style="border-top: 1px solid black;"&gt;0.64&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="border-bottom: 2px solid black;"&gt;N&lt;/td&gt;
-&lt;td style="border-bottom: 2px solid black;"&gt;47&lt;/td&gt;
-&lt;td style="border-bottom: 2px solid black;"&gt;47&lt;/td&gt;
-&lt;td style="border-bottom: 2px solid black;"&gt;47&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="padding-right: 12px; border: none;" colspan="5"&gt;&lt;span style="font-size:0.8em"&gt;&lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&amp;#42;&lt;/sup&gt;p &amp;lt; 0.001; &lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&amp;#42;&lt;/sup&gt;p &amp;lt; 0.01; &lt;sup style="vertical-align: 0px;"&gt;&amp;#42;&lt;/sup&gt;p &amp;lt; 0.05. Standard errors in parenthesis.&lt;/span&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
+.center[
+![](images/pentagon_5.svg)
 ]
 
 ---
 
-## Slide with table using kable and kableExtra
+.center[
+![](images/pentagon_4.svg)
+]
 
-&lt;table class=" lightable-material" style='font-family: "Source Sans Pro", helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
-&lt;caption&gt;Car info&lt;/caption&gt;
+---
+
+.center[
+![](images/pentagon_3.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_2.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_1.svg)
+]
+
+---
+
+.center[
+![](images/pentagon_0.svg)
+]
+
+---
+
+## How Do We Measure Prevalence of Intermarriage?
+
+--
+
+.pull-left[
+### Log-Linear Models
+
+We first create a cross-tabulation of husbands' and wives' characteristics:
+
+|           |W Group 1|W Group 2|W Group 3|
+|-----------|--------:|--------:|--------:|
+|H Group 1  | `\(F_{11}\)`| `\(F_{12}\)`| `\(F_{13}\)`|
+|H Group 2  | `\(F_{21}\)`| `\(F_{22}\)`| `\(F_{23}\)`|
+|H Group 3  | `\(F_{31}\)`| `\(F_{32}\)`| `\(F_{33}\)`|
+
+We then predict the counts within each cell by maginal and joint parameters:
+
+`$$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$`
+]
+
+--
+
+.pull-right[
+### Benefits and Drawbacks
+
+👍 Marginal distributions account for group size&lt;br&gt;
+👎 The *unmarried exclusion bias*&lt;br&gt;
+👎 Assumes a single marriage market&lt;br&gt;
+👎 Non-intuitive and complex&lt;br&gt;
+👎 Handles quantitative variables (e.g. age) poorly&lt;br&gt;
+]
+
+---
+
+## A Counterfactual Approach
+
+--
+
+1. For each actual union, randomly choose one spouse.
+
+--
+
+2. For the chosen spouse, sample `\(j\)` alternate partners that are drawn from the population of **single and recently married** individuals from the **same geographic** region.
+
+--
+
+3. Use a conditional logit model to look at how partner characteristics affect the likelihood of the actual union within the choice set. Examples could be:
+  - age differences
+  - educational homogamy, hypergamy, and hypogamy
+  - racial exogamy
+  - language endogamy
+
+--
+
+#### Benefits and Drawbacks of this Approach
+
+👍 Implicitly addresses "supply" issue in partner characteristics through sampling&lt;br&gt;
+👍 Allows for a tight specification of the marriage market&lt;br&gt;
+👍 Includes the single population in the pool of potential partners&lt;br&gt;
+👍 Easy to model using standard linear model framework&lt;br&gt;
+👎 Computationally intensive to sample partners&lt;br&gt;
+👎 Requires detailed marriage formation data
+
+---
+
+.center[
+![](images/counter_diagram1.svg)
+]
+
+---
+
+.center[
+![](images/counter_diagram2.svg)
+]
+
+---
+
+.center[
+![](images/counter_diagram3.svg)
+]
+
+
+---
+
+## How Do Partner Age Differences Affect Likelihood of Marriage?
+
+&lt;img src="presentation_files/figure-html/age-graph-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Data Sources
+
+.pull-left[
+#### Census 1980
+![Blondie](images/blondie.jpg)
+#### American Community Survey 2014-18
+![Justin Beiber](images/beiber.png)
+]
+
+--
+
+.pull-right[
+### Constructing Analytical Data
+- Marriages restricted to:
+    - Those formed within the last five years.
+    - Both spouses were present in the same state for the last five years.
+- Pool of eligible partners restricted to:
+    - Currently single individuals and those married in the last five years.
+    - Present in the same state for the last five years.
+- I sample 25 alternative partners **from same state** for one randomly selected marriage partner to create choice sets.
+]
+
+---
+
+## Block Coding Interracial Marriage
+
+&lt;table class=" lightable-classic table" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; width: auto !important; margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;'&gt;
  &lt;thead&gt;
   &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; mpg &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; cyl &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; disp &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; hp &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; drat &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; wt &lt;/th&gt;
+   &lt;th style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; White &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Black &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Indigenous &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Chinese &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Japanese &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Korean &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Filipino &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Vietnamese &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Asian Indian &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Mexican &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Cuban &lt;/th&gt;
+   &lt;th style="text-align:center;font-weight: bold;background-color: #EAEBEE !important;"&gt; Puerto Rican &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Mazda RX4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.90 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2.620 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Mazda RX4 Wag &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.90 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2.875 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #e31a1c !important;"&gt; Black/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Datsun 710 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 22.8 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 108 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 93 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.85 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2.320 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #1f78b4 !important;"&gt; Indigenous/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #a6cee3 !important;"&gt; Indigenous/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Hornet 4 Drive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 258 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.08 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.215 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Chinese &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #4daf4a !important;"&gt; Asian/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #b2df8a !important;"&gt; Asian/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #78c679 !important;"&gt; Asian/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Hornet Sportabout &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 18.7 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 360 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 175 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.15 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.440 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Japanese &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #4daf4a !important;"&gt; Asian/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #b2df8a !important;"&gt; Asian/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #78c679 !important;"&gt; Asian/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Korean &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #4daf4a !important;"&gt; Asian/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #b2df8a !important;"&gt; Asian/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #78c679 !important;"&gt; Asian/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Filipino &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #4daf4a !important;"&gt; Asian/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #b2df8a !important;"&gt; Asian/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #78c679 !important;"&gt; Asian/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Vietnamese &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #4daf4a !important;"&gt; Asian/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #b2df8a !important;"&gt; Asian/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #78c679 !important;"&gt; Asian/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #f7fcb9 !important;"&gt; Asian Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Asian Indian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #54278f !important;"&gt; Asian Indian/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #6a51a3 !important;"&gt; Asian Indian/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #807dba !important;"&gt; Asian Indian/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #9e9ac8 !important;"&gt; Asian Indian/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #9e9ac8 !important;"&gt; Asian Indian/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #9e9ac8 !important;"&gt; Asian Indian/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #9e9ac8 !important;"&gt; Asian Indian/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #9e9ac8 !important;"&gt; Asian Indian/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Mexican &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #ff7f00 !important;"&gt; Latino/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fdbf6f !important;"&gt; Latino/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #cc4c02 !important;"&gt; Latino/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #bcbddc !important;"&gt; Latino/Asian Indian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Cuban &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #ff7f00 !important;"&gt; Latino/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fdbf6f !important;"&gt; Latino/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #cc4c02 !important;"&gt; Latino/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #bcbddc !important;"&gt; Latino/Asian Indian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fee391 !important;"&gt; Latino Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #EAEBEE !important;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: #EAEBEE !important;border-right:1px solid;"&gt; Puerto Rican &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #ff7f00 !important;"&gt; Latino/White &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fdbf6f !important;"&gt; Latino/Black &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #cc4c02 !important;"&gt; Latino/Indigenous &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fe9929 !important;"&gt; Latino/Asian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #bcbddc !important;"&gt; Latino/Asian Indian &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fee391 !important;"&gt; Latino Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: #fee391 !important;"&gt; Latino Exogamy &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: grey !important;"&gt; Endogamous &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+
+
+---
+
+## What does the model control for?
+
+- Age differences
+- Education differences
+- Birthplace endogamy
+- Language endogamy
+- Native/immigrant preferences
+
+---
+
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+&lt;img src="presentation_files/figure-html/fig_asian_exog_controls0-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+&lt;img src="presentation_files/figure-html/fig_asian_exog_controls1-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+&lt;img src="presentation_files/figure-html/fig_asian_exog_controls2-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Asian Ethnic Exogamy is Much Higher When Accounting for Language and Birthplace Endogamy
+
+&lt;img src="presentation_files/figure-html/fig_asian_exog_controls3-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Latino Ethnic Exogamy is Unaffected by Language and Birthplace Endogamy
+
+&lt;img src="presentation_files/figure-html/fig_latino_exog_controls-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_acs-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_bothdata-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_arrows-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_ethnic_exog_callout-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_latino_exog_callout-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_asian_indian_callout-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_black_callout-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Racial and Ethnic Exogamy Based on Full Models
+
+&lt;img src="presentation_files/figure-html/fullfig_indig_indian_callout-1.png" width="936" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Conclusions
+
+
+---
+
+&lt;iframe src="https://github.com/AaronGullickson/fakeunion" width="400" height="200"&gt;&lt;/iframe&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
