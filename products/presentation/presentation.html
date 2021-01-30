@@ -4,6 +4,8 @@
     <title>Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018</title>
     <meta charset="utf-8" />
     <meta name="author" content="Aaron Gullickson" />
+    <link href="libs/tile-view-0.2.4/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.4/tile-view.js"></script>
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
     <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
@@ -19,6 +21,8 @@ class: center, middle, inverse, title-slide
 ### University of Oregon
 
 ---
+
+
 
 
 
@@ -465,11 +469,65 @@ We then predict the counts within each cell by maginal and joint parameters:
 
 ## What does the model control for?
 
-- Age differences
-- Education differences
-- Birthplace endogamy
-- Language endogamy
-- Native/immigrant preferences
+--
+
+#### Age Differences
+
+I include the age difference between partners and its square.
+
+--
+
+#### Education Differences
+
+I use a "crossing" model to code the distance between four educational categories: less than high school, high school diploma, some college, but no four-year degree, Four-year college degree or more.
+
+I also include variables for female educational hypergamy and hypogamy (ie. upward and dowward marriage).
+
+--
+
+#### Birthplace and Language Endogamy
+
+I include two variables that measure two additional forms of endogamy:
+* Were partners born in the same country or not?
+* Do partners speak the same primary language?
+
+--
+
+#### Immigrant/Nativity Attraction
+
+I include gender-specific variables that identify native/foreign-born couples regardless of country. 
+
+---
+
+## The Role of Birthplace and Language Endogamy
+
+| H's Ethnicity  | W's Ethnicity  | H Birthplace | W Birthplace  | H Language | W Language | Endogamy                     | 
+|----------------|----------------|--------------|---------------|------------|------------|------------------------------|
+| Chinese        | Chinese        | China        | China         | Chinese    | Chinese    | Ethnic, Birthplace, Language |
+| Chinese        | Chinese        | USA          | China         | English    | English    | Ethnic, Language             |
+| Chinese        | Chinese        | China        | English       | Chinese    | English    | Ethnic                       |
+| Chinese        | Vietnamese     | USA          | USA           | English    | English    | Birthplace, Language         |
+| Chinese        | Vietnamese     | China        | Vietnam       | English    | Vietnamese | *none*                       |
+
+--
+
+* Language Endogamy
+
+--
+
+  * For Asians, language is highly correlated with ethnicity/nationality and thus language endogamy should reduce the tendency toward ethnic exogamy.
+  
+--
+  
+  * For Latinos, language is often the same across ethnicity/nationality and thus language endogamy may increase the tendency toward ethnic exogamy.
+
+--
+
+* Birthplace Endogamy
+
+--
+
+  * For both groups, birthplace endogamy should reduce the tendency toward ethnic exogamy.
 
 ---
 
@@ -553,10 +611,9 @@ We then predict the counts within each cell by maginal and joint parameters:
 
 ## Conclusions
 
-
 ---
 
-&lt;iframe src="https://github.com/AaronGullickson/fakeunion" width="400" height="200"&gt;&lt;/iframe&gt;
+&lt;iframe url="https://github.com/AaronGullickson/fakeunion" height="500" width="800"&gt;&lt;/iframe&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

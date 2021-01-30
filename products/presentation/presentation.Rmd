@@ -32,6 +32,10 @@ library(kableExtra)
 load(here("analysis","output","models_restricted.RData"))
 ```
 
+```{r xaringanExtra, echo=FALSE}
+xaringanExtra::use_xaringan_extra(c("tile_view"))
+```
+
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
 style_mono_light(base_color="#23395b",
@@ -457,11 +461,65 @@ x %>%
 
 ## What does the model control for?
 
-- Age differences
-- Education differences
-- Birthplace endogamy
-- Language endogamy
-- Native/immigrant preferences
+--
+
+#### Age Differences
+
+I include the age difference between partners and its square.
+
+--
+
+#### Education Differences
+
+I use a "crossing" model to code the distance between four educational categories: less than high school, high school diploma, some college, but no four-year degree, Four-year college degree or more.
+
+I also include variables for female educational hypergamy and hypogamy (ie. upward and dowward marriage).
+
+--
+
+#### Birthplace and Language Endogamy
+
+I include two variables that measure two additional forms of endogamy:
+* Were partners born in the same country or not?
+* Do partners speak the same primary language?
+
+--
+
+#### Immigrant/Nativity Attraction
+
+I include gender-specific variables that identify native/foreign-born couples regardless of country. 
+
+---
+
+## The Role of Birthplace and Language Endogamy
+
+| H's Ethnicity  | W's Ethnicity  | H Birthplace | W Birthplace  | H Language | W Language | Endogamy                     | 
+|----------------|----------------|--------------|---------------|------------|------------|------------------------------|
+| Chinese        | Chinese        | China        | China         | Chinese    | Chinese    | Ethnic, Birthplace, Language |
+| Chinese        | Chinese        | USA          | China         | English    | English    | Ethnic, Language             |
+| Chinese        | Chinese        | China        | English       | Chinese    | English    | Ethnic                       |
+| Chinese        | Vietnamese     | USA          | USA           | English    | English    | Birthplace, Language         |
+| Chinese        | Vietnamese     | China        | Vietnam       | English    | Vietnamese | *none*                       |
+
+--
+
+* Language Endogamy
+
+--
+
+  * For Asians, language is highly correlated with ethnicity/nationality and thus language endogamy should reduce the tendency toward ethnic exogamy.
+  
+--
+  
+  * For Latinos, language is often the same across ethnicity/nationality and thus language endogamy may increase the tendency toward ethnic exogamy.
+
+--
+
+* Birthplace Endogamy
+
+--
+
+  * For both groups, birthplace endogamy should reduce the tendency toward ethnic exogamy.
 
 ---
 
@@ -788,3 +846,6 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ## Conclusions
 
+---
+
+## Additional Information
