@@ -1,8 +1,7 @@
 ---
 title: "Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018"
-subtitle: "UO Sociology Colloquium, Winter 2021"
-author: "Aaron Gullickson"
-institute: "University of Oregon"
+author: "Aaron Gullickson <a href='https://orcid.org/0000-0001-7237-8131'><img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' /></a><br><span style = 'font-size: 67%;'>University of Oregon<br>Department of Sociology</span>"
+date: 'UO Sociology Colloquium, Winter 2021'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -14,6 +13,7 @@ output:
       countIncrementalSlides: false
       slideNumberFormat: ""
       ratio: 16:10
+      titleSlideClass: ["left", "middle", "inverse"]
 ---
 
 ```{r setup, include=FALSE}
@@ -471,7 +471,11 @@ I include the age difference between partners and its square.
 
 #### Education Differences
 
-I use a "crossing" model to code the distance between four educational categories: less than high school, high school diploma, some college, but no four-year degree, Four-year college degree or more.
+I use a "crossing" model to code the distance between four educational categories: 
+* Less than high school
+* High school diploma
+* Some college, but no four-year degree
+* Four-year college degree or more.
 
 I also include variables for female educational hypergamy and hypogamy (ie. upward and dowward marriage).
 
@@ -482,12 +486,6 @@ I also include variables for female educational hypergamy and hypogamy (ie. upwa
 I include two variables that measure two additional forms of endogamy:
 * Were partners born in the same country or not?
 * Do partners speak the same primary language?
-
---
-
-#### Immigrant/Nativity Attraction
-
-I include gender-specific variables that identify native/foreign-born couples regardless of country. 
 
 ---
 
@@ -848,4 +846,23 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ---
 
+class: inverse
+
 ## Additional Information
+
+<span style = 'font-size: 125%;'>
+`r icon::fa("paper-plane")` [aarong@uoregon.edu](mailto:aarong@uoregon.edu)<br><br>
+`r icon::fa("twitter")` [@AaronGullickson](https://twitter.com/AaronGullickson)<br><br>
+`r icon::fa("github")` [@AaronGullickson](https://github.com/AaronGullickson)<br><br>
+`r icon::fa_r_project()` [fakeunion- an R Package for Sampling Partners](https://bit.ly/jlt-rmed2018)<br><br>
+`r icon::ai("osf")` [OSF page for Marriage Model Paper](https://osf.io/3w8xn/)<br><br>
+`r icon::fa("link")` [Presentation Slides](https://aarongullickson.netlify.app/talk/panethnic_mar/)<br><br>
+`r icon::fa("link")` [PAA 2021 Poster](https://aarongullickson.netlify.app/talk/panethnic_mar/poster.pdf)<br><br>
+</span>
+
+.center[
+## Thanks for Coming to My Talk!
+]
+
+
+
