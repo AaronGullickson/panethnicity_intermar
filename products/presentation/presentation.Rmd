@@ -442,20 +442,22 @@ x %>%
   kable_styling(font_size=12) %>% 
   row_spec(0, bold = T, background=rep("#EAEBEE",13)) %>%
   column_spec(1, bold = T, border_right = T, background=rep("#EAEBEE",13)) %>%
-  column_spec(2, background=c("grey","#e31a1c","#1f78b4",rep("#4daf4a",5),"#54278f",rep("#ff7f00",3))) %>%
-  column_spec(3, background=c("#EAEBEE","grey","#a6cee3",rep("#b2df8a",5),"#6a51a3",rep("#fdbf6f",3))) %>%
-  column_spec(4, background=c(rep("#EAEBEE",2),"grey",rep("#78c679",5),"#807dba",rep("#cc4c02",3))) %>%
-  column_spec(5, background=c(rep("#EAEBEE",3),"grey",rep("#f7fcb9",4),"#9e9ac8",rep("#fe9929",3))) %>%
-  column_spec(6, background=c(rep("#EAEBEE",4),"grey",rep("#f7fcb9",3),"#9e9ac8",rep("#fe9929",3))) %>%
-  column_spec(7, background=c(rep("#EAEBEE",5),"grey",rep("#f7fcb9",2),"#9e9ac8",rep("#fe9929",3))) %>%
-  column_spec(8, background=c(rep("#EAEBEE",6),"grey",rep("#f7fcb9",1),"#9e9ac8",rep("#fe9929",3))) %>%
-  column_spec(9, background=c(rep("#EAEBEE",7),"grey","#9e9ac8",rep("#fe9929",3))) %>%
-  column_spec(10, background=c(rep("#EAEBEE",8),"grey",rep("#bcbddc",3))) %>%
+  column_spec(2,  background=c("grey","#e31a1c","#1f78b4",rep("#4daf4a",5),"#6a51a3",rep("#ff7f00",3))) %>%
+  column_spec(3,  background=c("#EAEBEE","grey","#a6cee3",rep("#b2df8a",5),"#bcbddc",rep("#fdbf6f",3))) %>%
+  column_spec(4,  background=c(rep("#EAEBEE",2),"grey",rep("#f7fcb9",5),"#807dba",rep("#cc4c02",3))) %>%
+  column_spec(5,  background=c(rep("#EAEBEE",3),"grey",rep("#78c679",4),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(6,  background=c(rep("#EAEBEE",4),"grey",rep("#78c679",3),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(7,  background=c(rep("#EAEBEE",5),"grey",rep("#78c679",2),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(8,  background=c(rep("#EAEBEE",6),"grey",rep("#78c679",1),"#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(9,  background=c(rep("#EAEBEE",7),"grey","#9e9ac8",rep("#fe9929",3))) %>%
+  column_spec(10, background=c(rep("#EAEBEE",8),"grey",rep("#efedf5",3))) %>%
   column_spec(11, background=c(rep("#EAEBEE",9),"grey",rep("#fee391",2))) %>%
   column_spec(12, background=c(rep("#EAEBEE",10),"grey","#fee391")) %>%
   column_spec(13, background=c(rep("#EAEBEE",11),"grey"))
 ```
 
+* Each color corresponds to a dummy variable in the model.
+* All parameters are gender symmetric.
 
 ---
 
