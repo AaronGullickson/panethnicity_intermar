@@ -247,11 +247,29 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 ![](images/pentagon_5.svg)
 ]
 
+???
+
+* Ethnoracial pentagon
+  * coined by historian David Hollinger
+  * describes the increasingly taken for granted categorization of the US into five racial categories, supported by state practices and social norms
+  * The categories are quite similar to original color-coded taxonomic categories of Blumenbach: White, Black, Red, Yellow, and Brown (with caveats on brown)
+
 ---
 
 .center[
 ![](images/pentagon_4.svg)
 ]
+
+???
+
+* Pan-ethnicity is often used in reference to the clear national-origin ("ethnic") distinctions among groups that make up the Asian and Latino categories.
+* Pan-ethnicity is the tendency towards identifying with the larger umbrella category of Asian or Latino in contrast to other lower-level distinctions.
+* Pan-ethnicity should be a surprising outcome - nationality produces strong identities.
+* Asian and Latino pan-ethnicity is thought to have increased with the growth of these populations in the US, because of:
+  * state actions to categorize and count
+  * ethnic entrepreuners
+  * identity-based organizations (e.g. National Council of La Raza)
+* Intermarriage is often thought of as an excellent measure of the degree of pan-ethnicity among groups. 
 
 ---
 
@@ -259,11 +277,25 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 ![](images/pentagon_3.svg)
 ]
 
+???
+
+* While pan-ethnicity among Asians and Latinos is the most historically salient, we can think of similar consolidation occurring for each of the other categories in the racial pentagon.
+  * most well-studied is the creation (or expansion) of whiteness from a variety of European ethnic groups who often had great antipathy toward one another. 
+  * similar process occurred even earlier for blacks in the US, where the institution of slavery was a powerful vehicle for assimilation. 
+  * process has been more partial and complex for indigenous populations. Some strong tribal connections mixed with a large population without any strong tribal identity.
+
 ---
 
 .center[
 ![](images/pentagon_2.svg)
 ]
+
+???
+
+* In the lingo of boundary formation theory, we can think of pan-ethnicity more generally as a case of boundary expansion: Pushing back the level of important boundaries to a higher level.
+  * Each form of boundary expansion however has unique features that have contributed to the present dynamics of race in the US.
+  * white boundary expansion was part of a process of nation-building.
+  * black and indigenous boundary expansion was part of a process of ethnogenesis, but with opposing rules in how to handle mixed offspring.
 
 ---
 
@@ -271,11 +303,26 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 ![](images/pentagon_1.svg)
 ]
 
+???
+
+* The distinction between older projects of boundary expansion and contemporary pan-ethnicity is about timing. The original "triangle" of American race relations has been extended to two more recent entries.
+* Asian and Latino boundary expansion is an ongoing project and the boundaries between national-origin groups are "brighter". 
+* There are some important differences between the Asian and Latino case to be aware of:
+    * Latinos connected by single language, but Asians are not.
+    * Latino classification has resisted racialization more than Asian case.
+    * "model minority" status of Asian Americans as well as class advantages.
+
 ---
 
 .center[
 ![](images/pentagon_0.svg)
 ]
+
+???
+
+* It is worth noting that certain identifications still don't fit well within this racial pentagon. 
+  * MENA category (itself a pan-ethnic designation). They are supposed to check white.
+  * South Asians - Generally classified as Asian, but "Asian" in the US is often used to references someone of east of southeast Asian origin, and thus South Asians don't quite fit. 
 
 ---
 
