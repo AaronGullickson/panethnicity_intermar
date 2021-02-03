@@ -893,6 +893,33 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ## Conclusions
 
+--
+
+* Ethnic intermarriage among Asians and Latinos appears to be moderate and has not increased over time, but language and birthplace endogamy complicate the story.
+
+--
+
+  * For Asians, language and birthplace endogamy are significant barriers to ethnic intermarriage. Once these are held constant, Asian ethnic intermarriage **has** increased over time and is common today.
+
+--
+
+  * For Latinos, accounting for language and birthplace endogamy has little effect on ethnic intermarriage. Latino ethnic intermarriage is even less common today than Latino/White intermarriage. 
+
+--
+
+* `r emo::ji("open_mouth")` **Somewhat Surprising Finding**: Stronger evidence of pan-ethnicity among Asians than Latinos. Why might this be?
+
+--
+
+  * Stronger racialization of Asian populations?
+  
+--
+
+* Other findings:
+  * Black intermarriage remains the rarest form of intermarriage, but has increased over time. 
+  * Indigenous and Asian Indian intermarriage has decreased over time, but this may result from measurement issues.
+
+
 ---
 
 class: inverse
@@ -904,7 +931,7 @@ class: inverse
 `r icon::fa("twitter")` [@AaronGullickson](https://twitter.com/AaronGullickson)<br><br>
 `r icon::fa("github")` [@AaronGullickson](https://github.com/AaronGullickson)<br><br>
 `r icon::fa_r_project()` [fakeunion- an R Package for Sampling Partners](https://bit.ly/jlt-rmed2018)<br><br>
-`r icon::ai("osf")` [OSF page for Marriage Model Paper](https://osf.io/3w8xn/)<br><br>
+`r icon::ai("osf")` [OSF Page for Marriage Model Paper](https://osf.io/3w8xn/)<br><br>
 `r icon::fa("link")` [Presentation Slides](https://aarongullickson.netlify.app/talk/panethnic_mar/)<br><br>
 `r icon::fa("link")` [PAA 2021 Poster](https://aarongullickson.netlify.app/talk/panethnic_mar/poster.pdf)<br><br>
 </span>
