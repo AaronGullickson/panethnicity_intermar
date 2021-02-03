@@ -1002,7 +1002,7 @@ class: inverse
 `r icon::fa("github")` [@AaronGullickson](https://github.com/AaronGullickson)<br><br>
 `r icon::fa_r_project()` [fakeunion- an R Package for Sampling Partners](https://bit.ly/jlt-rmed2018)<br><br>
 `r icon::ai("osf")` [OSF Page for Marriage Model Paper](https://osf.io/3w8xn/)<br><br>
-`r icon::fa("link")` [Presentation Slides](https://aarongullickson.netlify.app/talk/panethnic_mar/)<br><br>
+`r icon::fa("link")` [Presentation Slides](https://aarongullickson.netlify.app/talk/panethnic_mar/presentation/presentation.html)<br><br>
 `r icon::fa("link")` [PAA 2021 Poster](https://aarongullickson.netlify.app/talk/panethnic_mar/poster.pdf)<br><br>
 </span>
 
