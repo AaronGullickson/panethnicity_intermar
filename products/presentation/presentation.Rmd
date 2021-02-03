@@ -127,6 +127,7 @@ coef_table$data <- factor(coef_table$data,
                           levels=c("Census 1980", "ACS 2014-18"))
 ```
 
+
 ## Shifting Boundaries in Interracial Marriage
 
 ```{r bigsplash}
@@ -187,11 +188,11 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 - Combination of two different projects
 - The first project is the development of a new(ish) approach to modeling assortative mating
   - An intuitive alternative to the traditional log-linear approach
-  - Happy to say that I now have an article forthcoming in *Demographic Research* that outlines the new technique
+  - Happy to say that I now have an article condtionally accepted in *Demographic Research* that outlines the new technique
 - The second project looks at changes in interracial marriage in the United States
   - Made possible by recent changes in Census questions that allow us to measure timing of marriage
-  - looking at two points in time (1980 and 2013-2018)
-  - Specific focus on questions of pan-ethnicity
+  - looking at two points in time (1980 and 2014-2018)
+  - Specific focus on the issue of pan-ethnicity among Asian and Latino national-origin/ethnic groups
 
 --
 
@@ -253,6 +254,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
   * coined by historian David Hollinger
   * describes the increasingly taken for granted categorization of the US into five racial categories, supported by state practices and social norms
   * The categories are quite similar to original color-coded taxonomic categories of Blumenbach: White, Black, Red, Yellow, and Brown (with caveats on brown)
+  * I have used the term "big race" to describe these categories as a parallel to Grusky and Weeden's "big class" concept
 
 ---
 
@@ -346,6 +348,10 @@ We then predict the counts within each cell by marginal and joint parameters:
 $$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
 ]
 
+???
+
+* Note that the log-linear model can incorporate more dimensions here. 
+
 --
 
 .pull-right[
@@ -357,6 +363,7 @@ $$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
 `r emo::ji("-1")` Non-intuitive and complex<br>
 `r emo::ji("-1")` Handles quantitative variables (e.g. age) poorly<br>
 ]
+
 
 ---
 
@@ -395,11 +402,22 @@ $$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
 ![](images/counter_diagram1.svg)
 ]
 
+???
+
+* Actual couple, but not real names. If ethnographers get to make up cool names for their subjects why can't quanties?
+
+
 ---
 
 .center[
 ![](images/counter_diagram2.svg)
 ]
+
+???
+
+* We pull four alternate wives for Lance from single or recently married women.
+* We chose husband randomly. In other cases we choose the wife and alternate husbands.
+* heterosexuality bias: possible to build this model for LGBT couples as well but some additional complexities. Happy to talk about it in Q&A.
 
 ---
 
@@ -407,6 +425,9 @@ $$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
 ![](images/counter_diagram3.svg)
 ]
 
+???
+
+* We can more formally use a logit model to identify the joint characteristics that lead to a real match.
 
 ---
 
@@ -439,6 +460,13 @@ ggplot(data.frame(agediff, odds), aes(x=agediff, y=odds))+
        y="Odds of union relative to partners of the same age")
 ```
 
+???
+
+* Go through details
+  * I am fitting a parabolic function here to see where the maximum likelihood is. 
+  * Note that an odds of one is when spouses are equal age.
+  * The "offset" of the parabola indicates the (slight) preference for husbands being older than wives.
+
 ---
 
 ## Data Sources
@@ -462,6 +490,12 @@ ggplot(data.frame(agediff, odds), aes(x=agediff, y=odds))+
     - Present in the same state for the last five years.
 - I sample 25 alternative partners **from same state** for one randomly selected marriage partner to create choice sets.
 ]
+
+???
+
+* The restrictions on being in-state also mean that foreign-born respondents are only included if they were married in the US. 
+* in-state sampling resolves problem of using a national marriage market.
+* inclusion of single invidiuals resolves the unmarried exclusion bias.
 
 ---
 
@@ -505,6 +539,15 @@ x %>%
 
 * Each color corresponds to a dummy variable in the model.
 * All parameters are gender symmetric.
+
+???
+
+* These are the racial/ethnic categories that can be identified on both the ACS and the 1980 Census. More available if we just take ACS, but I want comparability.
+* One partner on the row and the other on the column. 
+* Terms are gender-symmetric so only need to look at coding one way.
+* Endogamous unions are the reference.
+* I block code all ethnic exogamy between Latinos and Asians using a single dummy variable, respectively. I am not looking at specific affinities between certain ethnic groups.
+* I separate out Asian Indians as a group because of their racial ambiguity. 
 
 ---
 
@@ -584,6 +627,13 @@ ggplot(subset(coef_table, variable=="Asian ethnic exogamy"),
   labs(y=NULL, 
        x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy")
 ```
+
+??? 
+
+Walk through basic features:
+* outcome is the odds of ethnic intermarriage (e.g. Japanese and Korean) vs ethnically endogamous union (e.g. Japanese and Japanese). 
+* Bottom model does not control for language and birthplace endogamy. I then control for them separately and then jointly in subsequent model. 
+* You can think of the later models as asking "how much ethnic exogamy would there be if all Asians spoke the same language and were born in the same country?" 
 
 ---
 
@@ -670,6 +720,10 @@ ggplot(subset(coef_table, variable=="Latino ethnic exogamy"),
        x="Odds ratio of union formation for Latino ethnic intermarriage relative to ethnic endogamy")
 ```
 
+???
+
+* Slightly larger changes from birthplace than from language, but neither produces much change at all. 
+
 ---
 
 ## Racial and Ethnic Exogamy Based on Full Models
@@ -687,6 +741,12 @@ ggplot(subset(coef_table, racial_exog & model=="+ both" & data=="ACS 2014-18"),
        color="data source")
 ```
 
+???
+
+* Now lets look at how Asian and Latino ethnic exogamy fits into the overall patterns of racial exogamy.
+* I start by plotting all of the exogamy terms for the recent time period from least exogamous to most exogamous.
+* Note the log-scale. 
+
 ---
 
 ## Racial and Ethnic Exogamy Based on Full Models
@@ -703,6 +763,10 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
 ```
+
+???
+
+* I then add the 1980 measures.
 
 ---
 
@@ -725,6 +789,12 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
        y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
        color="data source")
 ```
+
+???
+
+* To help see the direction, I add an arrow pointing to the later time period.
+* some exogamy odds went up, while others went down.
+
 
 ---
 
