@@ -569,7 +569,7 @@ I use a "crossing" model to code the distance between four educational categorie
 * Some college, but no four-year degree
 * Four-year college degree or more.
 
-I also include variables for female educational hypergamy and hypogamy (i.e. upward and dowward marriage).
+I also include variables for female educational hypergamy and hypogamy (i.e. upward and downward marriage).
 
 --
 
@@ -628,7 +628,7 @@ ggplot(subset(coef_table, variable=="Asian ethnic exogamy"),
        x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy")
 ```
 
-??? 
+???
 
 Walk through basic features:
 * outcome is the odds of ethnic intermarriage (e.g. Japanese and Korean) vs ethnically endogamous union (e.g. Japanese and Japanese). 
