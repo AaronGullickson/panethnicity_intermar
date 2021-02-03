@@ -267,7 +267,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 * Pan-ethnicity should be a surprising outcome - nationality produces strong identities.
 * Asian and Latino pan-ethnicity is thought to have increased with the growth of these populations in the US, because of:
   * state actions to categorize and count
-  * ethnic entrepreuners
+  * ethnic entrepreneurs
   * identity-based organizations (e.g. National Council of La Raza)
 * Intermarriage is often thought of as an excellent measure of the degree of pan-ethnicity among groups. 
 
@@ -341,7 +341,7 @@ We first create a cross-tabulation of husbands' and wives' characteristics:
 |H Group 2  | $F_{21}$| $F_{22}$| $F_{23}$|
 |H Group 3  | $F_{31}$| $F_{32}$| $F_{33}$|
 
-We then predict the counts within each cell by maginal and joint parameters:
+We then predict the counts within each cell by marginal and joint parameters:
 
 $$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
 ]
@@ -382,10 +382,10 @@ $$\log(F_{ij})=\lambda+\lambda_i+\lambda_j+\lambda_{ij}$$
 
 #### Benefits and Drawbacks of this Approach
 
-`r emo::ji("+1")` Implicitly addresses "supply" issue in partner characteristics through sampling<br>
-`r emo::ji("+1")` Allows for a tight specification of the marriage market<br>
+`r emo::ji("+1")` Implicitly addresses group size differences through sampling<br>
+`r emo::ji("+1")` Allows for a better specification of the marriage market<br>
 `r emo::ji("+1")` Includes the single population in the pool of potential partners<br>
-`r emo::ji("+1")` Easy to model using standard linear model framework<br>
+`r emo::ji("+1")` Easy to model using the standard linear model framework<br>
 `r emo::ji("-1")` Computationally intensive to sample partners<br>
 `r emo::ji("-1")` Requires detailed marriage formation data
 
@@ -526,7 +526,7 @@ I use a "crossing" model to code the distance between four educational categorie
 * Some college, but no four-year degree
 * Four-year college degree or more.
 
-I also include variables for female educational hypergamy and hypogamy (ie. upward and dowward marriage).
+I also include variables for female educational hypergamy and hypogamy (i.e. upward and dowward marriage).
 
 --
 
@@ -540,7 +540,7 @@ I include two variables that measure two additional forms of endogamy:
 
 ## The Role of Birthplace and Language Endogamy
 
-| H's Ethnicity  | W's Ethnicity  | H Birthplace | W Birthplace  | H Language | W Language | Endogamy                     | 
+| H Ethnicity  | W Ethnicity  | H Birthplace | W Birthplace  | H Language | W Language | Endogamy                     | 
 |----------------|----------------|--------------|---------------|------------|------------|------------------------------|
 | Chinese        | Chinese        | China        | China         | Chinese    | Chinese    | Ethnic, Birthplace, Language |
 | Chinese        | Chinese        | USA          | China         | English    | English    | Ethnic, Language             |
@@ -879,7 +879,7 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
   geom_ellipse(aes(x0=13, y0=exp(-1.57), a=0.55, b=0.1, angle=0,),
                size=2, color="#23395b")+
   annotate("text", x=11, y=0.03, 
-           label="All cases of a decline in exogamy involve either\nthe Indigenous or Asian Indian categories. This\nmight be a measurement issue.",
+           label="All cases of a decline in exogamy involve either\nthe Indigenous or Asian Indian category. This\nmight be a measurement issue.",
            size=7, family="indie-flower", angle=9, color="grey35")+
   coord_flip()+
   scale_y_log10(limits=c(0.007,1.35))+
@@ -899,11 +899,11 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 --
 
-  * For Asians, language and birthplace endogamy are significant barriers to ethnic intermarriage. Once these are held constant, Asian ethnic intermarriage **has** increased over time and is common today.
+   * For Asians, language and birthplace endogamy are significant barriers to ethnic intermarriage. Once these are held constant, Asian ethnic intermarriage **has** increased over time and is common today.
 
 --
 
-  * For Latinos, accounting for language and birthplace endogamy has little effect on ethnic intermarriage. Latino ethnic intermarriage is even less common today than Latino/White intermarriage. 
+   * For Latinos, accounting for language and birthplace endogamy has little effect on ethnic intermarriage. Latino ethnic intermarriage is even less common today than Latino/White intermarriage. 
 
 --
 
