@@ -125,12 +125,7 @@ coef_table$model <- factor(coef_table$model,
                                     "+ language endogamy", "+ both"))
 coef_table$data <- factor(coef_table$data,
                           levels=c("Census 1980", "ACS 2014-18"))
-```
 
-
-## Shifting Boundaries in Interracial Marriage
-
-```{r bigsplash}
 #create the splash image figure here
 df_arrows <- coef_table %>%
   filter(model=="+ both") %>%
@@ -148,38 +143,7 @@ df_arrows$coef.census <- ifelse(abs(df_arrows$coef.census-df_arrows$coef.acs)<0,
                            df_arrows$coef.census+0.01)
 df_arrows$coef.census <- ifelse(abs(df_arrows$coef.census-df_arrows$coef.acs)<.1, 
                                 NA, df_arrows$coef.census)
-
-
-ggplot(subset(coef_table, racial_exog & model=="+ both"), 
-       aes(x=variable, y=exp(coef)))+
-  geom_hline(yintercept = 1, linetype=2, size=2)+
-  geom_point(aes(color=data), size=6)+
-  geom_segment(data=subset(df_arrows, racial_exog), size=2, alpha=0.7, linetype=1,
-               aes(x=variable, xend=variable, 
-                   y=exp(coef.census), yend=exp(coef.acs)),
-               arrow = arrow(length = unit(0.02, "npc")),
-               color="#808080")+
-  annotate("rect", xmin = 13.5, xmax = 14.5, ymin = 0, ymax = 1.5,
-           alpha = 0.4, color=NA, fill="#18273F")+
-  annotate("rect", xmin = 16.5, xmax = 17.5, ymin = 0, ymax = 1.5,
-           alpha = 0.4, color=NA, fill="#18273F")+
-  coord_flip()+
-  scale_y_log10()+
-  scale_color_manual(values=c("red","#f4c430"))+
-  labs(x=NULL, 
-       y="odds ratio of union formation relative to racially endogamous union, logarithmic scale",
-       color="data source")
 ```
-
-???
-
-- Sneak Preview: Showing you the punchline figure at the beginning. 
-- Obviously a lot going on here that I will get into in the talk
-  - Changes across two points in time in "racial" boundaries
-  - if you look carefully not all of these boundaries would be classified as race or at least "big" race
-- Lot of interesting stuff here that I will highlight later
-
----
 
 ## Two Projects
 
