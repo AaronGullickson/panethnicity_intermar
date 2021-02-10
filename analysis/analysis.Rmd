@@ -31,7 +31,7 @@ for(i in 1:length(temp)) {
                              model=paste("Model",i),
                              data="Census 1980"))
 }
-temp <- lapply(models_acs_summary, get_coefs)
+temp <- lapply(models_acs_short_summary, get_coefs)
 for(i in 1:length(temp)) {
   coef_table <- rbind(coef_table, 
                       tibble(variable=rownames(temp[[i]]),
