@@ -14,6 +14,7 @@ with(subset(markets_acs_fullrace, choice),
 #add variables
 markets_census <- add_vars(markets_census)
 markets_acs_shortrace <- add_vars(markets_acs_shortrace)
+markets_acs_fullrace <- add_vars(markets_acs_fullrace)
 
 # Run Models --------------------------------------------------------------
 
@@ -35,19 +36,27 @@ model_census2 <- clogit(formula_bpl_endog, data=markets_census)
 model_census3 <- clogit(formula_lang_endog, data=markets_census)
 model_census4 <- clogit(formula_full, data=markets_census)
 
-model_acs1 <- clogit(formula_baseline, data=markets_acs_shortrace)
-model_acs2 <- clogit(formula_bpl_endog, data=markets_acs_shortrace)
-model_acs3 <- clogit(formula_lang_endog, data=markets_acs_shortrace)
-model_acs4 <- clogit(formula_full, data=markets_acs_shortrace)
+model_acs_short1 <- clogit(formula_baseline, data=markets_acs_shortrace)
+model_acs_short2 <- clogit(formula_bpl_endog, data=markets_acs_shortrace)
+model_acs_short3 <- clogit(formula_lang_endog, data=markets_acs_shortrace)
+model_acs_short4 <- clogit(formula_full, data=markets_acs_shortrace)
+
+model_acs_full1 <- clogit(formula_baseline, data=markets_acs_fullrace)
+model_acs_full2 <- clogit(formula_bpl_endog, data=markets_acs_fullrace)
+model_acs_full3 <- clogit(formula_lang_endog, data=markets_acs_fullrace)
+model_acs_full4 <- clogit(formula_full, data=markets_acs_fullrace)
 
 #saving the model summary output should be fine
 models_census_summary <- lapply(list(model_census1, model_census2, 
                                     model_census3, model_census4),
                                summary)
-models_acs_summary <- lapply(list(model_acs1, model_acs2, 
-                                  model_acs3, model_acs4),
-                             summary)
+models_acs_short_summary <- lapply(list(model_acs_short1, model_acs_short2, 
+                                        model_acs_short3, model_acs_short4),
+                                   summary)
+models_acs_full_summary <- lapply(list(model_acs_full1, model_acs_full2, 
+                                        model_acs_full3, model_acs_full4),
+                                   summary)
 
-save(models_census_summary, models_acs_summary,
+save(models_census_summary, models_acs_short_summary, models_acs_full_summary,
      file=here("analysis","output","models_restricted.RData"))
 
