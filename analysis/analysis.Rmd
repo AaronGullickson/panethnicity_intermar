@@ -9,7 +9,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","models_restricted.RData"))
@@ -21,8 +22,8 @@ load(here("analysis","output","models_restricted.RData"))
 get_coefs <- function(x) {
   return(coef(x)[,c(1,3)])
 }
-temp <- lapply(models_census_summary, get_coefs)
 coef_table <- NULL
+temp <- lapply(models_census_summary, get_coefs)
 for(i in 1:length(temp)) {
   coef_table <- rbind(coef_table, 
                       tibble(variable=rownames(temp[[i]]),
@@ -38,7 +39,16 @@ for(i in 1:length(temp)) {
                              coef=temp[[i]][,"coef"],
                              se=temp[[i]][,"se(coef)"],
                              model=paste("Model",i),
-                             data="ACS 2014-18"))
+                             data="ACS 2014-18, short"))
+}
+temp <- lapply(models_acs_full_summary, get_coefs)
+for(i in 1:length(temp)) {
+  coef_table <- rbind(coef_table, 
+                      tibble(variable=rownames(temp[[i]]),
+                             coef=temp[[i]][,"coef"],
+                             se=temp[[i]][,"se(coef)"],
+                             model=paste("Model",i),
+                             data="ACS 2014-18, full"))
 }
 coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
 #fix up the names
@@ -47,12 +57,12 @@ better_names <- c("age difference", "age difference squared",
                   "female educational hypergamy", "female educational hypogamy",
                   "educational crossing LHS/HS", "educational crossing HS/SC",
                   "educational crossing SC/C", "Black/White","Indigenous/White",
-                  "Asian/White","Hispanic/White","Asian Indian/White",
-                  "Black/Indigenous","Black/Asian","Black/Hispanic",
-                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Hispanic",
-                  "Indigenous/Asian Indian","Asian/Hispanic","Asian/Asian Indian",
-                  "Hispanic/Asian Indian","Asian ethnic exogamy",
-                  "Hispanic ethnic exogamy", "birthplace endogamy",
+                  "Asian/White","Latino/White","Asian Indian/White",
+                  "Black/Indigenous","Black/Asian","Black/Latino",
+                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Latino",
+                  "Indigenous/Asian Indian","Asian/Latino","Asian/Asian Indian",
+                  "Latino/Asian Indian","Asian ethnic exogamy",
+                  "Latino ethnic exogamy", "birthplace endogamy",
                   "language endogamy")
 names(better_names) <- temp_names
 coef_table$variable <- better_names[coef_table$variable]
@@ -61,38 +71,80 @@ coef_table$model <- factor(coef_table$model,
                            labels=c("Baseline", "+ birthplace endogamy",
                                     "+ language endogamy", "+ both"))
 coef_table$data <- factor(coef_table$data,
-                          levels=c("Census 1980", "ACS 2014-18"))
+                          levels=c("Census 1980", "ACS 2014-18, short",
+                                   "ACS 2014-18, full"),
+                          labels=c("Census 1980", 
+                                   "ACS 2014-18, three latino groups",
+                                   "ACS 2014-18, seven latino groups"))
 ```
   
+## Asian and Latino Ethnic Exogamy
+
+I begin by looking at the Asian and Latino ethnic exogamy terms in particular. I want to see how these estimates change over time and with controls for birthplace and language endogamy. I also want to see how the results change in the later time period if I add in the additional Latino nationality groups.
+  
 ```{r}
-ggplot(subset(coef_table, 
-              variable=="Asian ethnic exogamy" | 
-                variable=="Hispanic ethnic exogamy"), 
-       aes(x=variable, y=exp(coef), color=model))+
-  facet_wrap(~data)+
-  coord_flip()+
-  geom_point()+
-  labs(x=NULL, 
-       y="odds ratio of union formation for Hispanic/Asian\nethnic intermarriage relative to ethnic endogamy")+
-  scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
-  #scale_color_manual(values=wes_palette("Moonrise2"))+
+ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy",
+       color="Data source",
+       title="Odds ratio of Asian ethnic exogamy",
+       subtitle="by year and data source")+
   theme_bw()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "right")
 ```
+
+The results for Asian ethnic exogamy so that language and birthplace endogamy both play important roles. Without controlling for either one, the results show that Asian ethnic exogamy is moderate and has actually gone down a little over time. However, once we factor out language and birthplace endogamy, ethnic exogamy is quite common and has increased substantially over time. Language endogamy is more important than birthplace endogamy, but both play a role. 
+
+Thus for Asian nationality groups, we actually observe relatively little pan-ethnicity in intermarriage, but that is because these groups are divided by language and birthplace diversity. In a counterfactual case in which most Asian Americans are all born in the US and speak English, we would see high level of ethnic exogamy.
+
+The difference between the three or seven Latino groups here is irrelevant as we would expect.
+
+```{r}
+ggplot(subset(coef_table, variable=="Latino ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Latino ethnic intermarriage relative to ethnic endogamy",
+       color="Data source",
+       title="Odds ratio of Latino ethnic exogamy",
+       subtitle="by year and data source")+
+  theme_bw()+
+  theme(legend.position = "right")
+```
+For Latino ethnic exogamy we see a very different story. First, regardless of which ACS sample we use, there have not been significant increases in Latino ethnic exogamy over time. In fact, in the more directly comparable case, Latino ethnic exogamy has decreased slightly. Controlling for birthplace and language endogamy has relatively little effect on these patterns. Controlling for birthplace endogamy increases exogamy somewhat, as expected. Controlling for language endogamy by itself does little, but tends to reduce exogaamy slightly once birthplace endogamy is accounted for (in the seven group case, but not in the three group case), sort of as expected.
+
+If we expand to seven Latino groups, the trends are generally the same, but there is greater Latino ethnic exogamy. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
+
+
+## Racial Exogamy Overall
   
 ```{r}
 #need a reworked dataset for arrows - try tidyverse style
 temp <- coef_table %>%
   filter(model=="+ both") %>%
   dcast(variable+racial_exog~data, value.var="coef") %>%
-  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18`)
+  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18, three latino groups`)
 
 #reorder based on ACS values
 temp$variable <- reorder(temp$variable, temp$coef.acs, max)
 coef_table$variable <- factor(coef_table$variable,
                               levels=levels(temp$variable))
 
-ggplot(subset(coef_table, racial_exog & model=="+ both"), 
+ggplot(subset(coef_table, racial_exog & 
+                model=="+ both" & 
+                data!="ACS 2014-18, seven latino groups"), 
        aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
@@ -103,7 +155,8 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
                color="grey60", alpha=0.6)+
   coord_flip()+
   scale_y_log10()+
-  scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
   #scale_color_manual(values=wes_palette("Moonrise2"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
@@ -112,3 +165,82 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
 
 ```
 
+The first graph just shows the comparable measures for the earlier and later time periods. A few things stand out.
+
+* Asian ethnic exogamy is more common than any form of racial exogamy and has increased over time.
+* Latino ethnic exogamy is slightly rarer than Latino/White exogamy and has not increased over time.
+* Asian/Asian Indian exogamy is less common than overall Asian ethnic exogamy.
+* Black exogamy is the rarest form of exogamy overall.
+* All declines are for cases of Indigenous and Asian Indian groups.
+
+```{r}
+ggplot(subset(coef_table, racial_exog & 
+                model=="+ both"), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2, alpha=0.7)+
+  geom_segment(data=subset(temp, racial_exog), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60", alpha=0.6)+
+  coord_flip()+
+  scale_y_log10()+
+  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  #scale_color_manual(values=wes_palette("Moonrise2"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source")+
+  theme_bw()
+```
+This graph just adds the seven group case for Latinos. You can see that it makes relatively little difference to our overall understanding.
+
+```{r}
+ggplot(subset(coef_table, racial_exog & 
+                model=="+ both" & 
+                data!="ACS 2014-18, seven latino groups" &
+                (grepl("Asian",variable) & !grepl("Asian Indian", variable) |
+                   variable=="Asian/Asian Indian")), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(temp, racial_exog &
+                (grepl("Asian",variable) & !grepl("Asian Indian", variable) |
+                   variable=="Asian/Asian Indian")), 
+                aes(x=variable, xend=variable, 
+                    y=exp(coef.census), yend=exp(coef.acs)),
+                arrow = arrow(length = unit(0.02, "npc")),
+                color="grey60", alpha=0.6)+
+  coord_flip()+
+#  scale_y_log10()+
+  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  #scale_color_manual(values=wes_palette("Moonrise2"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source")+
+  theme_bw()
+```
+
+```{r}
+ggplot(subset(coef_table, racial_exog & model=="+ both" & 
+                grepl("Latino",variable)), 
+       aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(temp, racial_exog & grepl("Latino",variable)), 
+                aes(x=variable, xend=variable, 
+                    y=exp(coef.census), yend=exp(coef.acs)),
+                arrow = arrow(length = unit(0.02, "npc")),
+                color="grey60", alpha=0.6)+
+  coord_flip()+
+#  scale_y_log10()+
+  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
+  #scale_color_manual(values=wes_palette("Moonrise2"))+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source")+
+  theme_bw()
+```
