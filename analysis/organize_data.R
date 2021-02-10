@@ -3,8 +3,6 @@
 
 # Introduction ------------------------------------------------------------
 
-#TODO: create synthetic marriage market from metro area and PUMA
-
 # This script will read in raw data from the input directory, clean it up to
 # produce the analytical dataset, and then write the analytical data to the
 # output directory.
