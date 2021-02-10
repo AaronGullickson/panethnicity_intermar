@@ -71,7 +71,7 @@ code_race <- function(raced, hispand) {
   # race variable. We want categories to be large enough to sustain an analysis.
   # We will use the following categories based on this criteria. I looked at
   # case counts on IPUMS to ascertain this. The general benchmarks is over 10,000
-  # in a given ACS year, aalthough Japanese is a little lower than this.
+  # in a given ACS year, although Japanese is a little lower than this.
   # - White (raced 100)
   # - Black (raced 200)
   # - Indigenous (raced 300 (American Indian) and raced 630 (Native Hawaiian))
