@@ -31,20 +31,28 @@ formula_lang_endog <- update(formula_baseline, .~.+language_endog)
 formula_full <- update(formula_bpl_endog, .~.+language_endog)
 
 
-model_census1 <- clogit(formula_baseline, data=markets_census)
-model_census2 <- clogit(formula_bpl_endog, data=markets_census)
-model_census3 <- clogit(formula_lang_endog, data=markets_census)
-model_census4 <- clogit(formula_full, data=markets_census)
+model_census1 <- clogit(formula_baseline, data=markets_census, method="efron")
+model_census2 <- clogit(formula_bpl_endog, data=markets_census, method="efron")
+model_census3 <- clogit(formula_lang_endog, data=markets_census, method="efron")
+model_census4 <- clogit(formula_full, data=markets_census, method="efron")
 
-model_acs_short1 <- clogit(formula_baseline, data=markets_acs_shortrace)
-model_acs_short2 <- clogit(formula_bpl_endog, data=markets_acs_shortrace)
-model_acs_short3 <- clogit(formula_lang_endog, data=markets_acs_shortrace)
-model_acs_short4 <- clogit(formula_full, data=markets_acs_shortrace)
+model_acs_short1 <- clogit(formula_baseline, data=markets_acs_shortrace, 
+                           method="efron")
+model_acs_short2 <- clogit(formula_bpl_endog, data=markets_acs_shortrace, 
+                           method="efron")
+model_acs_short3 <- clogit(formula_lang_endog, data=markets_acs_shortrace, 
+                           method="efron")
+model_acs_short4 <- clogit(formula_full, data=markets_acs_shortrace, 
+                           method="efron")
 
-model_acs_full1 <- clogit(formula_baseline, data=markets_acs_fullrace)
-model_acs_full2 <- clogit(formula_bpl_endog, data=markets_acs_fullrace)
-model_acs_full3 <- clogit(formula_lang_endog, data=markets_acs_fullrace)
-model_acs_full4 <- clogit(formula_full, data=markets_acs_fullrace)
+model_acs_full1 <- clogit(formula_baseline, data=markets_acs_fullrace, 
+                          method="efron")
+model_acs_full2 <- clogit(formula_bpl_endog, data=markets_acs_fullrace, 
+                          method="efron")
+model_acs_full3 <- clogit(formula_lang_endog, data=markets_acs_fullrace, 
+                          method="efron")
+model_acs_full4 <- clogit(formula_full, data=markets_acs_fullrace, 
+                          method="efron")
 
 #saving the model summary output should be fine
 models_census_summary <- lapply(list(model_census1, model_census2, 
