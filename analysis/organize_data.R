@@ -1,5 +1,7 @@
-## organize_data.R
-
+#' ---
+#' title: "organize_data.R"
+#' author: ""
+#' ---
 
 # Introduction ------------------------------------------------------------
 
@@ -21,7 +23,7 @@ source(here("analysis","useful_functions.R"))
 
 set.seed(39)
 
-# Read in the 1980 Data ---------------------------------------------------
+# Read in the Data ---------------------------------------------------------
 
 
 census1980 <- read_fwf(here("analysis","input","census1980","usa_00097.dat.gz"), 
