@@ -69,58 +69,98 @@ code_census_variables <- function(census) {
 code_race <- function(raced, hispand) {
   # We want to take the raced and hispand variables and code them into a combined
   # race variable. We want categories to be large enough to sustain an analysis.
-  # We will use the following categories based on this criteria. I looked at
-  # case counts on IPUMS to ascertain this. The general benchmarks is over 10,000
-  # in a given ACS year, although Japanese is a little lower than this.
-  # - White (raced 100)
-  # - Black (raced 200)
-  # - Indigenous (raced 300 (American Indian) and raced 630 (Native Hawaiian))
-  # - Chinese (raced 400 and 410 Chinese and Tawaiianese respectively)
-  # - Japanese (raced 500)
-  # - Korean (raced 620)
-  # - Vietnamese (raced 640)
-  # - Filipino (raced 600)
-  # - Mexican (hispand 100)
-  # - Puerto Rican (hispand 200)
-  # - Cuban (hispand 300)
-  # - Guatemalan (raced 412)
-  # - Salvadorian (raced 416)
-  # - Colombian (raced 423)
-  # - Dominican (raced 460)
-  # Any other cases should be treated as missing values.
-  #Note that I cannot get Guatemalan, Salvadorian, Colombian, and Dominican in
-  #1980 data so that when using comparisons I will need a separate ACS data which
-  #leaves these categories out
+  # That generally means that I need to have at least one intermarriage among 
+  # the intrarace ethnic groups. here I will include any Latino/Asian ethnic 
+  # group with more than a 1000 members in the 2018 ACS, although I may need 
+  # to drop some of these for the actual analysis. Note that in the 1980 data
+  # I can only get a few of the Asian and Latino categories, so most of these
+  # will go into NA, but for the ACS data I can get much more detail.
   race <- case_when(
     hispand==100 ~ "Mexican",
     hispand==200 ~ "Puerto Rican",
     hispand==300 ~ "Cuban",
+    hispand==411 ~ "Costa Rican",
     hispand==412 ~ "Guatemalan",
+    hispand==413 ~ "Honduran",
+    hispand==414 ~ "Nicaraguan",
+    hispand==415 ~ "Panamanian",
     hispand==416 ~ "Salvadorian",
+    hispand==420 ~ "Argentinian",
+    #hispand==421 ~ "Bolivian", #removed for sample size reasons
+    #hispand==422 ~ "Chilean", #removed for sample size reasons
     hispand==423 ~ "Colombian",
+    hispand==424 ~ "Ecuadorian",
+    hispand==426 ~ "Peruvian",
+    hispand==428 ~ "Venezuelan",
     hispand==460 ~ "Dominican",
-    hispand>=400 ~ NA_character_,
+    hispand>=400 & hispand!=450 ~ NA_character_,
     raced==100 ~ "White",
     raced==200 ~ "Black",
-    (raced>=300 & raced<400) | raced==630 ~ "Indigenous",
+    (raced>=300 & raced<400) ~ "Indigenous",
     raced==400 | raced==410 ~ "Chinese",
     raced==500 ~ "Japanese",
     raced==620 ~ "Korean",
     raced==600 ~ "Filipino",
     raced==640 ~ "Vietnamese",
     raced==610 ~ "Asian Indian",
+    raced==660 ~ "Cambodian",
+    #raced==661 ~ "Hmong", # removed for sample size reasons
+    raced==662 ~ "Laotian",
+    raced==663 ~ "Thai",
+    raced==664 ~ "Bangladeshi",
+    #raced==665 ~ "Burmese", #removed for sample size reasons
+    raced==669 ~ "Pakistani",
     TRUE ~ NA_character_
   )
   
-  race <- factor(race, 
-                 levels=c("White","Black","Indigenous","Chinese","Japanese",
-                          "Korean","Filipino","Vietnamese","Asian Indian", 
-                          "Mexican","Cuban","Puerto Rican","Dominican",
-                          "Guatemalan","Salvadorian","Colombian"))
-  
-  table(raced, hispand, race)
-  
+  race <- factor(race)
+
   return(race)
+}
+
+#code race back into the racial pentagon, plus Asian Indian
+code_race_pentagon <- function(race) {
+  race_pent <- ifelse(is.na(race), NA, 
+                      ifelse(race=="Chinese" | 
+                               race=="Japanese" | 
+                               race=="Korean" | 
+                               race=="Filipino" | 
+                               race=="Vietnamese" |
+                               race=="Cambodian" |
+                               race=="Hmong" |
+                               race=="Laotian" |
+                               race=="Thai" |
+                               race=="Burmese",
+                             "Asian", 
+                             ifelse(race=="Asian Indian" | 
+                                      race=="Pakistani" | 
+                                      race=="Bangladeshi", 
+                                    "South Asian",
+                                    ifelse(race=="Mexican" | 
+                                             race=="Cuban" | 
+                                             race=="Puerto Rican" | 
+                                             race=="Guatemalan" |
+                                             race=="Salvadorian" | 
+                                             race=="Dominican" |
+                                             race=="Colombian" |
+                                             race=="Costa Rican" |
+                                             race=="Honduran" |
+                                             race=="Nicaraguan" |
+                                             race=="Panamanian" |
+                                             race=="Argentinian" |
+                                             race=="Bolivian" | 
+                                             race=="Chilean" | 
+                                             race=="Ecuadorian" | 
+                                             race=="Peruvian" | 
+                                             race=="Venezuelan", 
+                                           "Hispanic",
+                                           as.character(race)))))
+  
+  race_pent <- factor(race_pent,
+                      levels=c("White","Black","Indigenous","Asian","Hispanic",
+                               "South Asian"))
+  return(race_pent)
+  
 }
 
 code_educ <- function(educd) {
@@ -248,49 +288,50 @@ add_vars <- function(markets) {
                                                symmetric=TRUE)
   
   
-  #restricted to pentagon plus Asian/Asian and Hispanic/Hispanic intermarriage
+  #pentagon based
   markets$raceh_pent <- code_race_pentagon(markets$raceh)
   markets$racew_pent <- code_race_pentagon(markets$racew)
   markets$race_exog_pent <- createExogamyTerms(markets$raceh_pent, 
-                                          markets$racew_pent, 
-                                          symmetric=TRUE)
-  #now replace endogamy with ethnic intermarriage for Asian and Hispanic groups
-  markets$race_exog_pent <- as.character(markets$race_exog_pent)
-  markets$race_exog_pent <- ifelse(markets$raceh_pent=="Asian" & 
-                                     markets$racew_pent=="Asian" &
-                                     markets$raceh!=markets$racew, "Asian.Asian", 
-                                   ifelse(markets$raceh_pent=="Hispanic" & 
-                                            markets$racew_pent=="Hispanic" &
-                                            markets$raceh!=markets$racew, "Hispanic.Hispanic",
-                                          markets$race_exog_pent))
-
+                                               markets$racew_pent, 
+                                               symmetric=TRUE)
+  
+  #now replace pentagon with Asian and Latino exogamy and for extended version
+  #replace with specific ethnic combinations
+  markets <- markets %>% 
+    mutate(
+      race_exog_pent=case_when(
+        raceh_pent=="Asian" & racew_pent=="Asian" & raceh!=racew ~ "Asian.Asian",
+        raceh_pent=="South Asian" & racew_pent=="South Asian" & 
+          raceh!=racew ~ "South Asian.South Asian",
+        raceh_pent=="Hispanic" & racew_pent=="Hispanic" & raceh!=racew ~ "Hispanic.Hispanic",
+        TRUE ~ as.character(race_exog_pent)
+      ),
+      race_exog_extended=case_when(
+        race_exog_pent=="Asian.Asian" | 
+          race_exog_pent=="South Asian.South Asian" |
+          race_exog_pent=="Hispanic.Hispanic" |
+          race_exog_pent=="Black.Hispanic" ~ as.character(race_exog_full),
+        TRUE ~ as.character(race_exog_pent)
+      )
+    )
+                                   
   #tests
   # with(subset(markets, race_exog_pent=="Asian.Asian"), table(raceh, racew))
   # with(subset(markets, race_exog_pent=="Hispanic.Hispanic"), table(raceh, racew))
   # with(subset(markets, race_exog_pent=="Endog"), table(raceh, racew))
-  
-  #Ok, now lets try an extended racial exogamy model which fits single terms
-  #between big race groups, but specific ethnicity-to-ethnicity terms within
-  #Asian and Latino groups. I am also going to expand the full ethnicity table
-  #for black/Hispanic intermarriage.
-  markets$race_exog_full <- as.character(markets$race_exog_full)
-  markets$race_exog_extended <- ifelse(markets$race_exog_pent=="Asian.Asian", 
-                                       markets$race_exog_full, 
-                                       ifelse(markets$race_exog_pent=="Hispanic.Hispanic", 
-                                              markets$race_exog_full,
-                                              ifelse(markets$race_exog_pent=="Black.Hispanic", 
-                                                     markets$race_exog_full,
-                                                     markets$race_exog_pent)))
-
-  #test
   # with(subset(markets, race_exog_pent=="Asian.Asian"), 
   #      table(race_exog_extended, exclude=NULL))
   # with(subset(markets, race_exog_pent=="Hispanic.Hispanic"), 
   #      table(race_exog_extended, exclude=NULL))
-  # 
+  # with(subset(markets, race_exog_pent=="Black.Hispanic"), 
+  #           table(race_exog_extended, exclude=NULL))
+  # with(subset(markets, race_exog_pent=="South Asian.South Asian"), 
+  #     table(race_exog_extended, exclude=NULL))
+
   #turn into factors and set Endog as the reference
   markets$race_exog_pent <- relevel(factor(markets$race_exog_pent), "Endog")
-  markets$race_exog_extended <- relevel(factor(markets$race_exog_extended), "Endog")
+  markets$race_exog_extended <- relevel(factor(markets$race_exog_extended), 
+                                        "Endog")
   
   #test
   #table(markets$race_exog_extended, markets$race_exog_pent)
@@ -298,27 +339,12 @@ add_vars <- function(markets) {
   #dummy variable for Filipino/Latino
   markets$race_filipino_hispanic <- markets$race_exog_extended=="Asian.Hispanic" & 
     (markets$raceh=="Filipino" | markets$racew=="Filipino") 
-  with(subset(markets, race_filipino_hispanic),
-       table(raceh, racew))
+  
+  #test
+  #with(subset(markets, race_filipino_hispanic),
+  #     table(raceh, racew))
   
   return(markets)
-}
-
-#code race back into the racial pentagon, plus Asian Indian
-code_race_pentagon <- function(race) {
-  race_pent <- ifelse(is.na(race), NA, 
-                      ifelse(race=="Chinese" | race=="Japanese" | 
-                               race=="Korean" | race=="Filipino" | 
-                               race=="Vietnamese", "Asian", 
-                             ifelse(race=="Mexican" | race=="Cuban" | 
-                                      race=="Puerto Rican" | race=="Guatemalan" |
-                                      race=="Salvadorian" | race=="Dominican" |
-                                      race=="Colombian", "Hispanic",
-                                    as.character(race))))
-  race_pent <- factor(race_pent, 
-                      levels=c("White","Black","Indigenous","Asian","Hispanic",
-                               "Asian Indian"))
-  return(race_pent)
 }
 
 #create a distance matrix from model output
@@ -348,4 +374,17 @@ plot_dendrogram <- function(model) {
   plot(as.dendrogram(hc), 
        las=1, xlab="", ylab="distance")
   abline(h=1, lty=3, col="red")
+}
+
+
+sum_symmetric <- function(tab) {
+  for(i in 1:nrow(tab)) {
+    for(j in 1:ncol(tab)) {
+      if(j>i) {
+        tab[j,i] <- tab[i,j]+tab[j,i]
+        tab[i,j] <- NA
+      }
+    }
+  }
+  return(tab)
 }

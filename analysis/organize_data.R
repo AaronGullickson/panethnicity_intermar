@@ -76,10 +76,12 @@ census1980 <- code_census_variables(census1980)
 acs <- code_census_variables(acs)
 
 #Check Yourself Before You Wreck Yourself
-table(census1980$raced, census1980$race, exclude=NULL)
-table(census1980$hispand, census1980$race, exclude=NULL)
-table(acs$raced, acs$race, exclude=NULL)
-table(acs$hispand, acs$race, exclude=NULL)
+table(census1980$race, census1980$raced, exclude=NULL)
+table(census1980$race, census1980$hispand, exclude=NULL)
+options(max.print=10000)
+table(acs$race, acs$raced, exclude=NULL)
+table(acs$race, acs$hispand, exclude=NULL)
+options(max.print=99999)
 
 table(census1980$educd, census1980$educ, exclude=NULL)
 table(census1980$educd_sp, census1980$educ_sp, exclude=NULL)
@@ -112,8 +114,8 @@ markets_census <- create_unions(census1980, 5, 25)
 
 #for the ACS, first calculate one based on the full racial categories
 markets_acs_fullrace <- create_unions(acs, 5, 25)
-#and then calculate one after removing the Hispanic categories not available
-#in 1980
+
+#Calculate another one after removing the categories not available in 1980
 acs$race <- factor(acs$race, levels=levels(census1980$race))
 acs$race_sp <- factor(acs$race_sp, levels=levels(census1980$race))
 markets_acs_shortrace <- create_unions(acs, 5, 25)
