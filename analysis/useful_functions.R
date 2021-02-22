@@ -255,18 +255,51 @@ add_vars <- function(markets) {
                                           markets$racew_pent, 
                                           symmetric=TRUE)
   #now replace endogamy with ethnic intermarriage for Asian and Hispanic groups
-  lvls_tmp <- levels(markets$race_exog_pent)
   markets$race_exog_pent <- as.character(markets$race_exog_pent)
-  markets$race_exog_pent <- ifelse(markets$raceh_pent=="Asian" & markets$racew_pent=="Asian" &
-                                markets$raceh!=markets$racew, "Asian.Asian", 
-                              ifelse(markets$raceh_pent=="Hispanic" & markets$racew_pent=="Hispanic" &
-                                       markets$raceh!=markets$racew, "Hispanic.Hispanic",
-                                     markets$race_exog_pent))
-  markets$race_exog_pent <- factor(markets$race_exog_pent,
-                              levels=c(lvls_tmp,
-                                       "Asian.Asian","Hispanic.Hispanic"))
+  markets$race_exog_pent <- ifelse(markets$raceh_pent=="Asian" & 
+                                     markets$racew_pent=="Asian" &
+                                     markets$raceh!=markets$racew, "Asian.Asian", 
+                                   ifelse(markets$raceh_pent=="Hispanic" & 
+                                            markets$racew_pent=="Hispanic" &
+                                            markets$raceh!=markets$racew, "Hispanic.Hispanic",
+                                          markets$race_exog_pent))
+
+  #tests
+  # with(subset(markets, race_exog_pent=="Asian.Asian"), table(raceh, racew))
+  # with(subset(markets, race_exog_pent=="Hispanic.Hispanic"), table(raceh, racew))
+  # with(subset(markets, race_exog_pent=="Endog"), table(raceh, racew))
+  
+  #Ok, now lets try an extended racial exogamy model which fits single terms
+  #between big race groups, but specific ethnicity-to-ethnicity terms within
+  #Asian and Latino groups. I am also going to expand the full ethnicity table
+  #for black/Hispanic intermarriage.
+  markets$race_exog_full <- as.character(markets$race_exog_full)
+  markets$race_exog_extended <- ifelse(markets$race_exog_pent=="Asian.Asian", 
+                                       markets$race_exog_full, 
+                                       ifelse(markets$race_exog_pent=="Hispanic.Hispanic", 
+                                              markets$race_exog_full,
+                                              ifelse(markets$race_exog_pent=="Black.Hispanic", 
+                                                     markets$race_exog_full,
+                                                     markets$race_exog_pent)))
+
   #test
-  #table(markets$raceh, markets$racew, markets$race.exog)
+  # with(subset(markets, race_exog_pent=="Asian.Asian"), 
+  #      table(race_exog_extended, exclude=NULL))
+  # with(subset(markets, race_exog_pent=="Hispanic.Hispanic"), 
+  #      table(race_exog_extended, exclude=NULL))
+  # 
+  #turn into factors and set Endog as the reference
+  markets$race_exog_pent <- relevel(factor(markets$race_exog_pent), "Endog")
+  markets$race_exog_extended <- relevel(factor(markets$race_exog_extended), "Endog")
+  
+  #test
+  #table(markets$race_exog_extended, markets$race_exog_pent)
+  
+  #dummy variable for Filipino/Latino
+  markets$race_filipino_hispanic <- markets$race_exog_extended=="Asian.Hispanic" & 
+    (markets$raceh=="Filipino" | markets$racew=="Filipino") 
+  with(subset(markets, race_filipino_hispanic),
+       table(raceh, racew))
   
   return(markets)
 }
