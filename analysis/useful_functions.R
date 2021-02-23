@@ -79,13 +79,13 @@ code_race <- function(raced, hispand) {
     hispand==100 ~ "Mexican",
     hispand==200 ~ "Puerto Rican",
     hispand==300 ~ "Cuban",
-    hispand==411 ~ "Costa Rican",
+    #hispand==411 ~ "Costa Rican",
     hispand==412 ~ "Guatemalan",
     hispand==413 ~ "Honduran",
-    hispand==414 ~ "Nicaraguan",
-    hispand==415 ~ "Panamanian",
+    #hispand==414 ~ "Nicaraguan",
+    #hispand==415 ~ "Panamanian",
     hispand==416 ~ "Salvadorian",
-    hispand==420 ~ "Argentinian",
+    #hispand==420 ~ "Argentinian",
     #hispand==421 ~ "Bolivian", #removed for sample size reasons
     #hispand==422 ~ "Chilean", #removed for sample size reasons
     hispand==423 ~ "Colombian",
@@ -348,11 +348,11 @@ add_vars <- function(markets) {
 }
 
 #create a distance matrix from model output
-calc_distance <- function(model) {
+calc_distance <- function(model, var_name) {
   coefs <- coef(model)
-  coefs <- coefs[grepl("race_exog_full",names(coefs))]
+  coefs <- coefs[grepl("var_name",names(coefs))]
   #get single racial categories from names
-  temp <- gsub("race_exog_full","",names(coefs))
+  temp <- gsub("var_name","",names(coefs))
   temp <- strsplit(temp, "\\.")
   race1 <- sapply(temp, function(x) {x[1]})
   race2 <- sapply(temp, function(x) {x[2]})
