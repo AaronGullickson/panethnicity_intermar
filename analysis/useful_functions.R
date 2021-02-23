@@ -81,17 +81,17 @@ code_race <- function(raced, hispand) {
     hispand==300 ~ "Cuban",
     #hispand==411 ~ "Costa Rican",
     hispand==412 ~ "Guatemalan",
-    hispand==413 ~ "Honduran",
+    #hispand==413 ~ "Honduran",
     #hispand==414 ~ "Nicaraguan",
     #hispand==415 ~ "Panamanian",
     hispand==416 ~ "Salvadorian",
     #hispand==420 ~ "Argentinian",
-    #hispand==421 ~ "Bolivian", #removed for sample size reasons
-    #hispand==422 ~ "Chilean", #removed for sample size reasons
+    #hispand==421 ~ "Bolivian",
+    #hispand==422 ~ "Chilean",
     hispand==423 ~ "Colombian",
     hispand==424 ~ "Ecuadorian",
     hispand==426 ~ "Peruvian",
-    hispand==428 ~ "Venezuelan",
+    #hispand==428 ~ "Venezuelan",
     hispand==460 ~ "Dominican",
     hispand>=400 & hispand!=450 ~ NA_character_,
     raced==100 ~ "White",
@@ -104,11 +104,11 @@ code_race <- function(raced, hispand) {
     raced==640 ~ "Vietnamese",
     raced==610 ~ "Asian Indian",
     raced==660 ~ "Cambodian",
-    #raced==661 ~ "Hmong", # removed for sample size reasons
-    raced==662 ~ "Laotian",
+    #raced==661 ~ "Hmong",
+    #raced==662 ~ "Laotian",
     raced==663 ~ "Thai",
-    raced==664 ~ "Bangladeshi",
-    #raced==665 ~ "Burmese", #removed for sample size reasons
+    #raced==664 ~ "Bangladeshi",
+    #raced==665 ~ "Burmese",
     raced==669 ~ "Pakistani",
     TRUE ~ NA_character_
   )
