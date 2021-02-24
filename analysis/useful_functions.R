@@ -348,11 +348,11 @@ add_vars <- function(markets) {
 }
 
 #create a distance matrix from model output
-calc_distance <- function(model, var_name) {
-  coefs <- coef(model)
-  coefs <- coefs[grepl("var_name",names(coefs))]
+calc_or_matrix <- function(model_summary, var_name, selected) {
+  coefs <- model_summary$coef[,"coef"]
+  coefs <- coefs[grepl(var_name,names(coefs))]
   #get single racial categories from names
-  temp <- gsub("var_name","",names(coefs))
+  temp <- gsub(var_name,"",names(coefs))
   temp <- strsplit(temp, "\\.")
   race1 <- sapply(temp, function(x) {x[1]})
   race2 <- sapply(temp, function(x) {x[2]})
@@ -363,9 +363,10 @@ calc_distance <- function(model, var_name) {
     tab[race1[i], race2[i]] <- coefs[i]
     tab[race2[i], race1[i]] <- coefs[i]
   }
+  tab <- tab[rownames(tab) %in% selected,colnames(tab) %in% selected]
   tab <- exp(-1 * tab)
-  dist <- as.dist(tab)
-  return(dist)
+  #dist <- as.dist(tab)
+  return(tab)
 }
 
 plot_dendrogram <- function(model) {
