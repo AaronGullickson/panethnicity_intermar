@@ -76,53 +76,51 @@ formulas_extended <- list(base=formula_base,
                           lendog=formula_lendog,
                           both=formula_both)
 
-
 # Run models --------------------------------------------------------------
 
 #saving the model summary output should be fine
 
-models_census_pentagon <- lapply(formulas_pentagon,
-                                 function(formula) {
-                                   summary(clogit(formula, 
-                                                  data=markets_census,
-                                                  method="efron"))
-                                 })
-
-models_shortacs_pentagon <- lapply(formulas_pentagon,
+models_census_pentagon <- mclapply(formulas_pentagon,
                                    function(formula) {
                                      summary(clogit(formula, 
-                                                    data=markets_acs_shortrace,
+                                                    data=markets_census,
                                                     method="efron"))
                                    })
 
-models_fullacs_pentagon <- lapply(formulas_pentagon,
-                                  function(formula) {
-                                    summary(clogit(formula, 
-                                                   data=markets_acs_fullrace,
-                                                   method="efron"))
-                                  })
+models_shortacs_pentagon <- mclapply(formulas_pentagon,
+                                     function(formula) {
+                                       summary(clogit(formula, 
+                                                      data=markets_acs_shortrace,
+                                                      method="efron"))
+                                     })
 
-models_census_extended <- lapply(formulas_extended,
-                                 function(formula) {
-                                   summary(clogit(formula, 
-                                                  data=markets_census,
-                                                  method="efron"))
-                                 })
+models_fullacs_pentagon <- mclapply(formulas_pentagon,
+                                    function(formula) {
+                                      summary(clogit(formula, 
+                                                     data=markets_acs_fullrace,
+                                                     method="efron"))
+                                    })
 
-models_shortacs_extended <- lapply(formulas_extended,
+models_census_extended <- mclapply(formulas_extended,
                                    function(formula) {
                                      summary(clogit(formula, 
-                                                    data=markets_acs_shortrace,
+                                                    data=markets_census,
                                                     method="efron"))
                                    })
 
-models_fullacs_extended <- lapply(formulas_extended,
-                                  function(formula) {
-                                    summary(clogit(formula, 
-                                                   data=markets_acs_fullrace,
-                                                   method="efron"))
-                                  })
+models_shortacs_extended <- mclapply(formulas_extended,
+                                     function(formula) {
+                                       summary(clogit(formula, 
+                                                      data=markets_acs_shortrace,
+                                                      method="efron"))
+                                     })
 
+models_fullacs_extended <- mclapply(formulas_extended,
+                                    function(formula) {
+                                      summary(clogit(formula, 
+                                                     data=markets_acs_fullrace,
+                                                     method="efron"))
+                                    })
 
 save(models_census_pentagon, models_shortacs_pentagon, models_fullacs_pentagon, 
      models_census_extended, models_shortacs_extended, models_fullacs_extended,
