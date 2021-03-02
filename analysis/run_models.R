@@ -107,6 +107,20 @@ models_acsfull_pentagon <- mclapply(formulas_pentagon,
                                                      method="efron"))
                                     })
 
+## Now try extended models for the 1980 basis data
+models_census_extended <- mclapply(formulas_extended,
+                                   function(formula) {
+                                     summary(clogit(formula, 
+                                                    data=markets_census,
+                                                    method="efron"))
+                                   })
+
+models_acs1980_extended <- mclapply(formulas_extended,
+                                   function(formula) {
+                                     summary(clogit(formula, 
+                                                    data=markets_acs_1980basis,
+                                                    method="efron"))
+                                   })
 
 ### Now try an extended model for the ACS data
 models_acsres_extended <- mclapply(formulas_extended,
@@ -116,7 +130,7 @@ models_acsres_extended <- mclapply(formulas_extended,
                                                     method="efron"))
                                    })
 
-save(models_census_pentagon, 
-     models_acs1980_pentagon, models_acsfull_pentagon, models_acsres_extended,
+save(models_census_pentagon, models_acs1980_pentagon, models_acsfull_pentagon, 
+     models_census_extended, models_acs1980_extended, models_acsres_extended,
      file=here("analysis","output","models.RData"))
 
