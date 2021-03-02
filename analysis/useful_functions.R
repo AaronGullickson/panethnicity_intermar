@@ -405,6 +405,17 @@ sum_symmetric <- function(tab) {
 #convert the intermarriage variable names to something pretty
 convert_intermar_names <- function(var_names, prefix) {
   var_names <- sub("\\.","/", sub(prefix,"",var_names))
+  temp <- strsplit(var_names, "/")
+  ethnic_exog <- sapply(temp, function(x) {
+    if(length(x)>=2) {
+      return(x[1]==x[2])
+    } else {
+      return(TRUE)
+    }
+  })
+  first_name <- sapply(temp, function(x) {x[1]})
+  var_names <- ifelse(ethnic_exog, 
+                      paste(first_name, "ethnic exogamy"), var_names)
   return(var_names)
 }
 
