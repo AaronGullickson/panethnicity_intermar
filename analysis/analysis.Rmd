@@ -17,7 +17,7 @@ load(here("analysis","output","models.RData"))
 ```
 
 
-```{r}
+```{r create-coef-table}
 #extract coefficicent values
 get_coefs <- function(x) {
   return(coef(x)[,c(1,3)])
@@ -32,23 +32,23 @@ for(i in 1:length(temp)) {
                              model=names(temp)[i],
                              data="Census 1980"))
 }
-temp <- lapply(models_shortacs_pentagon, get_coefs)
+temp <- lapply(models_acs1980_pentagon, get_coefs)
 for(i in 1:length(temp)) {
   coef_table <- rbind(coef_table, 
                       tibble(variable=rownames(temp[[i]]),
                              coef=temp[[i]][,"coef"],
                              se=temp[[i]][,"se(coef)"],
                              model=names(temp)[i],
-                             data="ACS 2014-18, short"))
+                             data="ACS 2014-18, 1980 ethnic groups"))
 }
-temp <- lapply(models_fullacs_pentagon, get_coefs)
+temp <- lapply(models_acsfull_pentagon, get_coefs)
 for(i in 1:length(temp)) {
   coef_table <- rbind(coef_table, 
                       tibble(variable=rownames(temp[[i]]),
                              coef=temp[[i]][,"coef"],
                              se=temp[[i]][,"se(coef)"],
                              model=names(temp)[i],
-                             data="ACS 2014-18, full"))
+                             data="ACS 2014-18, all ethnic groups"))
 }
 coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
 #fix up the names
@@ -57,12 +57,10 @@ better_names <- c("age difference", "age difference squared",
                   "female educational hypergamy", "female educational hypogamy",
                   "educational crossing LHS/HS", "educational crossing HS/SC",
                   "educational crossing SC/C", "Asian ethnic exogamy", 
-                  "Asian/Latino", "Asian/South Asian","Black/Asian",
-                  "Black/Latino","Black/Indigenous","Black/South Asian",
-                  "Latino ethnic exogamy","Latino/South Asian","Indigenous/Asian",
-                  "Indigenous/Latino","Indigenous/South Asian","White/Asian",
-                  "White/Black","White/Latino","White/Indigenous",
-                  "White/South Asian","birthplace endogamy",
+                  "Asian/Latino", "Asian/South Asian","Asian/Black",
+                  "Latino/Black","South Asian/Black","Latino ethnic exogamy",
+                  "Latino/South Asian","Asian/White","Black/White",
+                  "Latino/White","South Asian/White","birthplace endogamy",
                   "language endogamy", "South Asian ethnic exogamy")
 names(better_names) <- temp_names
 coef_table$variable <- better_names[coef_table$variable]
@@ -71,18 +69,25 @@ coef_table$model <- factor(coef_table$model,
                            labels=c("Baseline", "+ birthplace endogamy",
                                     "+ language endogamy", "+ both"))
 coef_table$data <- factor(coef_table$data,
-                          levels=c("Census 1980", "ACS 2014-18, short",
-                                   "ACS 2014-18, full"),
-                          labels=c("Census 1980", 
+                          levels=c("Census 1980", 
                                    "ACS 2014-18, 1980 ethnic groups",
-                                   "ACS 2014-18, expanded ethnic groups"))
+                                   "ACS 2014-18, all ethnic groups"))
+
+#order variables from smallest to largest based on a given data
+ord <- coef_table %>% 
+  filter(data=="Census 1980" & model=="+ both") %>%
+  select(variable, coef)
+ord$variable <- reorder(ord$variable, ord$coef, max)
+coef_table$variable <- factor(coef_table$variable,
+                              levels=c(levels(ord$variable), 
+                                       "South Asian ethnic exogamy"))
 ```
   
 ## Asian and Latino Ethnic Exogamy
 
 I begin by looking at the Asian and Latino ethnic exogamy terms in particular. I want to see how these estimates change over time and with controls for birthplace and language endogamy. I also want to see how the results change in the later time period if I add in the additional Latino nationality groups.
   
-```{r}
+```{r asian-exog-lolly}
 ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
        aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
@@ -106,7 +111,7 @@ Thus for Asian nationality groups, we actually observe relatively little pan-eth
 
 The difference between the three or seven Latino groups here is irrelevant as we would expect.
 
-```{r}
+```{r latino-exog-lolly}
 ggplot(subset(coef_table, variable=="Latino ethnic exogamy"), 
        aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
@@ -127,7 +132,7 @@ For Latino ethnic exogamy we see a very different story. First, regardless of wh
 
 If we expand to seven Latino groups, the trends are generally the same, but there is greater Latino ethnic exogamy. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
 
-```{r}
+```{r south-asian-exog-lolly}
 ggplot(subset(coef_table, variable=="South Asian ethnic exogamy"), 
        aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
@@ -150,23 +155,26 @@ ggplot(subset(coef_table, variable=="South Asian ethnic exogamy"),
   
 ```{r}
 #need a reworked dataset for arrows - try tidyverse style
-temp <- coef_table %>%
-  filter(model=="+ both") %>%
-  dcast(variable+racial_exog~data, value.var="coef") %>%
+df_arrows <- coef_table %>%
+  filter(model=="+ both" & 
+           racial_exog & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, all ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
   rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18, 1980 ethnic groups`)
 
 #reorder based on ACS values
-temp$variable <- reorder(temp$variable, temp$coef.acs, max)
-coef_table$variable <- factor(coef_table$variable,
-                              levels=levels(temp$variable))
 
-ggplot(subset(coef_table, racial_exog & 
-                model=="+ both" & 
-                data!="ACS 2014-18, expanded ethnic groups"), 
-       aes(x=variable, y=exp(coef)))+
+coef_table %>%
+  filter(model=="+ both" & 
+           racial_exog & 
+           variable!="South Asian ethnic exogamy") %>%
+  select(variable, coef, data) %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
-  geom_point(aes(color=data), size=2)+
-  geom_segment(data=subset(temp, racial_exog), 
+  geom_point(aes(color=data), size=2, alpha=0.8)+
+  geom_segment(data=df_arrows, 
                aes(x=variable, xend=variable, 
                    y=exp(coef.census), yend=exp(coef.acs)),
                arrow = arrow(length = unit(0.02, "npc")),
@@ -174,13 +182,10 @@ ggplot(subset(coef_table, racial_exog &
   coord_flip()+
   scale_y_log10()+
   scale_color_manual(values=c("blue","#f4c430","orange"))+
-  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
-  #scale_color_manual(values=wes_palette("Moonrise2"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
        color="data source")+
   theme_bw()
-
 ```
 
 The first graph just shows the comparable measures for the earlier and later time periods. A few things stand out.
@@ -192,49 +197,25 @@ The first graph just shows the comparable measures for the earlier and later tim
 * All declines are for cases of Indigenous and Asian Indian groups.
 
 ```{r}
-ggplot(subset(coef_table, racial_exog & 
-                model=="+ both"), 
-       aes(x=variable, y=exp(coef)))+
-  geom_hline(yintercept = 1, linetype=2)+
-  geom_point(aes(color=data), size=2, alpha=0.7)+
-  geom_segment(data=subset(temp, racial_exog), 
-               aes(x=variable, xend=variable, 
-                   y=exp(coef.census), yend=exp(coef.acs)),
-               arrow = arrow(length = unit(0.02, "npc")),
-               color="grey60", alpha=0.6)+
-  coord_flip()+
-  scale_y_log10()+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
-  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
-  #scale_color_manual(values=wes_palette("Moonrise2"))+
-  labs(x=NULL, 
-       y="odds ratio of union formation relative to racially endogamous union",
-       color="data source")+
-  theme_bw()
-```
-This graph just adds the seven group case for Latinos. You can see that it makes relatively little difference to our overall understanding.
-
-```{r}
-ggplot(subset(coef_table, racial_exog & 
-                model=="+ both" & 
-                #data!="ACS 2014-18, expanded ethnic groups" &
-                (grepl("Asian",variable) & !grepl("South Asian", variable) |
-                   variable=="Asian/South Asian")), 
-       aes(x=variable, y=exp(coef)))+
+coef_table %>%
+  filter(model=="+ both" & 
+           racial_exog & 
+           variable!="South Asian ethnic exogamy" &
+           (grepl("Asian",variable) & !grepl("South Asian", variable) |
+              variable=="Asian/South Asian")) %>%
+  select(variable, coef, data) %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
-  geom_segment(data=subset(temp, racial_exog &
-                (grepl("Asian",variable) & !grepl("South Asian", variable) |
-                   variable=="Asian/South Asian")), 
+  geom_segment(data=subset(df_arrows,
+           (grepl("Asian",variable) & !grepl("South Asian", variable) |
+              variable=="Asian/South Asian")), 
                 aes(x=variable, xend=variable, 
                     y=exp(coef.census), yend=exp(coef.acs)),
                 arrow = arrow(length = unit(0.02, "npc")),
                 color="grey60", alpha=0.6)+
   coord_flip()+
-#  scale_y_log10()+
   scale_color_manual(values=c("blue","#f4c430","orange"))+
-  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
-  #scale_color_manual(values=wes_palette("Moonrise2"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
        color="data source")+
@@ -242,101 +223,98 @@ ggplot(subset(coef_table, racial_exog &
 ```
 
 ```{r}
-ggplot(subset(coef_table, racial_exog & model=="+ both" & 
-                grepl("Latino",variable)), 
-       aes(x=variable, y=exp(coef)))+
+coef_table %>%
+  filter(model=="+ both" & 
+           racial_exog & 
+           variable!="South Asian ethnic exogamy" &
+           grepl("Latino",variable)) %>%
+  select(variable, coef, data) %>%
+ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
-  geom_segment(data=subset(temp, racial_exog & grepl("Latino",variable)), 
+  geom_segment(data=subset(df_arrows, grepl("Latino",variable)), 
                 aes(x=variable, xend=variable, 
                     y=exp(coef.census), yend=exp(coef.acs)),
                 arrow = arrow(length = unit(0.02, "npc")),
                 color="grey60", alpha=0.6)+
   coord_flip()+
-#  scale_y_log10()+
   scale_color_manual(values=c("blue","#f4c430","orange"))+
-  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
-  #scale_color_manual(values=wes_palette("Moonrise2"))+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
        color="data source")+
   theme_bw()
 ```
-
 ```{r}
-#ok, now lets look more closely at specific ethnic combinations
-asian_groups <- c("Chinese","Japanese","Korean","Thai","Vietnamese",
-                  "Filipino")
-#temp <- lapply(models_fullacs_extended, get_coefs)
-or_asian <- calc_or_matrix(models_fullacs_extended$both, "race_exog_extended", 
-                           asian_groups)
-heatmap(or_asian, symm=TRUE, distfun = as.dist, margins = c(8,2))
-#TODO: using dist or as.dist produces different results. I need to understand
-#the difference. heatmap use dist, but this is not the same as just the odds 
-#ratios
-hc <- hclust(as.dist(or_asian))
-plot(as.dendrogram(hc), 
-     las=1, xlab="", ylab="distance")
-abline(h=1, lty=3, col="red")
+#function for ethnic heat maps
+heatmap_ethnic <- function(groups, model, y=0.6, height=0.68) {
+
+  or <- calc_or_matrix(models_acsres_extended[[model]], "race_exog_extended", 
+                       groups)
+  hc <- hclust(as.dist(or))
+  or <- or[hc$order, rev(hc$order)]
+  
+  gg.heat <- ggplot(melt(or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
+    geom_tile(color = NA)+
+    scale_fill_gradient2(low = "#276419", high = "#8e0152", mid = "#f7f7f7", 
+                         midpoint = 1, limit = c(0, max(or)),
+                         name="odds ratio")+
+    geom_text(aes(label=paste(round(or,2))))+
+    labs(x=NULL, y=NULL,
+         caption=paste("model:", model))+
+    theme_minimal()+
+    theme(legend.position = "left", 
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  dendro <- as.dendrogram(hc)
+  gg.dendro <- ggdendrogram(data = dendro, rotate = TRUE, labels = FALSE)+theme_void()
+  
+  grid.newpage()
+  print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
+  print(gg.dendro, vp = viewport(x = 0.9, y = y, width = 0.2, height = height))
+}
 ```
 
+
 ```{r}
-#try ggplot version of heatmap
-or_asian <- calc_or_matrix(models_fullacs_extended$both, "race_exog_extended", 
-                            asian_groups)
-hc <- hclust(as.dist(or_asian))
-or_asian <- or_asian[hc$order, rev(hc$order)]
-
-gg.heat <- ggplot(melt(or_asian, na.rm=TRUE), aes(Var2, Var1, fill = value))+
-  geom_tile(color = NA)+
-  scale_fill_gradient2(low = "#276419", high = "#8e0152", mid = "#f7f7f7", 
-                       midpoint = 1, limit = c(0, max(or_asian)),
-                       name="odds ratio")+
-  geom_text(aes(label=paste(round(or_asian,2))))+
-  labs(x=NULL, y=NULL)+
-  theme_minimal()+
-  theme(legend.position = "left", 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank())
-
-dendro <- as.dendrogram(hc)
-gg.dendro <- ggdendrogram(data = dendro, rotate = TRUE, labels = FALSE)+theme_void()
-
-grid.newpage()
-print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
-print(gg.dendro, vp = viewport(x = 0.9, y = 0.5, width = 0.2, height = 0.85))
+asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
+heatmap_ethnic(asian_groups, "base")
+heatmap_ethnic(asian_groups, "lendog")
+heatmap_ethnic(asian_groups, "bendog")
+heatmap_ethnic(asian_groups, "both")
 ```
 
+
 ```{r}
-#ok, now lets look more closely at specific ethnic combinations
 latino_groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
                    "Salvadorian","Colombian","Ecuadorian","Peruvian",
                    "Dominican")
-#temp <- lapply(models_fullacs_extended, get_coefs)
-or_latino <- calc_or_matrix(models_fullacs_extended$both, 
-                             "race_exog_extended", 
-                             latino_groups)
-hc <- hclust(as.dist(or_latino))
-or_latino <- or_latino[hc$order, rev(hc$order)]
+heatmap_ethnic(latino_groups, "base", height=0.75)
+heatmap_ethnic(latino_groups, "lendog", height=0.75)
+heatmap_ethnic(latino_groups, "bendog", height=0.75)
+heatmap_ethnic(latino_groups, "both", height=0.75)
+```
 
-gg.heat <- ggplot(melt(or_latino, na.rm=TRUE), aes(Var2, Var1, fill = value))+
-  geom_tile(color = NA)+
-  scale_fill_gradient2(low = "#276419", high = "#8e0152", mid = "#f7f7f7", 
-                       midpoint = 1, limit = c(0, max(or_latino)),
-                       name="odds ratio")+
-  geom_text(aes(label=paste(round(or_latino,2))))+
-  labs(x=NULL, y=NULL)+
-  theme_minimal()+
-  theme(legend.position = "left", 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1))
-
-dendro <- as.dendrogram(hc)
-gg.dendro <- ggdendrogram(data = dendro, rotate = TRUE, labels = FALSE)+theme_void()
-
-library(grid)
-grid.newpage()
-print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
-print(gg.dendro, vp = viewport(x = 0.9, y = 0.55, width = 0.2, height = 0.85))
+```{r}
+temp <- models_acsres_extended$both$coefficients[,1:2]
+df_black_latino <- tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2])
+df_black_latino <- df_black_latino %>% 
+  filter(grepl("Black",variable) & !grepl("White",variable) &
+           !grepl("Asian",variable))
+df_black_latino$variable <- sub("race_exog_extended","",
+                                df_black_latino$variable)
+df_black_latino$variable <- sub("\\.","/",
+                                df_black_latino$variable)
+ggplot(df_black_latino, aes(y=reorder(variable, coef, max), x=exp(coef)))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for black and Latino partner relative to endogamy",
+       title="Odds ratio of Black/Latino exogamy by Latino ethnic group")+
+  theme_bw()+
+  theme(legend.position = "right")
 ```

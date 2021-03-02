@@ -113,15 +113,29 @@ census1980$race_sp <- droplevels(census1980$race_sp)
 markets_census <- create_unions(census1980, 5, 25)
 
 #for the ACS, first calculate one based on the full racial categories
-markets_acs_fullrace <- create_unions(acs, 5, 25)
+markets_acs_full <- create_unions(acs, 5, 25)
+
+#now do one that is restricted to groups with a sufficiently large population
+#to do a full ethnicity-by-ethnicity breakout in ACS data
+restricted_race <- c("White","Black",
+                     "Mexican","Puerto Rican","Cuban", #basic Latino
+                     "Guatemalan","Salvadorian","Colombian","Ecuadorian","Peruvian","Dominican", #extra
+                     "Chinese","Japanese","Filipino","Korean","Vietnamese", #basic Asian
+                     #"Hmong","Laotian","Thai", #extra
+                     "Asian Indian", #basic South Asian
+                     "Pakistani") #extra
+acs$race <- factor(acs$race, levels=restricted_race)
+acs$race_sp <- factor(acs$race_sp, levels=restricted_race)
+markets_acs_restricted <- create_unions(acs, 5, 25)
 
 #Calculate another one after removing the categories not available in 1980
+#that will have groups consistent with Census 1980
 acs$race <- factor(acs$race, levels=levels(census1980$race))
 acs$race_sp <- factor(acs$race_sp, levels=levels(census1980$race))
-markets_acs_shortrace <- create_unions(acs, 5, 25)
+markets_acs_1980basis <- create_unions(acs, 5, 25)
 
 
 save(markets_census, file=here("analysis","output","markets_census.RData"))
-save(markets_acs_fullrace, markets_acs_shortrace, 
+save(markets_acs_full, markets_acs_restricted, markets_acs_1980basis, 
      file=here("analysis","output","markets_acs.RData"))
 

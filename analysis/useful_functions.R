@@ -68,48 +68,53 @@ code_census_variables <- function(census) {
 
 code_race <- function(raced, hispand) {
   # We want to take the raced and hispand variables and code them into a combined
-  # race variable. We want categories to be large enough to sustain an analysis.
-  # That generally means that I need to have at least one intermarriage among 
-  # the intrarace ethnic groups. here I will include any Latino/Asian ethnic 
-  # group with more than a 1000 members in the 2018 ACS, although I may need 
-  # to drop some of these for the actual analysis. Note that in the 1980 data
-  # I can only get a few of the Asian and Latino categories, so most of these
-  # will go into NA, but for the ACS data I can get much more detail.
+  # race variable. I am going to use the fullest possible coding here although
+  # only a few of these cases will show up in the 1980 data. I am also going 
+  # to leave out the indigenous population for the moment, due to some issues
+  # with measurement across the two time periods.
   race <- case_when(
     hispand==100 ~ "Mexican",
     hispand==200 ~ "Puerto Rican",
     hispand==300 ~ "Cuban",
-    #hispand==411 ~ "Costa Rican",
+    hispand==411 ~ "Costa Rican",
     hispand==412 ~ "Guatemalan",
-    #hispand==413 ~ "Honduran",
-    #hispand==414 ~ "Nicaraguan",
-    #hispand==415 ~ "Panamanian",
+    hispand==413 ~ "Honduran",
+    hispand==414 ~ "Nicaraguan",
+    hispand==415 ~ "Panamanian",
     hispand==416 ~ "Salvadorian",
-    #hispand==420 ~ "Argentinian",
-    #hispand==421 ~ "Bolivian",
-    #hispand==422 ~ "Chilean",
+    hispand==420 ~ "Argentinian",
+    hispand==421 ~ "Bolivian",
+    hispand==422 ~ "Chilean",
     hispand==423 ~ "Colombian",
     hispand==424 ~ "Ecuadorian",
+    hispand==425 ~ "Paraguayan",
     hispand==426 ~ "Peruvian",
+    hispand==427 ~ "Uruguayan",
     hispand==428 ~ "Venezuelan",
     hispand==460 ~ "Dominican",
     hispand>=400 & hispand!=450 ~ NA_character_,
     raced==100 ~ "White",
     raced==200 ~ "Black",
-    (raced>=300 & raced<400) ~ "Indigenous",
+    #(raced>=300 & raced<400) ~ "Indigenous",
     raced==400 | raced==410 ~ "Chinese",
     raced==500 ~ "Japanese",
-    raced==620 ~ "Korean",
     raced==600 ~ "Filipino",
-    raced==640 ~ "Vietnamese",
     raced==610 ~ "Asian Indian",
-    #raced==660 ~ "Cambodian",
-    #raced==661 ~ "Hmong",
-    #raced==662 ~ "Laotian",
+    raced==620 ~ "Korean",
+    raced==640 ~ "Vietnamese",
+    raced==641 ~ "Bhutanese",
+    raced==642 ~ "Mongolian",
+    raced==643 ~ "Nepalese",
+    raced==660 ~ "Cambodian",
+    raced==661 ~ "Hmong",
+    raced==662 ~ "Laotian",
     raced==663 ~ "Thai",
-    #raced==664 ~ "Bangladeshi",
-    #raced==665 ~ "Burmese",
+    raced==664 ~ "Bangladeshi",
+    raced==665 ~ "Burmese",
+    raced==666 ~ "Indonesian",
+    raced==667 ~ "Malaysian",
     raced==669 ~ "Pakistani",
+    raced==670 ~ "Sri Lankan",
     TRUE ~ NA_character_
   )
   
@@ -130,11 +135,16 @@ code_race_pentagon <- function(race) {
                                race=="Hmong" |
                                race=="Laotian" |
                                race=="Thai" |
-                               race=="Burmese",
+                               race=="Burmese"  | 
+                               race=="Indonesian" | 
+                               race=="Malaysian" |
+                               race=="Bhutanese" |
+                               race=="Nepalese",
                              "Asian", 
                              ifelse(race=="Asian Indian" | 
                                       race=="Pakistani" | 
-                                      race=="Bangladeshi", 
+                                      race=="Bangladeshi" | 
+                                      race=="Sri Lankan", 
                                     "South Asian",
                                     ifelse(race=="Mexican" | 
                                              race=="Cuban" | 
@@ -152,12 +162,14 @@ code_race_pentagon <- function(race) {
                                              race=="Chilean" | 
                                              race=="Ecuadorian" | 
                                              race=="Peruvian" | 
-                                             race=="Venezuelan", 
+                                             race=="Venezuelan" | 
+                                             race=="Paraguayan" | 
+                                             race=="Uruguayan", 
                                            "Hispanic",
                                            as.character(race)))))
   
   race_pent <- factor(race_pent,
-                      levels=c("White","Black","Indigenous","Asian","Hispanic",
+                      levels=c("White","Black","Asian","Hispanic",
                                "South Asian"))
   return(race_pent)
   

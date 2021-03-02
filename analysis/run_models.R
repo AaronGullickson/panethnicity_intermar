@@ -10,9 +10,12 @@
 # 
 # Dataset
 # * "census" for Census 1980
-# * "shortacs" for ACS data that only includes three comparable Latino groups
+# * "acs1980" for ACS data that only includes comparable Latino and Asian groups
 #   from 1980
-# * "fullacs" for ACS that includes more Latino groups than available in 1980
+# * "acsres" for ACS that includes more groups than available in 1980, but 
+#   only those large enough to sustain a specific ethnicity analysis
+# * "acsfull" for ACS that includes all Asian and Latino groups regardless of 
+#    size
 # Race Coding
 # * "pentagon" when using racial pentagon categories and simple dummies for 
 #   Asian and Latino exogamy
@@ -41,8 +44,9 @@ load(here("analysis","output","markets_acs.RData"))
 
 #add variables to the market datasets
 markets_census <- add_vars(markets_census)
-markets_acs_shortrace <- add_vars(markets_acs_shortrace)
-markets_acs_fullrace <- add_vars(markets_acs_fullrace)
+markets_acs_1980basis <- add_vars(markets_acs_1980basis)
+markets_acs_restricted <- add_vars(markets_acs_restricted)
+markets_acs_full <- add_vars(markets_acs_full)
 
 # Create functions --------------------------------------------------------
 
@@ -80,6 +84,7 @@ formulas_extended <- list(base=formula_base,
 
 #saving the model summary output should be fine
 
+### First run comparable pentagon models for census and ACS
 models_census_pentagon <- mclapply(formulas_pentagon,
                                    function(formula) {
                                      summary(clogit(formula, 
@@ -87,42 +92,31 @@ models_census_pentagon <- mclapply(formulas_pentagon,
                                                     method="efron"))
                                    })
 
-models_shortacs_pentagon <- mclapply(formulas_pentagon,
-                                     function(formula) {
-                                       summary(clogit(formula, 
-                                                      data=markets_acs_shortrace,
-                                                      method="efron"))
-                                     })
-
-models_fullacs_pentagon <- mclapply(formulas_pentagon,
+models_acs1980_pentagon <- mclapply(formulas_pentagon,
                                     function(formula) {
                                       summary(clogit(formula, 
-                                                     data=markets_acs_fullrace,
+                                                     data=markets_acs_1980basis,
                                                      method="efron"))
                                     })
 
-models_census_extended <- mclapply(formulas_extended,
+### Then run a pentagon model on the ACS data with full set of ethnic groups
+models_acsfull_pentagon <- mclapply(formulas_pentagon,
+                                    function(formula) {
+                                      summary(clogit(formula, 
+                                                     data=markets_acs_full,
+                                                     method="efron"))
+                                    })
+
+
+### Now try an extended model for the ACS data
+models_acsres_extended <- mclapply(formulas_extended,
                                    function(formula) {
                                      summary(clogit(formula, 
-                                                    data=markets_census,
+                                                    data=markets_acs_restricted,
                                                     method="efron"))
                                    })
 
-models_shortacs_extended <- mclapply(formulas_extended,
-                                     function(formula) {
-                                       summary(clogit(formula, 
-                                                      data=markets_acs_shortrace,
-                                                      method="efron"))
-                                     })
-
-models_fullacs_extended <- mclapply(formulas_extended,
-                                    function(formula) {
-                                      summary(clogit(formula, 
-                                                     data=markets_acs_fullrace,
-                                                     method="efron"))
-                                    })
-
-save(models_census_pentagon, models_shortacs_pentagon, models_fullacs_pentagon, 
-     models_census_extended, models_shortacs_extended, models_fullacs_extended,
+save(models_census_pentagon, 
+     models_acs1980_pentagon, models_acsfull_pentagon, models_acsres_extended,
      file=here("analysis","output","models.RData"))
 
