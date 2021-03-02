@@ -401,3 +401,19 @@ sum_symmetric <- function(tab) {
   }
   return(tab)
 }
+
+#convert the intermarriage variable names to something pretty
+convert_intermar_names <- function(var_names, prefix) {
+  var_names <- sub("\\.","/", sub(prefix,"",var_names))
+  return(var_names)
+}
+
+#pull out coefs belonging to a certain group from model summary output
+pull_group_coefs <- function(model_summary, groups) {
+  temp <- model_summary$coefficients[,c(1,3)]
+  group_coefs <- tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]) %>%
+    filter(grepl("race_exog", variable) & 
+             grepl(paste(groups,collapse="|"), variable))
+  return(group_coefs)
+}
+

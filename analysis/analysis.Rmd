@@ -20,7 +20,7 @@ my_palette <- c("#7b3294","#008837","#a6dba0")
 
 
 ```{r create-coef-table}
-#extract coefficicent values
+#extract coefficient values
 get_coefs <- function(x) {
   return(coef(x)[,c(1,3)])
 }
@@ -219,6 +219,7 @@ ggplot(subset(coef_table, variable=="Latino ethnic exogamy"),
   theme_bw()+
   theme(legend.position = "right")
 ```
+
 For Latino ethnic exogamy we see a very different story. Using the three Latino groups available in Census 1980, there have not been significant increases in Latino ethnic exogamy over time. In fact, Latino ethnic exogamy has decreased slightly. Controlling for birthplace and language endogamy has relatively little effect on these patterns. Controlling for birthplace endogamy increases exogamy somewhat, as expected. Controlling for language endogamy by itself has very little effect on the model.
 
 If we expand to the full 19 Latino groups in the ACS data, the patterns are generally the same, but there is greater Latino ethnic exogamy overall. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
@@ -311,14 +312,17 @@ The 15 E&SE Asian categories, 19 Latino categories, and 4 South Asian categories
 To determine what is feasible to fit, I used basic cutoffs on group size to eliminate groups from model estimation, until I produced models that fit well on all parameters with standard errors that give reasonable precision. This was an iterative process. 
 
 For the E&SE Asian case, I ultimately was forced to use the same five groups as in the 1980 data:
+
 * Chinese
 * Korean
 * Japanese
 * Vietnamese
 * Filipino
+
 I hade hoped to also use the SE Asian groups of Thai, Hmong, and Cambodian, all of whom have similar sample sizes. However, the standard errors on these estimates were very large and a few of the parameters between these groups failed to converge.
 
 For the Latino case, I was able to retain the nine largest groups of:
+
 * Mexican
 * Cuban
 * Puerto Rican
@@ -328,6 +332,7 @@ For the Latino case, I was able to retain the nine largest groups of:
 * Colombian
 * Ecuadorian
 * Peruvian
+
 This gives me a good sampling of Central American, Caribbean, and South American nationalities. It also gives me two groups (PR and Dominican) that are generally considered more afro-Latino than other groups (although Colombians and Cubans maybe as well?).
 
 I also included specific variables for Black/Latino ethnicity rather than a single Black/Latino variable - this allows me to see whether that Black/non-Black divide works differently for some Latino groups. TODO: I should probably do this for Asian groups just for consistency? 
@@ -381,6 +386,39 @@ heatmap_ethnic(asian_groups, "both")
 
 #### Changes over time
 
+```{r}
+#TODO: why is Korean/Vietnamese missing in 1980 data?
+#Vietnamese is not fitting well in most of these cases, so remove that group
+
+temp1 <- pull_group_coefs(models_census_extended$both, asian_groups) %>%
+  filter(!grepl("Vietnamese", variable)) %>%
+  mutate(data="Census 1980")
+temp2 <- pull_group_coefs(models_acs1980_extended$both, asian_groups) %>%
+  filter(!grepl("Vietnamese", variable)) %>%
+  mutate(data="ACS 2014-18")
+df_asian_exog <- temp1 %>% bind_rows(temp2)
+df_asian_exog$variable <- convert_intermar_names(df_asian_exog$variable,
+                                                 "race_exog_extended")
+lvls <- levels(reorder(subset(df_asian_exog, data=="Census 1980")$variable, 
+                       subset(df_asian_exog, data=="Census 1980")$coef,
+                       max))
+df_asian_exog$variable <- factor(df_asian_exog$variable,
+                                 levels=lvls)
+df_asian_exog$data <- factor(df_asian_exog$data,
+                             levels=c("Census 1980", "ACS 2014-18"))
+ggplot(df_asian_exog, aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  coord_flip()+
+  scale_color_manual(values=my_palette)+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source",
+       title="Changes in specific Asian ethnic exogamy over time",
+       caption="Vietnamese excluded due to poor model fitting in Cenus 1980")+
+  theme_bw()
+```
+
 Placeholder until I estimate these models
 
 ### Latino Specific Ethnic Exogamy
@@ -397,21 +435,47 @@ heatmap_ethnic(latino_groups, "both", height=0.75)
 
 #### Changes over time
 
+```{r}
+latino_groups1980 <- c("Mexican","Puerto Rican","Cuban")
+temp1 <- pull_group_coefs(models_census_extended$both, latino_groups1980) %>%
+  filter(!grepl("Black", variable)) %>%
+  mutate(data="Census 1980")
+temp2 <- pull_group_coefs(models_acs1980_extended$both, latino_groups1980) %>%
+  filter(!grepl("Black", variable)) %>%
+  mutate(data="ACS 2014-18")
+df_latino_exog <- temp1 %>% bind_rows(temp2)
+df_latino_exog$variable <- convert_intermar_names(df_latino_exog$variable,
+                                                 "race_exog_extended")
+lvls <- levels(reorder(subset(df_latino_exog, data=="Census 1980")$variable, 
+                       subset(df_latino_exog, data=="Census 1980")$coef,
+                       max))
+df_latino_exog$variable <- factor(df_latino_exog$variable,
+                                 levels=lvls)
+df_latino_exog$data <- factor(df_latino_exog$data,
+                             levels=c("Census 1980", "ACS 2014-18"))
+ggplot(df_latino_exog, aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  coord_flip()+
+  scale_color_manual(values=my_palette)+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source",
+       title="Changes in specific Latino ethnic exogamy over time")+
+  theme_bw()
+```
+
 Placeholder until I estimate these models
 
 
 ### Black/Latino Ethnic Exogamy
 
 ```{r}
-temp <- models_acsres_extended$both$coefficients[,1:2]
-df_black_latino <- tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2])
-df_black_latino <- df_black_latino %>% 
-  filter(grepl("Black",variable) & !grepl("White",variable) &
-           !grepl("Asian",variable))
-df_black_latino$variable <- sub("race_exog_extended","",
-                                df_black_latino$variable)
-df_black_latino$variable <- sub("\\.","/",
-                                df_black_latino$variable)
+df_black_latino <- pull_group_coefs(models_acsres_extended$both, 
+                                    latino_groups) %>%
+  filter(grepl("Black", variable))
+df_black_latino$variable <- convert_intermar_names(df_black_latino$variable,
+                                                   "race_exog_extended") 
 ggplot(df_black_latino, aes(y=reorder(variable, coef, max), x=exp(coef)))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
@@ -423,6 +487,37 @@ ggplot(df_black_latino, aes(y=reorder(variable, coef, max), x=exp(coef)))+
        title="Odds ratio of Black/Latino exogamy by Latino ethnic group")+
   theme_bw()+
   theme(legend.position = "right")
+```
+
+#### Changes over time
+
+```{r}
+temp1 <- pull_group_coefs(models_census_extended$both, latino_groups1980) %>%
+  filter(grepl("Black", variable)) %>%
+  mutate(data="Census 1980")
+temp2 <- pull_group_coefs(models_acs1980_extended$both, latino_groups1980) %>%
+  filter(grepl("Black", variable)) %>%
+  mutate(data="ACS 2014-18")
+df_latblack_exog <- temp1 %>% bind_rows(temp2)
+df_latblack_exog$variable <- convert_intermar_names(df_latblack_exog$variable,
+                                                 "race_exog_extended")
+lvls <- levels(reorder(subset(df_latblack_exog, data=="Census 1980")$variable, 
+                       subset(df_latblack_exog, data=="Census 1980")$coef,
+                       max))
+df_latblack_exog$variable <- factor(df_latblack_exog$variable,
+                                 levels=lvls)
+df_latblack_exog$data <- factor(df_latblack_exog$data,
+                             levels=c("Census 1980", "ACS 2014-18"))
+ggplot(df_latblack_exog, aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  coord_flip()+
+  scale_color_manual(values=my_palette)+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source",
+       title="Changes in specific Latino/Black exogamy over time")+
+  theme_bw()
 ```
 
 ### Black/Asian Ethnic Exogamy
