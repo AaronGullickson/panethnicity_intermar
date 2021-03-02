@@ -14,6 +14,8 @@ library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","models.RData"))
+
+my_palette <- c("#7b3294","#008837","#a6dba0")
 ```
 
 
@@ -82,10 +84,63 @@ coef_table$variable <- factor(coef_table$variable,
                               levels=c(levels(ord$variable), 
                                        "South Asian ethnic exogamy"))
 ```
-  
-## Asian and Latino Ethnic Exogamy
 
-I begin by looking at the Asian and Latino ethnic exogamy terms in particular. I want to see how these estimates change over time and with controls for birthplace and language endogamy. I also want to see how the results change in the later time period if I add in the additional Latino nationality groups.
+
+```{r df-arrows}
+#create a dataset that can be used for the arrows in the graph
+#need a reworked dataset for arrows - try tidyverse style
+df_arrows <- coef_table %>%
+  filter(model=="+ both" & 
+           racial_exog & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, all ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+  mutate(coef.census=ifelse(abs(exp(coef.census)-exp(coef.acs))<0.05, NA,
+                            coef.census))
+
+
+
+# coef_table %>%
+#   filter(model=="+ both" & 
+#            racial_exog & 
+#            variable!="South Asian ethnic exogamy") %>%
+#   select(variable, coef, data) %>%
+#   ggplot(aes(x=variable, y=exp(coef)))+
+#   geom_hline(yintercept = 1, linetype=2)+
+#   geom_point(aes(color=data), size=2, alpha=0.8)+
+#   geom_segment(data=df_arrows, 
+#                aes(x=variable, xend=variable, 
+#                    y=exp(coef.census), yend=exp(coef.acs)),
+#                arrow = arrow(length = unit(0.02, "npc")),
+#                color="grey60", alpha=0.6)+
+#   coord_flip()+
+#   scale_y_log10()+
+#   scale_color_manual(values=c("blue","#f4c430","orange"))+
+#   labs(x=NULL, 
+#        y="odds ratio of union formation relative to racially endogamous union",
+#        color="data source")+
+#   theme_bw()
+```
+
+## Language and Birthplace Heterogeneity
+
+## Race Reporting among Latinos
+
+## Overall Ethnic Exogamy
+
+I begin by looking at the models that estimate a single term for Asian, Latino, and South Asian ethnic exogamy. These terms estimate the (log) odds of an ethnically exogamous union in comparison to an endogamou union. I want to see how these estimates change over time and with controls for birthplace and language endogamy. To look at the effects of controls, I run four sets of models in each time period:
+
+1. A baseline model that controls for the age difference between the spouses (and its square), educational crossing parameters, and hypogamy/hypergamy terms. 
+2. A model that adds to the baseline model a control for language endogamy.
+3. A model that adds to the baseline model a control for birthplace endogamy.
+4. A model that adds to the baseline model both controls for language and birthplace endogamy.
+
+These models are estimated on data that is restricted to the ethnic groups available in the Census 1980 data (Mexican, Cuban, Puerto Rican, Chinese, Japanese, Korean, Vietnamese, and Filipino). This allows for results that are directly comparable across time. However, I also want to see how these results change if I add in all of the possible Asian and Latino nationality groups in the later time period. This gives me 19 Latino groups and 15 Asian groups. Using this data, I also have three additional South Asian groups (Bangladeshi, Pakistani, and Sri Lankan) and so I can estimate an ethnic exogamy term for this group. 
+
+### E&SE Asian Ethnic Exogamy
   
 ```{r asian-exog-lolly}
 ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
@@ -94,7 +149,7 @@ ggplot(subset(coef_table, variable=="Asian ethnic exogamy"),
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
                    position=position_dodgev(height=0.5))+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  scale_color_manual(values=c("#7b3294","#008837","#a6dba0"))+
   scale_x_continuous(limits=c(0,1))+
   labs(y=NULL, 
        x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy",
@@ -105,98 +160,14 @@ ggplot(subset(coef_table, variable=="Asian ethnic exogamy"),
   theme(legend.position = "right")
 ```
 
-The results for Asian ethnic exogamy so that language and birthplace endogamy both play important roles. Without controlling for either one, the results show that Asian ethnic exogamy is moderate and has actually gone down a little over time. However, once we factor out language and birthplace endogamy, ethnic exogamy is quite common and has increased substantially over time. Language endogamy is more important than birthplace endogamy, but both play a role. 
+
+The results for Asian ethnic exogamy reveal that language and birthplace endogamy both play important roles. Without controlling for either one, the results show that Asian ethnic exogamy is moderate and has actually gone down a little over time. However, once we factor out language and birthplace endogamy, ethnic exogamy is quite common and has increased substantially over time. Language endogamy is more important than birthplace endogamy, but both play a role. 
 
 Thus for Asian nationality groups, we actually observe relatively little pan-ethnicity in intermarriage, but that is because these groups are divided by language and birthplace diversity. In a counterfactual case in which most Asian Americans are all born in the US and speak English, we would see high level of ethnic exogamy.
 
-The difference between the three or seven Latino groups here is irrelevant as we would expect.
+If I expand the analysis in the later data to all Asian ethnic groups, the results are very similar, with slightly higher ethnic exogamy in each model. 
 
-```{r latino-exog-lolly}
-ggplot(subset(coef_table, variable=="Latino ethnic exogamy"), 
-       aes(y=model, x=exp(coef), color=data))+
-  geom_vline(xintercept = 0, color="grey70", linetype=1)+
-  geom_vline(xintercept = 1, color="grey70", linetype=3)+
-  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
-                   position=position_dodgev(height=0.5))+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
-  scale_x_continuous(limits=c(0,1))+
-  labs(y=NULL, 
-       x="Odds ratio of union formation for Latino ethnic intermarriage relative to ethnic endogamy",
-       color="Data source",
-       title="Odds ratio of Latino ethnic exogamy",
-       subtitle="by year and data source")+
-  theme_bw()+
-  theme(legend.position = "right")
-```
-For Latino ethnic exogamy we see a very different story. First, regardless of which ACS sample we use, there have not been significant increases in Latino ethnic exogamy over time. In fact, in the more directly comparable case, Latino ethnic exogamy has decreased slightly. Controlling for birthplace and language endogamy has relatively little effect on these patterns. Controlling for birthplace endogamy increases exogamy somewhat, as expected. Controlling for language endogamy by itself does little, but tends to reduce exogaamy slightly once birthplace endogamy is accounted for (in the seven group case, but not in the three group case), sort of as expected.
-
-If we expand to seven Latino groups, the trends are generally the same, but there is greater Latino ethnic exogamy. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
-
-```{r south-asian-exog-lolly}
-ggplot(subset(coef_table, variable=="South Asian ethnic exogamy"), 
-       aes(y=model, x=exp(coef), color=data))+
-  geom_vline(xintercept = 0, color="grey70", linetype=1)+
-  geom_vline(xintercept = 1, color="grey70", linetype=3)+
-  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
-                   position=position_dodgev(height=0.5))+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
-  scale_x_continuous(limits=c(0,1))+
-  labs(y=NULL, 
-       x="Odds ratio of union formation for South Asian ethnic intermarriage relative to ethnic endogamy",
-       color="Data source",
-       title="Odds ratio of South Asian ethnic exogamy",
-       subtitle="by year and data source")+
-  theme_bw()+
-  theme(legend.position = "right")
-```
-
-
-## Racial Exogamy Overall
-  
-```{r}
-#need a reworked dataset for arrows - try tidyverse style
-df_arrows <- coef_table %>%
-  filter(model=="+ both" & 
-           racial_exog & 
-           variable!="South Asian ethnic exogamy" &
-           data!="ACS 2014-18, all ethnic groups") %>%
-  select(variable, coef, data) %>% 
-  pivot_wider(names_from=data, values_from=coef) %>%
-  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18, 1980 ethnic groups`)
-
-#reorder based on ACS values
-
-coef_table %>%
-  filter(model=="+ both" & 
-           racial_exog & 
-           variable!="South Asian ethnic exogamy") %>%
-  select(variable, coef, data) %>%
-  ggplot(aes(x=variable, y=exp(coef)))+
-  geom_hline(yintercept = 1, linetype=2)+
-  geom_point(aes(color=data), size=2, alpha=0.8)+
-  geom_segment(data=df_arrows, 
-               aes(x=variable, xend=variable, 
-                   y=exp(coef.census), yend=exp(coef.acs)),
-               arrow = arrow(length = unit(0.02, "npc")),
-               color="grey60", alpha=0.6)+
-  coord_flip()+
-  scale_y_log10()+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
-  labs(x=NULL, 
-       y="odds ratio of union formation relative to racially endogamous union",
-       color="data source")+
-  theme_bw()
-```
-
-The first graph just shows the comparable measures for the earlier and later time periods. A few things stand out.
-
-* Asian ethnic exogamy is more common than any form of racial exogamy and has increased over time.
-* Latino ethnic exogamy is slightly rarer than Latino/White exogamy and has not increased over time.
-* Asian/Asian Indian exogamy is less common than overall Asian ethnic exogamy.
-* Black exogamy is the rarest form of exogamy overall.
-* All declines are for cases of Indigenous and Asian Indian groups.
-
-```{r}
+```{r asian-exog-compare-dot}
 coef_table %>%
   filter(model=="+ both" & 
            racial_exog & 
@@ -206,23 +177,53 @@ coef_table %>%
   select(variable, coef, data) %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
-  geom_point(aes(color=data), size=2)+
+  geom_point(aes(color=data), size=2, alpha=0.8)+
   geom_segment(data=subset(df_arrows,
            (grepl("Asian",variable) & !grepl("South Asian", variable) |
               variable=="Asian/South Asian")), 
                 aes(x=variable, xend=variable, 
                     y=exp(coef.census), yend=exp(coef.acs)),
                 arrow = arrow(length = unit(0.02, "npc")),
-                color="grey60", alpha=0.6)+
+                color="grey60")+
   coord_flip()+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  scale_color_manual(values=my_palette)+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
-       color="data source")+
+       color="data source",
+       title="Asian ethnic exogamy in comparison to Asian racial exogamy")+
   theme_bw()
 ```
+The figure above shows the Asian ethnic exogamy term in comparison to the terms for Asian outmarriage with other racial groups. A few features stand out:
 
-```{r}
+* Asian ethnic exogamy is more common than any form of racial exogamy and has increased over time.
+* Asian/South Asian exogamy is much less common than overall Asian ethnic exogamy and has actually become slightly less common over time.
+* Of the four interracial marriage possibilities here, Asian/White intermarriage has increased the most, but still is much less likely than Asian ethnic exogamy.
+* Asian/Black intermarriage remains extremely rare and has hardly changed at all.
+
+### Latino Ethnic Exogamy
+
+```{r latino-exog-lolly}
+ggplot(subset(coef_table, variable=="Latino ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=my_palette)+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for Latino ethnic intermarriage relative to ethnic endogamy",
+       color="Data source",
+       title="Odds ratio of Latino ethnic exogamy",
+       subtitle="by year and data source")+
+  theme_bw()+
+  theme(legend.position = "right")
+```
+For Latino ethnic exogamy we see a very different story. Using the three Latino groups available in Census 1980, there have not been significant increases in Latino ethnic exogamy over time. In fact, Latino ethnic exogamy has decreased slightly. Controlling for birthplace and language endogamy has relatively little effect on these patterns. Controlling for birthplace endogamy increases exogamy somewhat, as expected. Controlling for language endogamy by itself has very little effect on the model.
+
+If we expand to the full 19 Latino groups in the ACS data, the patterns are generally the same, but there is greater Latino ethnic exogamy overall. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
+
+```{r latino-exog-compare-dot}
 coef_table %>%
   filter(model=="+ both" & 
            racial_exog & 
@@ -238,12 +239,103 @@ ggplot(aes(x=variable, y=exp(coef)))+
                 arrow = arrow(length = unit(0.02, "npc")),
                 color="grey60", alpha=0.6)+
   coord_flip()+
-  scale_color_manual(values=c("blue","#f4c430","orange"))+
+  scale_color_manual(values=my_palette)+
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
-       color="data source")+
+       color="data source",
+       title="Latino ethnic exogamy in comparison to Latino racial exogamy")+
   theme_bw()
 ```
+The figure above shows where Latino ethnic exogamy stands in relation to racial outmarriage among Latinos. The results here are somewhat different than the Asian case. Notably:
+
+* There has been a large increase in the odds of intermarriage between Latinos and Whites and relatively little change in Latino ethnic exogamy. The consequence is that in the restricted group case, Latino/White intermarriage is slightly more likely than Latino ethnic exogamy in the current data. In the data with more ethnic groups, Latino ethnic exogamy is still slightly more common than Latino/White intermarriage, but just.
+* Latino/Black intermarriage remains very rare but has increased substantially over time. This suggests somewhat weaker boundaries at this "black/non-black" divide for Latinos than for Asians. Some of this may be due to racial heterogeneity among Latinos (i.e. Afro-Latinos). TODO: Model the change in that parameter in specific ethnicity models for Mexican, PRs, and Cubans.
+* The South Asian/Latino parameter has gone down significantly. This seems to be a general pattern for the South Asian term and may reflect measurement issues.
+
+### South Asian Ethnic Exogamy
+
+I can only look at South Asian ethnic exogamy in the ACS data with all ethnic groups, which has the groups of Asian Indian, Pakistani, Bangladeshi, and Sri Lankan. In all other cases, the only South Asian ethnic group is Asian Indians. 
+```{r south-asian-exog-lolly}
+ggplot(subset(coef_table, variable=="South Asian ethnic exogamy"), 
+       aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=my_palette[3])+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for South Asian ethnic intermarriage relative to ethnic endogamy",
+       color="Data source",
+       title="Odds ratio of South Asian ethnic exogamy",
+       subtitle="by year and data source")+
+  theme_bw()+
+  theme(legend.position = "right")
+```
+
+Language and birthplace endogamy both increase the estimate of ethnic exogamy. The odds of ethnic exogamy are more substantial than for Latinos but less than for E&SE Asians. Regarding language, I do worry a little about the Urdu/Hindi issue. This is probably the most common case of language "exogamy", but these are generally considered to be so similar as to be dialects. This may artificially inflate the estimates when controlling for language endogamy. TODO: do a sensitivity analysis where I treat Urdu/Hindi as language endogamous.
+
+```{r south-asian-exog-compare-dot}
+coef_table %>%
+  filter(model=="+ both" & racial_exog & grepl("South Asian",variable)) %>%
+  select(variable, coef, data) %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2, alpha=0.8)+
+  geom_segment(data=subset(df_arrows, grepl("South Asian",variable)), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60")+
+  coord_flip()+
+  scale_color_manual(values=my_palette)+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source",
+       title="South Asian ethnic exogamy in comparison to South Asian racial exogamy")+
+  theme_bw()
+```
+
+The figure above looks at South Asian racial exogamy. I also include ethnic exogamy here for comparative purposes with the same dataset, but I cannot look at it over time due to the lack of comprable data across time.
+
+The results show little difference in the ACS data with using only Asian Indians and using all four groups. In all cases, South Asian racial intermarriage has become *less* likely over time. The smallest drops are for Asian/South Asian which may reflect some form of pan-ethnicity I guess and South Asian/Black, but the latter case was close to zero already. 
+
+I do worry that these drops are driven by measurement issues. The Census lists "Asian Indian" as a category to help distinguish it from the case where people are looking for an American Indian category. My guess would be that people have gotten better over time at not mis-checking this box when they meant to select an American Indian category. Those mischeckers are probably more likely to intermarry with other groups given the historical legacy of the American Indian group. Thus, the later period may be witnessing a drop simply because it is more accurately capturing people who intended to check Asian Indian. In support of this hypothesis, the odds of intermarriage between American Indian and Asian Indian respondents is extremely high in 1980 (slightly over 1) and diminishes dramatically in the ACS data (TODO: re-do this model to show that effect and test this effect on the separate ethnic groups in ACS. If still present in ACS time period, we should see substantially higher odds of Asian Indian/American Indian intermarriage than other groups' intermarriage with American Indians).
+
+## Ethnic-Group Specific Exogamy
+
+I now turn to models that estimate full ethnicity-by-ethnicity terms within the E&SE Asian and Latino categories. These terms will allow me to create heat maps with combined dendrograms that show the patterns of association between specific ethnic groups within these big race categories. 
+
+The 15 E&SE Asian categories, 19 Latino categories, and 4 South Asian categories are unfeasible for an analysis for two reasons. First, the sample size of some of these groups is so small that I end up with sparse data and models that do not fully converge on parameters involving these groups. Even in cases, with convergence, the standard errors are so large that I cannot draw any conclusions with precision. Second, the number of parameters that I would need to estimate for these models is ridiculous (282 ethnic-by-ethnic terms in the fullest model) making the models impossible to actually fit. 
+
+To determine what is feasible to fit, I used basic cutoffs on group size to eliminate groups from model estimation, until I produced models that fit well on all parameters with standard errors that give reasonable precision. This was an iterative process. 
+
+For the E&SE Asian case, I ultimately was forced to use the same five groups as in the 1980 data:
+* Chinese
+* Korean
+* Japanese
+* Vietnamese
+* Filipino
+I hade hoped to also use the SE Asian groups of Thai, Hmong, and Cambodian, all of whom have similar sample sizes. However, the standard errors on these estimates were very large and a few of the parameters between these groups failed to converge.
+
+For the Latino case, I was able to retain the nine largest groups of:
+* Mexican
+* Cuban
+* Puerto Rican
+* Dominican
+* Salvadorian
+* Guatemalan
+* Colombian
+* Ecuadorian
+* Peruvian
+This gives me a good sampling of Central American, Caribbean, and South American nationalities. It also gives me two groups (PR and Dominican) that are generally considered more afro-Latino than other groups (although Colombians and Cubans maybe as well?).
+
+I also included specific variables for Black/Latino ethnicity rather than a single Black/Latino variable - this allows me to see whether that Black/non-Black divide works differently for some Latino groups. TODO: I should probably do this for Asian groups just for consistency? 
+
+For South Asians, none of the groups outside of Asian Indians are large enough to sustain an analysis. TODO: Could I consider a crude "religion" split, Asian Indians vs. all others? Its not perfect because some Asian Indians will also be Muslim.
+
+In addition to all of these parameters, I also include a Filipino/Latino dummy variable to capture particular affinities between Latinos and this "latinized" Asian ethnic group. 
+
 ```{r}
 #function for ethnic heat maps
 heatmap_ethnic <- function(groups, model, y=0.6, height=0.68) {
@@ -276,6 +368,7 @@ heatmap_ethnic <- function(groups, model, y=0.6, height=0.68) {
 }
 ```
 
+### E&SE Asian Specific Ethnic Exogamy
 
 ```{r}
 asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
@@ -286,6 +379,12 @@ heatmap_ethnic(asian_groups, "both")
 ```
 
 
+#### Changes over time
+
+Placeholder until I estimate these models
+
+### Latino Specific Ethnic Exogamy
+
 ```{r}
 latino_groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
                    "Salvadorian","Colombian","Ecuadorian","Peruvian",
@@ -295,6 +394,13 @@ heatmap_ethnic(latino_groups, "lendog", height=0.75)
 heatmap_ethnic(latino_groups, "bendog", height=0.75)
 heatmap_ethnic(latino_groups, "both", height=0.75)
 ```
+
+#### Changes over time
+
+Placeholder until I estimate these models
+
+
+### Black/Latino Ethnic Exogamy
 
 ```{r}
 temp <- models_acsres_extended$both$coefficients[,1:2]
@@ -318,3 +424,15 @@ ggplot(df_black_latino, aes(y=reorder(variable, coef, max), x=exp(coef)))+
   theme_bw()+
   theme(legend.position = "right")
 ```
+
+### Black/Asian Ethnic Exogamy
+
+Placeholder until I estimate models with these parameters
+
+### Filipino/Latino Exogamy
+
+TODO
+
+## Full Model Output
+
+TODO
