@@ -83,7 +83,7 @@ These models are estimated on data that is restricted to the ethnic groups avail
   
 ```{r asian-exog-lolly}
 coefs_pent %>% 
-  filter(variable=="Asian/Asian") %>%
+  filter(variable=="Asian ethnic exogamy") %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
@@ -143,7 +143,7 @@ The figure above shows the Asian ethnic exogamy term in comparison to the terms 
 
 ```{r latino-exog-lolly}
 coefs_pent %>%
-  filter(variable=="Hispanic/Hispanic") %>%
+  filter(variable=="Hispanic ethnic exogamy") %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
@@ -195,9 +195,11 @@ The figure above shows where Latino ethnic exogamy stands in relation to racial 
 ### South Asian Ethnic Exogamy
 
 I can only look at South Asian ethnic exogamy in the ACS data with all ethnic groups, which has the groups of Asian Indian, Pakistani, Bangladeshi, and Sri Lankan. In all other cases, the only South Asian ethnic group is Asian Indians. 
+
 ```{r south-asian-exog-lolly}
-ggplot(subset(coef_table, variable=="South Asian ethnic exogamy"), 
-       aes(y=model, x=exp(coef), color=data))+
+coefs_pent %>%
+  filter(variable=="South Asian ethnic exogamy") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
@@ -216,13 +218,13 @@ ggplot(subset(coef_table, variable=="South Asian ethnic exogamy"),
 Language and birthplace endogamy both increase the estimate of ethnic exogamy. The odds of ethnic exogamy are more substantial than for Latinos but less than for E&SE Asians. Regarding language, I do worry a little about the Urdu/Hindi issue. This is probably the most common case of language "exogamy", but these are generally considered to be so similar as to be dialects. This may artificially inflate the estimates when controlling for language endogamy. TODO: do a sensitivity analysis where I treat Urdu/Hindi as language endogamous.
 
 ```{r south-asian-exog-compare-dot}
-coef_table %>%
-  filter(model=="+ both" & racial_exog & grepl("South Asian",variable)) %>%
+coefs_pent %>%
+  filter(model=="+ both" & grepl("South Asian",variable)) %>%
   select(variable, coef, data) %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2, alpha=0.8)+
-  geom_segment(data=subset(df_arrows, grepl("South Asian",variable)), 
+  geom_segment(data=subset(arrows_pent, grepl("South Asian",variable)), 
                aes(x=variable, xend=variable, 
                    y=exp(coef.census), yend=exp(coef.acs)),
                arrow = arrow(length = unit(0.02, "npc")),
