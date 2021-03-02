@@ -62,6 +62,35 @@ arrows_pent <- coefs_pent %>%
   rename(coef.census=`Census 1980`, 
          coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
   filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
+
+## Extended Models ##
+coefs_extended <- list(census=models_census_extended,
+                       acs_1980basis=models_acs1980_extended,
+                       acs_full=models_acsres_extended) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_extended"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline", "+ birthplace endogamy",
+                               "+ language endogamy", "+ both")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis","acs_full"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups",
+                              "ACS 2014-18, expanded ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+#arrows
+arrows_extended <- coefs_extended %>%
+  filter(model=="+ both" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
 ## Language and Birthplace Heterogeneity
@@ -327,29 +356,24 @@ heatmap_ethnic(asian_groups, "both")
 
 #### Changes over time
 
-```{r}
+```{r asian-exog-change}
 #TODO: why is Korean/Vietnamese missing in 1980 data?
 #Vietnamese is not fitting well in most of these cases, so remove that group
-
-temp1 <- pull_group_coefs(models_census_extended$both, asian_groups) %>%
-  filter(!grepl("Vietnamese", variable)) %>%
-  mutate(data="Census 1980")
-temp2 <- pull_group_coefs(models_acs1980_extended$both, asian_groups) %>%
-  filter(!grepl("Vietnamese", variable)) %>%
-  mutate(data="ACS 2014-18")
-df_asian_exog <- temp1 %>% bind_rows(temp2)
-df_asian_exog$variable <- convert_intermar_names(df_asian_exog$variable,
-                                                 "race_exog_extended")
-lvls <- levels(reorder(subset(df_asian_exog, data=="Census 1980")$variable, 
-                       subset(df_asian_exog, data=="Census 1980")$coef,
-                       max))
-df_asian_exog$variable <- factor(df_asian_exog$variable,
-                                 levels=lvls)
-df_asian_exog$data <- factor(df_asian_exog$data,
-                             levels=c("Census 1980", "ACS 2014-18"))
-ggplot(df_asian_exog, aes(x=variable, y=exp(coef)))+
+coefs_extended %>%
+  filter(grepl(paste(asian_groups,collapse="|"), variable) & 
+           !grepl("Vietnamese", variable) & 
+           model=="+ both" & 
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(arrows_extended, 
+                           grepl(paste(asian_groups,collapse="|"), variable) &
+                             !grepl("Vietnamese", variable)), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60")+
   coord_flip()+
   scale_color_manual(values=my_palette)+
   labs(x=NULL, 
@@ -376,27 +400,23 @@ heatmap_ethnic(latino_groups, "both", height=0.75)
 
 #### Changes over time
 
-```{r}
+```{r latino-exog-change}
 latino_groups1980 <- c("Mexican","Puerto Rican","Cuban")
-temp1 <- pull_group_coefs(models_census_extended$both, latino_groups1980) %>%
-  filter(!grepl("Black", variable)) %>%
-  mutate(data="Census 1980")
-temp2 <- pull_group_coefs(models_acs1980_extended$both, latino_groups1980) %>%
-  filter(!grepl("Black", variable)) %>%
-  mutate(data="ACS 2014-18")
-df_latino_exog <- temp1 %>% bind_rows(temp2)
-df_latino_exog$variable <- convert_intermar_names(df_latino_exog$variable,
-                                                 "race_exog_extended")
-lvls <- levels(reorder(subset(df_latino_exog, data=="Census 1980")$variable, 
-                       subset(df_latino_exog, data=="Census 1980")$coef,
-                       max))
-df_latino_exog$variable <- factor(df_latino_exog$variable,
-                                 levels=lvls)
-df_latino_exog$data <- factor(df_latino_exog$data,
-                             levels=c("Census 1980", "ACS 2014-18"))
-ggplot(df_latino_exog, aes(x=variable, y=exp(coef)))+
+coefs_extended %>%
+  filter(grepl(paste(latino_groups1980,collapse="|"), variable) & 
+           !grepl("Black", variable) & 
+           model=="+ both" & 
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(arrows_extended, 
+                           grepl(paste(latino_groups1980,collapse="|"), variable) &
+                             !grepl("Black", variable)), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60")+
   coord_flip()+
   scale_color_manual(values=my_palette)+
   labs(x=NULL, 
@@ -411,13 +431,13 @@ Placeholder until I estimate these models
 
 ### Black/Latino Ethnic Exogamy
 
-```{r}
-df_black_latino <- pull_group_coefs(models_acsres_extended$both, 
-                                    latino_groups) %>%
-  filter(grepl("Black", variable))
-df_black_latino$variable <- convert_intermar_names(df_black_latino$variable,
-                                                   "race_exog_extended") 
-ggplot(df_black_latino, aes(y=reorder(variable, coef, max), x=exp(coef)))+
+```{r black-latino-exog}
+coefs_extended %>%
+  filter(grepl(paste(latino_groups,collapse="|"), variable) & 
+           grepl("Black", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
@@ -432,26 +452,22 @@ ggplot(df_black_latino, aes(y=reorder(variable, coef, max), x=exp(coef)))+
 
 #### Changes over time
 
-```{r}
-temp1 <- pull_group_coefs(models_census_extended$both, latino_groups1980) %>%
-  filter(grepl("Black", variable)) %>%
-  mutate(data="Census 1980")
-temp2 <- pull_group_coefs(models_acs1980_extended$both, latino_groups1980) %>%
-  filter(grepl("Black", variable)) %>%
-  mutate(data="ACS 2014-18")
-df_latblack_exog <- temp1 %>% bind_rows(temp2)
-df_latblack_exog$variable <- convert_intermar_names(df_latblack_exog$variable,
-                                                 "race_exog_extended")
-lvls <- levels(reorder(subset(df_latblack_exog, data=="Census 1980")$variable, 
-                       subset(df_latblack_exog, data=="Census 1980")$coef,
-                       max))
-df_latblack_exog$variable <- factor(df_latblack_exog$variable,
-                                 levels=lvls)
-df_latblack_exog$data <- factor(df_latblack_exog$data,
-                             levels=c("Census 1980", "ACS 2014-18"))
-ggplot(df_latblack_exog, aes(x=variable, y=exp(coef)))+
+```{r black-latino-exog-change}
+coefs_extended %>%
+  filter(grepl(paste(latino_groups1980,collapse="|"), variable) & 
+           grepl("Black", variable) & 
+           model=="+ both" & 
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(arrows_extended, 
+                           grepl(paste(latino_groups1980,collapse="|"), variable) &
+                             grepl("Black", variable)), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60")+
   coord_flip()+
   scale_color_manual(values=my_palette)+
   labs(x=NULL, 

@@ -419,15 +419,6 @@ convert_intermar_names <- function(var_names, prefix) {
   return(var_names)
 }
 
-#pull out coefs belonging to a certain group from model summary output
-pull_group_coefs <- function(model_summary, groups) {
-  temp <- model_summary$coefficients[,c(1,3)]
-  group_coefs <- tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]) %>%
-    filter(grepl("race_exog", variable) & 
-             grepl(paste(groups,collapse="|"), variable))
-  return(group_coefs)
-}
-
 #order the variable variable (hah!) from smallest to largest based on a given
 #year
 order_variables <- function(coefs, data_choice, model_choice) {
