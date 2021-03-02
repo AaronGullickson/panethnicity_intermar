@@ -20,109 +20,48 @@ my_palette <- c("#7b3294","#008837","#a6dba0")
 
 
 ```{r create-coef-table}
-#extract coefficient values
+#extract coefficient values from model summary as tibble
 get_coefs <- function(x) {
-  return(coef(x)[,c(1,3)])
+  temp <- coef(x)[,c(1,3)]
+  return(tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]))
 }
-coef_table <- NULL
-temp <- lapply(models_census_pentagon, get_coefs)
-for(i in 1:length(temp)) {
-  coef_table <- rbind(coef_table, 
-                      tibble(variable=rownames(temp[[i]]),
-                             coef=temp[[i]][,"coef"],
-                             se=temp[[i]][,"se(coef)"],
-                             model=names(temp)[i],
-                             data="Census 1980"))
+#bind together the model summaries
+bind_models <- function(models_summary) {
+  temp <- lapply(models_summary, get_coefs) %>%
+    bind_rows(.id="model") %>%
+    filter(grepl("race_exog", variable))
+  return(temp)
 }
-temp <- lapply(models_acs1980_pentagon, get_coefs)
-for(i in 1:length(temp)) {
-  coef_table <- rbind(coef_table, 
-                      tibble(variable=rownames(temp[[i]]),
-                             coef=temp[[i]][,"coef"],
-                             se=temp[[i]][,"se(coef)"],
-                             model=names(temp)[i],
-                             data="ACS 2014-18, 1980 ethnic groups"))
-}
-temp <- lapply(models_acsfull_pentagon, get_coefs)
-for(i in 1:length(temp)) {
-  coef_table <- rbind(coef_table, 
-                      tibble(variable=rownames(temp[[i]]),
-                             coef=temp[[i]][,"coef"],
-                             se=temp[[i]][,"se(coef)"],
-                             model=names(temp)[i],
-                             data="ACS 2014-18, all ethnic groups"))
-}
-coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
-#fix up the names
-temp_names <- unique(coef_table$variable)
-better_names <- c("age difference", "age difference squared",
-                  "female educational hypergamy", "female educational hypogamy",
-                  "educational crossing LHS/HS", "educational crossing HS/SC",
-                  "educational crossing SC/C", "Asian ethnic exogamy", 
-                  "Asian/Latino", "Asian/South Asian","Asian/Black",
-                  "Latino/Black","South Asian/Black","Latino ethnic exogamy",
-                  "Latino/South Asian","Asian/White","Black/White",
-                  "Latino/White","South Asian/White","birthplace endogamy",
-                  "language endogamy", "South Asian ethnic exogamy")
-names(better_names) <- temp_names
-coef_table$variable <- better_names[coef_table$variable]
-coef_table$model <- factor(coef_table$model,
-                           levels=c("base","bendog","lendog","both"),
-                           labels=c("Baseline", "+ birthplace endogamy",
-                                    "+ language endogamy", "+ both"))
-coef_table$data <- factor(coef_table$data,
-                          levels=c("Census 1980", 
-                                   "ACS 2014-18, 1980 ethnic groups",
-                                   "ACS 2014-18, all ethnic groups"))
 
-#order variables from smallest to largest based on a given data
-ord <- coef_table %>% 
-  filter(data=="Census 1980" & model=="+ both") %>%
-  select(variable, coef)
-ord$variable <- reorder(ord$variable, ord$coef, max)
-coef_table$variable <- factor(coef_table$variable,
-                              levels=c(levels(ord$variable), 
-                                       "South Asian ethnic exogamy"))
-```
+## Pentagon Models ##
+coefs_pent <- list(census=models_census_pentagon,
+                    acs_1980basis=models_acs1980_pentagon,
+                    acs_full=models_acsfull_pentagon) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline", "+ birthplace endogamy",
+                               "+ language endogamy", "+ both")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis","acs_full"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups",
+                              "ACS 2014-18, all ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
 
-
-```{r df-arrows}
 #create a dataset that can be used for the arrows in the graph
-#need a reworked dataset for arrows - try tidyverse style
-df_arrows <- coef_table %>%
+#need a reworked dataset for arrows
+arrows_pent <- coefs_pent %>%
   filter(model=="+ both" & 
-           racial_exog & 
            variable!="South Asian ethnic exogamy" &
            data!="ACS 2014-18, all ethnic groups") %>%
   select(variable, coef, data) %>% 
   pivot_wider(names_from=data, values_from=coef) %>%
   rename(coef.census=`Census 1980`, 
          coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
-  mutate(coef.census=ifelse(abs(exp(coef.census)-exp(coef.acs))<0.05, NA,
-                            coef.census))
-
-
-
-# coef_table %>%
-#   filter(model=="+ both" & 
-#            racial_exog & 
-#            variable!="South Asian ethnic exogamy") %>%
-#   select(variable, coef, data) %>%
-#   ggplot(aes(x=variable, y=exp(coef)))+
-#   geom_hline(yintercept = 1, linetype=2)+
-#   geom_point(aes(color=data), size=2, alpha=0.8)+
-#   geom_segment(data=df_arrows, 
-#                aes(x=variable, xend=variable, 
-#                    y=exp(coef.census), yend=exp(coef.acs)),
-#                arrow = arrow(length = unit(0.02, "npc")),
-#                color="grey60", alpha=0.6)+
-#   coord_flip()+
-#   scale_y_log10()+
-#   scale_color_manual(values=c("blue","#f4c430","orange"))+
-#   labs(x=NULL, 
-#        y="odds ratio of union formation relative to racially endogamous union",
-#        color="data source")+
-#   theme_bw()
+  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
 ## Language and Birthplace Heterogeneity
@@ -143,8 +82,9 @@ These models are estimated on data that is restricted to the ethnic groups avail
 ### E&SE Asian Ethnic Exogamy
   
 ```{r asian-exog-lolly}
-ggplot(subset(coef_table, variable=="Asian ethnic exogamy"), 
-       aes(y=model, x=exp(coef), color=data))+
+coefs_pent %>% 
+  filter(variable=="Asian/Asian") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
@@ -168,9 +108,8 @@ Thus for Asian nationality groups, we actually observe relatively little pan-eth
 If I expand the analysis in the later data to all Asian ethnic groups, the results are very similar, with slightly higher ethnic exogamy in each model. 
 
 ```{r asian-exog-compare-dot}
-coef_table %>%
+coefs_pent %>%
   filter(model=="+ both" & 
-           racial_exog & 
            variable!="South Asian ethnic exogamy" &
            (grepl("Asian",variable) & !grepl("South Asian", variable) |
               variable=="Asian/South Asian")) %>%
@@ -178,7 +117,7 @@ coef_table %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2, alpha=0.8)+
-  geom_segment(data=subset(df_arrows,
+  geom_segment(data=subset(arrows_pent,
            (grepl("Asian",variable) & !grepl("South Asian", variable) |
               variable=="Asian/South Asian")), 
                 aes(x=variable, xend=variable, 
@@ -203,8 +142,9 @@ The figure above shows the Asian ethnic exogamy term in comparison to the terms 
 ### Latino Ethnic Exogamy
 
 ```{r latino-exog-lolly}
-ggplot(subset(coef_table, variable=="Latino ethnic exogamy"), 
-       aes(y=model, x=exp(coef), color=data))+
+coefs_pent %>%
+  filter(variable=="Hispanic/Hispanic") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
@@ -225,16 +165,15 @@ For Latino ethnic exogamy we see a very different story. Using the three Latino 
 If we expand to the full 19 Latino groups in the ACS data, the patterns are generally the same, but there is greater Latino ethnic exogamy overall. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
 
 ```{r latino-exog-compare-dot}
-coef_table %>%
+coefs_pent %>%
   filter(model=="+ both" & 
-           racial_exog & 
            variable!="South Asian ethnic exogamy" &
-           grepl("Latino",variable)) %>%
+           grepl("Hispanic",variable)) %>%
   select(variable, coef, data) %>%
-ggplot(aes(x=variable, y=exp(coef)))+
+  ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
-  geom_segment(data=subset(df_arrows, grepl("Latino",variable)), 
+  geom_segment(data=subset(arrows_pent, grepl("Hispanic",variable)), 
                 aes(x=variable, xend=variable, 
                     y=exp(coef.census), yend=exp(coef.acs)),
                 arrow = arrow(length = unit(0.02, "npc")),

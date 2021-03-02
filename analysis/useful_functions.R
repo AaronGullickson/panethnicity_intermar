@@ -417,3 +417,16 @@ pull_group_coefs <- function(model_summary, groups) {
   return(group_coefs)
 }
 
+#order the variable variable (hah!) from smallest to largest based on a given
+#year
+order_variables <- function(coefs, data_choice, model_choice) {
+  ord <- coefs %>% 
+    filter(data==data_choice & model==model_choice) %>%
+    select(variable, coef)
+  lvls <- levels(reorder(factor(ord$variable), ord$coef, max))
+  #check for missing cases in lvls and add to end if so
+  all_vars <- unique(coefs$variable)
+  missing_vars <- all_vars[!(all_vars %in% lvls)]
+  coefs$variable <- factor(coefs$variable, levels=c(missing_vars,lvls))
+  return(coefs)
+}
