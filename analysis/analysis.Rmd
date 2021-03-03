@@ -112,7 +112,7 @@ These models are estimated on data that is restricted to the ethnic groups avail
   
 ```{r asian-exog-lolly}
 coefs_pent %>% 
-  filter(variable=="Asian ethnic exogamy") %>%
+  filter(variable=="E&SE Asian ethnic exogamy") %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
@@ -121,9 +121,9 @@ coefs_pent %>%
   scale_color_manual(values=c("#7b3294","#008837","#a6dba0"))+
   scale_x_continuous(limits=c(0,1))+
   labs(y=NULL, 
-       x="Odds ratio of union formation for Asian ethnic intermarriage relative to ethnic endogamy",
+       x="Odds ratio of union formation for E&SE Asian ethnic intermarriage relative to ethnic endogamy",
        color="Data source",
-       title="Odds ratio of Asian ethnic exogamy",
+       title="Odds ratio of E&SE Asian ethnic exogamy",
        subtitle="by year and data source")+
   theme_bw()+
   theme(legend.position = "right")
@@ -138,17 +138,14 @@ If I expand the analysis in the later data to all Asian ethnic groups, the resul
 
 ```{r asian-exog-compare-dot}
 coefs_pent %>%
-  filter(model=="+ both" & 
-           variable!="South Asian ethnic exogamy" &
-           (grepl("Asian",variable) & !grepl("South Asian", variable) |
-              variable=="Asian/South Asian")) %>%
+  filter(model=="+ both" & grepl("E&SE Asian",variable) 
+         & !grepl("AIAN", variable)) %>%
   select(variable, coef, data) %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2, alpha=0.8)+
-  geom_segment(data=subset(arrows_pent,
-           (grepl("Asian",variable) & !grepl("South Asian", variable) |
-              variable=="Asian/South Asian")), 
+  geom_segment(data=subset(arrows_pent, grepl("E&SE Asian",variable) &
+                             !grepl("AIAN", variable)), 
                 aes(x=variable, xend=variable, 
                     y=exp(coef.census), yend=exp(coef.acs)),
                 arrow = arrow(length = unit(0.02, "npc")),
@@ -158,7 +155,7 @@ coefs_pent %>%
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
        color="data source",
-       title="Asian ethnic exogamy in comparison to Asian racial exogamy")+
+       title="E&SE Asian ethnic exogamy in comparison to E&SE Asian racial exogamy")+
   theme_bw()
 ```
 The figure above shows the Asian ethnic exogamy term in comparison to the terms for Asian outmarriage with other racial groups. A few features stand out:
@@ -172,7 +169,7 @@ The figure above shows the Asian ethnic exogamy term in comparison to the terms 
 
 ```{r latino-exog-lolly}
 coefs_pent %>%
-  filter(variable=="Hispanic ethnic exogamy") %>%
+  filter(variable=="Latino ethnic exogamy") %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
@@ -195,14 +192,14 @@ If we expand to the full 19 Latino groups in the ACS data, the patterns are gene
 
 ```{r latino-exog-compare-dot}
 coefs_pent %>%
-  filter(model=="+ both" & 
-           variable!="South Asian ethnic exogamy" &
-           grepl("Hispanic",variable)) %>%
+  filter(model=="+ both" & grepl("Latino",variable) & 
+           !grepl("AIAN",variable)) %>%
   select(variable, coef, data) %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2)+
-  geom_segment(data=subset(arrows_pent, grepl("Hispanic",variable)), 
+  geom_segment(data=subset(arrows_pent, grepl("Latino",variable) &
+                             !grepl("AIAN",variable)), 
                 aes(x=variable, xend=variable, 
                     y=exp(coef.census), yend=exp(coef.acs)),
                 arrow = arrow(length = unit(0.02, "npc")),
@@ -218,7 +215,7 @@ coefs_pent %>%
 The figure above shows where Latino ethnic exogamy stands in relation to racial outmarriage among Latinos. The results here are somewhat different than the Asian case. Notably:
 
 * There has been a large increase in the odds of intermarriage between Latinos and Whites and relatively little change in Latino ethnic exogamy. The consequence is that in the restricted group case, Latino/White intermarriage is slightly more likely than Latino ethnic exogamy in the current data. In the data with more ethnic groups, Latino ethnic exogamy is still slightly more common than Latino/White intermarriage, but just.
-* Latino/Black intermarriage remains very rare but has increased substantially over time. This suggests somewhat weaker boundaries at this "black/non-black" divide for Latinos than for Asians. Some of this may be due to racial heterogeneity among Latinos (i.e. Afro-Latinos). TODO: Model the change in that parameter in specific ethnicity models for Mexican, PRs, and Cubans.
+* Latino/Black intermarriage remains very rare but has increased substantially over time. This suggests somewhat weaker boundaries at this "black/non-black" divide for Latinos than for Asians. Some of this may be due to racial heterogeneity among Latinos (i.e. Afro-Latinos).
 * The South Asian/Latino parameter has gone down significantly. This seems to be a general pattern for the South Asian term and may reflect measurement issues.
 
 ### South Asian Ethnic Exogamy
@@ -248,12 +245,14 @@ Language and birthplace endogamy both increase the estimate of ethnic exogamy. T
 
 ```{r south-asian-exog-compare-dot}
 coefs_pent %>%
-  filter(model=="+ both" & grepl("South Asian",variable)) %>%
+  filter(model=="+ both" & grepl("South Asian",variable) &
+           !grepl("AIAN",variable)) %>%
   select(variable, coef, data) %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(aes(color=data), size=2, alpha=0.8)+
-  geom_segment(data=subset(arrows_pent, grepl("South Asian",variable)), 
+  geom_segment(data=subset(arrows_pent, grepl("South Asian",variable) &
+           !grepl("AIAN",variable)), 
                aes(x=variable, xend=variable, 
                    y=exp(coef.census), yend=exp(coef.acs)),
                arrow = arrow(length = unit(0.02, "npc")),
@@ -267,7 +266,7 @@ coefs_pent %>%
   theme_bw()
 ```
 
-The figure above looks at South Asian racial exogamy. I also include ethnic exogamy here for comparative purposes with the same dataset, but I cannot look at it over time due to the lack of comprable data across time.
+The figure above looks at South Asian racial exogamy. I also include ethnic exogamy here for comparative purposes with the same dataset, but I cannot look at it over time due to the lack of comparable data across time.
 
 The results show little difference in the ACS data with using only Asian Indians and using all four groups. In all cases, South Asian racial intermarriage has become *less* likely over time. The smallest drops are for Asian/South Asian which may reflect some form of pan-ethnicity I guess and South Asian/Black, but the latter case was close to zero already. 
 
@@ -305,7 +304,7 @@ For the Latino case, I was able to retain the nine largest groups of:
 
 This gives me a good sampling of Central American, Caribbean, and South American nationalities. It also gives me two groups (PR and Dominican) that are generally considered more afro-Latino than other groups (although Colombians and Cubans maybe as well?).
 
-I also included specific variables for Black/Latino ethnicity rather than a single Black/Latino variable - this allows me to see whether that Black/non-Black divide works differently for some Latino groups. TODO: I should probably do this for Asian groups just for consistency? 
+I also included specific variables for Black/Latino ethnicity and Black/Asian ethnicity rather than single Black/Latino and Black/Asian variables, respectively. This approach allows me to see whether the Black/non-Black divide works differently for some Latino and Asian ethnic groups. 
 
 For South Asians, none of the groups outside of Asian Indians are large enough to sustain an analysis. TODO: Could I consider a crude "religion" split, Asian Indians vs. all others? Its not perfect because some Asian Indians will also be Muslim.
 
@@ -364,7 +363,7 @@ heatmap_ethnic(asian_groups, "+ both")
 #Vietnamese is not fitting well in most of these cases, so remove that group
 coefs_extended %>%
   filter(grepl(paste(asian_groups,collapse="|"), variable) & 
-           !grepl("Vietnamese", variable) & 
+           !grepl("Vietnamese", variable) & !grepl("Black", variable) & 
            model=="+ both" & 
            data!="ACS 2014-18, expanded ethnic groups") %>%
   ggplot(aes(x=variable, y=exp(coef)))+
@@ -372,7 +371,8 @@ coefs_extended %>%
   geom_point(aes(color=data), size=2)+
   geom_segment(data=subset(arrows_extended, 
                            grepl(paste(asian_groups,collapse="|"), variable) &
-                             !grepl("Vietnamese", variable)), 
+                             !grepl("Vietnamese", variable) & 
+                             !grepl("Black", variable) ), 
                aes(x=variable, xend=variable, 
                    y=exp(coef.census), yend=exp(coef.acs)),
                arrow = arrow(length = unit(0.02, "npc")),
@@ -382,12 +382,10 @@ coefs_extended %>%
   labs(x=NULL, 
        y="odds ratio of union formation relative to racially endogamous union",
        color="data source",
-       title="Changes in specific Asian ethnic exogamy over time",
+       title="Changes in specific E&SE Asian ethnic exogamy over time",
        caption="Vietnamese excluded due to poor model fitting in Cenus 1980")+
   theme_bw()
 ```
-
-Placeholder until I estimate these models
 
 ### Latino Specific Ethnic Exogamy
 
@@ -428,8 +426,6 @@ coefs_extended %>%
        title="Changes in specific Latino ethnic exogamy over time")+
   theme_bw()
 ```
-
-Placeholder until I estimate these models
 
 
 ### Black/Latino Ethnic Exogamy
@@ -482,7 +478,51 @@ coefs_extended %>%
 
 ### Black/Asian Ethnic Exogamy
 
-Placeholder until I estimate models with these parameters
+```{r black-asian-exog}
+coefs_extended %>%
+  filter(grepl(paste(asian_groups,collapse="|"), variable) & 
+           grepl("Black", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for black and Latino partner relative to endogamy",
+       title="Odds ratio of Black/Latino exogamy by Latino ethnic group")+
+  theme_bw()+
+  theme(legend.position = "right")
+```
+
+#### Changes over time
+
+```{r black-asian-exog-change}
+coefs_extended %>%
+  filter(grepl(paste(asian_groups,collapse="|"), variable) & 
+           grepl("Black", variable) & 
+           model=="+ both" & 
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(arrows_extended, 
+                           grepl(paste(asian_groups,collapse="|"), variable) &
+                             grepl("Black", variable)), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.02, "npc")),
+               color="grey60")+
+  coord_flip()+
+  scale_color_manual(values=my_palette)+
+  labs(x=NULL, 
+       y="odds ratio of union formation relative to racially endogamous union",
+       color="data source",
+       title="Changes in specific Latino/Black exogamy over time")+
+  theme_bw()
+```
 
 ### Filipino/Latino Exogamy
 
