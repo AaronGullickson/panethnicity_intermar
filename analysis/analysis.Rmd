@@ -93,9 +93,11 @@ arrows_extended <- coefs_extended %>%
   filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
-## Language and Birthplace Heterogeneity
+## Analysis of Potential Partner Characteristics
 
-## Race Reporting among Latinos
+### Language and Birthplace Heterogeneity
+
+### Race Reporting among Latinos
 
 ## Overall Ethnic Exogamy
 
@@ -129,7 +131,6 @@ coefs_pent %>%
   theme(legend.position = "right")
 ```
 
-
 The results for Asian ethnic exogamy reveal that language and birthplace endogamy both play important roles. Without controlling for either one, the results show that Asian ethnic exogamy is moderate and has actually gone down a little over time. However, once we factor out language and birthplace endogamy, ethnic exogamy is quite common and has increased substantially over time. Language endogamy is more important than birthplace endogamy, but both play a role. 
 
 Thus for Asian nationality groups, we actually observe relatively little pan-ethnicity in intermarriage, but that is because these groups are divided by language and birthplace diversity. In a counterfactual case in which most Asian Americans are all born in the US and speak English, we would see high level of ethnic exogamy.
@@ -158,6 +159,7 @@ coefs_pent %>%
        title="E&SE Asian ethnic exogamy in comparison to E&SE Asian racial exogamy")+
   theme_bw()
 ```
+
 The figure above shows the Asian ethnic exogamy term in comparison to the terms for Asian outmarriage with other racial groups. A few features stand out:
 
 * Asian ethnic exogamy is more common than any form of racial exogamy and has increased over time.
@@ -212,6 +214,7 @@ coefs_pent %>%
        title="Latino ethnic exogamy in comparison to Latino racial exogamy")+
   theme_bw()
 ```
+
 The figure above shows where Latino ethnic exogamy stands in relation to racial outmarriage among Latinos. The results here are somewhat different than the Asian case. Notably:
 
 * There has been a large increase in the odds of intermarriage between Latinos and Whites and relatively little change in Latino ethnic exogamy. The consequence is that in the restricted group case, Latino/White intermarriage is slightly more likely than Latino ethnic exogamy in the current data. In the data with more ethnic groups, Latino ethnic exogamy is still slightly more common than Latino/White intermarriage, but just.
@@ -594,11 +597,44 @@ coefs_extended %>%
        title="Changes in specific Latino/Black exogamy over time")+
   theme_bw()
 ```
-Not a lot of change over time. The story is consistently low odds suggesting a very strong an persistent boundary between Asian ethnicities and Blackness.
+
+Not a lot of change over time. The story is one of consistently low odds suggesting a very strong and persistent boundary between Asian ethnicities and Blackness.
 
 ### Filipino/Latino Exogamy
 
-TODO
+
+```{r}
+#I need to grab this parameter from the original model summaries because it is not part of coefs_extended. Also, remember that this parameter is in addition to a general E&SE Asian/Latino parameter, so need to add them up to get the full effect.
+latino_filipino_effect <- sapply(models_acsres_extended, function(x)
+  {return(x$coef["race_filipino_latinoTRUE",1])})
+latino_asian_effect <- sapply(models_acsres_extended, function(x)
+  {return(x$coef["race_exog_extendedLatino.E&SE Asian",1])})
+df_fili <- tibble(model=factor(rep(c("Baseline","+ birthplace endogamy",
+                                     "+ language endogamy","+ both"),2),
+                               levels=c("Baseline","+ birthplace endogamy",
+                                     "+ language endogamy","+ both")),
+       variable=rep(c("E&SE Asian/Latino","Filipino/Latino"), each=4),
+       coef=c(latino_asian_effect,
+              latino_asian_effect+latino_filipino_effect))
+
+df_fili %>%
+  ggplot(aes(y=model, x=exp(coef), color=variable))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_color_manual(values=c("#7b3294","#008837","#a6dba0"))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of exogamous union formation",
+       color="Type of exogamy",
+       title="Odds ratio of E&SE Asian/Latino exogamy in comparison to Filipino/Latino exogamy",
+       caption="E&SE Asian/Latino exogamy is estimated exclusive of Filipinos")+
+  theme_bw()+
+  theme(legend.position = "right")
+```
+
+Filipino/Latino exogamy is considerably higher than E&SE Asian/Latino exogamy overall.
 
 ## Full Model Output
 
