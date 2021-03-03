@@ -104,16 +104,41 @@ acs$dur_mar <- ifelse(acs$yrmarr==0,
                       NA, acs$year - acs$yrmarr)
 tapply(acs$dur_mar, acs$marst, mean)
 
+
+# Save alternate partner datasets -----------------------------------------
+
+# Need to create datasets of possible alternate partners for later analysis.
+# This will use the first bit of code in the create_unions function to
+# determine who is eligible
+years_mar <- 5
+
+alternates_census <- subset(census1980, (is.na(yr_usa) | yr_usa>years_mar) & 
+                              (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
+                              (is_single(marst) | dur_mar<=years_mar),
+                            select=c("statefip","metarea","sex","hhwt","perwt",
+                                     "marst","age","race","educ","bpl","yr_usa",
+                                     "language","raced","hispand"))
+
+alternates_acs <- subset(acs, (is.na(yr_usa) | yr_usa>years_mar) & 
+                           (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
+                           (is_single(marst) | dur_mar<=years_mar),
+                         select=c("statefip","metarea","sex","hhwt","perwt",
+                                  "marst","age","race","educ","bpl","yr_usa",
+                                  "language","raced","hispand"))
+
+save(alternates_census, alternates_acs, 
+     file=here("analysis","output","alternates.RData"))
+
 # Create Counterfactual Unions -------------------------------------------------------
 
 #important to use five year windows to fix intervalled year of migration
 #data for census 1980
 census1980$race <- droplevels(census1980$race)
 census1980$race_sp <- droplevels(census1980$race_sp)
-markets_census <- create_unions(census1980, 5, 25)
+markets_census <- create_unions(census1980, years_mar, 25)
 
 #for the ACS, first calculate one based on the full racial categories
-markets_acs_full <- create_unions(acs, 5, 25)
+markets_acs_full <- create_unions(acs, years_mar, 25)
 
 #now do one that is restricted to groups with a sufficiently large population
 #to do a full ethnicity-by-ethnicity breakout in ACS data
@@ -126,13 +151,13 @@ restricted_race <- sort(c("White","Black","AIAN",
                           "Pakistani")) #extra
 acs$race <- factor(acs$race, levels=restricted_race)
 acs$race_sp <- factor(acs$race_sp, levels=restricted_race)
-markets_acs_restricted <- create_unions(acs, 5, 25)
+markets_acs_restricted <- create_unions(acs, years_mar, 25)
 
 #Calculate another one after removing the categories not available in 1980
 #that will have groups consistent with Census 1980
 acs$race <- factor(acs$race, levels=levels(census1980$race))
 acs$race_sp <- factor(acs$race_sp, levels=levels(census1980$race))
-markets_acs_1980basis <- create_unions(acs, 5, 25)
+markets_acs_1980basis <- create_unions(acs, years_mar, 25)
 
 
 save(markets_census, file=here("analysis","output","markets_census.RData"))
