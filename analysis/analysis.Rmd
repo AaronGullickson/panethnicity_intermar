@@ -347,6 +347,8 @@ heatmap_ethnic <- function(groups, model_name, y=0.6, height=0.68) {
 
 ### E&SE Asian Specific Ethnic Exogamy
 
+I start by looking at heat maps of the odds ratio of endogamy when looking at specific combinations of ethnic groups. I also treat these odds ratios as distances in order to calculate dendrograms showing the closeness of each ethnic group. The figures below show both the heat map and dendrograms. I show the heat map for each of the four models to see how controlling for laanguage and birthplace endogamy affect the results.
+
 ```{r asian-heat-maps}
 asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
 heatmap_ethnic(asian_groups, "Baseline")
@@ -354,6 +356,12 @@ heatmap_ethnic(asian_groups, "+ language endogamy")
 heatmap_ethnic(asian_groups, "+ birthplace endogamy")
 heatmap_ethnic(asian_groups, "+ both")
 ```
+
+In general, here is my summary of what I see:
+
+* Language and birthplace endogamy both reduce these odds ratios quite a bit although language endogamy plays a bigger role. 
+* The biggest division is between Filipinos and all others. There remain significant boundaries with every other ethnic group included even after controlling for language and birth[place endogamy.
+* Many of the final estimated odds ratios are actually less than 1! There is little evidence of any barriers at all between intermarriage of Chinese, Korean, and Japanese respondents, net of language endogamy. There is still moderate barriers between Korean/Japanese and Vietnamese, but not Chinese and Vietnamese, which actually had the lowest estimated odds ratios overall.
 
 
 #### Changes over time
@@ -387,7 +395,11 @@ coefs_extended %>%
   theme_bw()
 ```
 
+The results here show increases in all cases of ethnic exogamy, although the largest increases are for the East Asian groups of Chinese, Japanese, and Korean. In every case of these latter groups, the estimated parameters have crossed the important threshold of one. 
+
 ### Latino Specific Ethnic Exogamy
+
+I run the same heatmaps for Latino exogamy.
 
 ```{r latino-heat-maps}
 latino_groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
@@ -398,6 +410,12 @@ heatmap_ethnic(latino_groups, "+ language endogamy", height=0.75)
 heatmap_ethnic(latino_groups, "+ birthplace endogamy", height=0.75)
 heatmap_ethnic(latino_groups, "+ both", height=0.75)
 ```
+
+With more groups, the results here are more complicated to interpret, but here is what I see:
+
+* I see some evidence of regional divisions. The Central American/Mexican cases all group together. The South American and Caribbean cases also sort of group together, except for the case of Peruvian/Cuban. 
+* The odds between Puerto Rican and Dominican are the second lowest and both of these groups are the "blackest" so there may be something there.
+* In general the strongest boundaries overall are between Mexicans and other groups (thats eyeballing it, but I should check more thoroughly).
 
 #### Changes over time
 
@@ -427,6 +445,7 @@ coefs_extended %>%
   theme_bw()
 ```
 
+There have been virtually no changes over time in specific latino ethnic exogamy among the three groups where we can track change.
 
 ### Black/Latino Ethnic Exogamy
 
@@ -448,6 +467,54 @@ coefs_extended %>%
   theme_bw()+
   theme(legend.position = "right")
 ```
+
+The results here are pretty telling. There are basically two groups, Puerto Ricans and Dominicans and everyone else. Puerto Ricans and Dominicans are significantly more likely to intermarry with Blacks than all of the other groups. So some evidence of different patterns for groups that are more Afro-Latino in make-up.
+
+How do these odds compare to the odds of Latino ethnic exogamy for Puerto Ricans and Dominicans?
+
+```{r puerto-rican-exog-lolly}
+coefs_extended %>%
+  filter(grepl("Puerto Rican", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  mutate(black_intermar=grepl("Black", variable)) %>%
+  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef),
+             color=black_intermar))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_x_continuous(limits=c(0,1))+
+  scale_color_manual(values = c("black","red"))+
+  labs(y=NULL, 
+       x="Odds ratio of exogamy for Puerto Ricans relative to endogamy",
+       title="Odds ratio of Puerto Rican exogamy")+
+  theme_bw()+
+  theme(legend.position = "none")
+```
+
+```{r dominican-exog-lolly}
+coefs_extended %>%
+  filter(grepl("Dominican", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  mutate(black_intermar=grepl("Black", variable)) %>%
+  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef),
+             color=black_intermar))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_x_continuous(limits=c(0,1))+
+  scale_color_manual(values = c("black","red"))+
+  labs(y=NULL, 
+       x="Odds ratio of exogamy for Dominican relative to endogamy",
+       title="Odds ratio of Dominican exogamy")+
+  theme_bw()+
+  theme(legend.position = "none")
+```
+
+The odds of outmarrying to a Black partner are still lower than exogamy to most other Latino ethnic groups although they are relatively comparable for many cases.
 
 #### Changes over time
 
@@ -476,6 +543,8 @@ coefs_extended %>%
   theme_bw()
 ```
 
+In 1980, the odds for all three groups were very similar. Black/Puerto Rican intermarriage has increased substantially over time, in contrast to the other cases. Evidence of increasing racialization of Puerto Ricans (and probably Dominicans) as black over time.
+
 ### Black/Asian Ethnic Exogamy
 
 ```{r black-asian-exog}
@@ -496,6 +565,8 @@ coefs_extended %>%
   theme_bw()+
   theme(legend.position = "right")
 ```
+
+Not a lot going on here. Its very low for all groups and no particular groups standout.
 
 #### Changes over time
 
@@ -523,6 +594,7 @@ coefs_extended %>%
        title="Changes in specific Latino/Black exogamy over time")+
   theme_bw()
 ```
+Not a lot of change over time. The story is consistently low odds suggesting a very strong an persistent boundary between Asian ethnicities and Blackness.
 
 ### Filipino/Latino Exogamy
 
