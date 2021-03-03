@@ -360,35 +360,20 @@ add_vars <- function(markets) {
 }
 
 #create a distance matrix from model output
-calc_or_matrix <- function(model_summary, var_name, selected) {
-  coefs <- model_summary$coef[,"coef"]
-  coefs <- coefs[grepl(var_name,names(coefs))]
-  #get single racial categories from names
-  temp <- gsub(var_name,"",names(coefs))
-  temp <- strsplit(temp, "\\.")
+calc_or_matrix <- function(coefs) {
+  temp <- strsplit(as.character(coefs$variable), "/")
   race1 <- sapply(temp, function(x) {x[1]})
   race2 <- sapply(temp, function(x) {x[2]})
   groups <- unique(c(race1,race2))
   tab <- matrix(0, length(groups), length(groups))
   rownames(tab) <- colnames(tab) <- groups
   for(i in 1:length(race1)) {
-    tab[race1[i], race2[i]] <- coefs[i]
-    tab[race2[i], race1[i]] <- coefs[i]
+    tab[race1[i], race2[i]] <- coefs$coef[i]
+    tab[race2[i], race1[i]] <- coefs$coef[i]
   }
-  tab <- tab[rownames(tab) %in% selected,colnames(tab) %in% selected]
   tab <- exp(-1 * tab)
-  #dist <- as.dist(tab)
   return(tab)
 }
-
-plot_dendrogram <- function(model) {
-  calc_distance(model)
-  hc <- hclust(dist, method="average")
-  plot(as.dendrogram(hc), 
-       las=1, xlab="", ylab="distance")
-  abline(h=1, lty=3, col="red")
-}
-
 
 sum_symmetric <- function(tab) {
   for(i in 1:nrow(tab)) {
@@ -405,15 +390,30 @@ sum_symmetric <- function(tab) {
 #convert the intermarriage variable names to something pretty
 convert_intermar_names <- function(var_names, prefix) {
   var_names <- sub("\\.","/", sub(prefix,"",var_names))
+  temp <- strsplit(var_names, "/")
+  ethnic_exog <- sapply(temp, function(x) {
+    if(length(x)>=2) {
+      return(x[1]==x[2])
+    } else {
+      return(TRUE)
+    }
+  })
+  first_name <- sapply(temp, function(x) {x[1]})
+  var_names <- ifelse(ethnic_exog, 
+                      paste(first_name, "ethnic exogamy"), var_names)
   return(var_names)
 }
 
-#pull out coefs belonging to a certain group from model summary output
-pull_group_coefs <- function(model_summary, groups) {
-  temp <- model_summary$coefficients[,c(1,3)]
-  group_coefs <- tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]) %>%
-    filter(grepl("race_exog", variable) & 
-             grepl(paste(groups,collapse="|"), variable))
-  return(group_coefs)
+#order the variable variable (hah!) from smallest to largest based on a given
+#year
+order_variables <- function(coefs, data_choice, model_choice) {
+  ord <- coefs %>% 
+    filter(data==data_choice & model==model_choice) %>%
+    select(variable, coef)
+  lvls <- levels(reorder(factor(ord$variable), ord$coef, max))
+  #check for missing cases in lvls and add to end if so
+  all_vars <- unique(coefs$variable)
+  missing_vars <- all_vars[!(all_vars %in% lvls)]
+  coefs$variable <- factor(coefs$variable, levels=c(missing_vars,lvls))
+  return(coefs)
 }
-
