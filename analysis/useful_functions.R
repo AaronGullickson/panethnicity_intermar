@@ -403,6 +403,20 @@ order_variables <- function(coefs, data_choice, model_choice) {
   return(coefs)
 }
 
+#A function to convert model summaries to something knitreg will understand
+#TODO: this will need to be changed whenever I get around to running pooled 
+#models
+convertModel <- function(model) {
+  tr <- createTexreg(
+    coef.names = rownames(model$coef), 
+    coef = model$coef[,"coef"], 
+    se = model$coef[,"se(coef)"], 
+    pvalues = model$coef[,"Pr(>|z|)"],
+    gof.names = c("Number of married couples", "Number of alternate unions per actual union"), 
+    gof = c(model$nevent, model$n/model$nevent-1), 
+    gof.decimal = c(F, F)
+  )
+}
 
 # Miscellaneous -----------------------------------------------------------
 

@@ -638,4 +638,48 @@ Filipino/Latino exogamy is considerably higher than E&SE Asian/Latino exogamy ov
 
 ## Full Model Output
 
-TODO
+### Census 1980
+
+```{r, results="asis"}
+knitreg(lapply(models_census_pentagon, convertModel),
+        digits=3,
+        caption="Model predicting union formation on Census 1980 data using racial pentagon categories",
+        caption.above=TRUE)
+```
+
+```{r, results="asis"}
+knitreg(lapply(models_census_extended, convertModel),
+        digits=3,
+        caption="Model predicting union formation on Census 1980 data using specific Asian and Latino ethnic categories",
+        caption.above=TRUE)
+```
+
+### ACS 2014-18
+
+```{r, results="asis"}
+knitreg(lapply(models_acs1980_pentagon, convertModel),
+        digits=3,
+        caption="Model predicting union formation on ACS 2014-18 data using racial pentagon categories and Asian/Latino ethnic groups available in 1980",
+        caption.above=TRUE)
+```
+
+```{r, results="asis"}
+knitreg(lapply(models_acs1980_extended, convertModel),
+        digits=3,
+        caption="Model predicting union formation on ACS 2014-18 data using specific Asian and Latino ethnic categories and Asian/Latino ethnic groups available in 1980",
+        caption.above=TRUE)
+```
+
+```{r, results="asis"}
+knitreg(lapply(models_acsfull_pentagon, convertModel),
+        digits=3,
+        caption="Model predicting union formation on ACS 2014-18 data using racial pentagon categories and all available Asian/Latino ethnic groups",
+        caption.above=TRUE)
+```
+
+```{r, results="asis"}
+knitreg(lapply(models_acsres_extended, convertModel),
+        digits=3,
+        caption="Model predicting union formation on ACS 2014-18 data using specific Asian and Latino ethnic categories and largest available Asian/Latino ethnic groups",
+        caption.above=TRUE)
+```
