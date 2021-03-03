@@ -311,12 +311,15 @@ For South Asians, none of the groups outside of Asian Indians are large enough t
 
 In addition to all of these parameters, I also include a Filipino/Latino dummy variable to capture particular affinities between Latinos and this "latinized" Asian ethnic group. 
 
-```{r}
+```{r heat-map-function}
 #function for ethnic heat maps
-heatmap_ethnic <- function(groups, model, y=0.6, height=0.68) {
-
-  or <- calc_or_matrix(models_acsres_extended[[model]], "race_exog_extended", 
-                       groups)
+heatmap_ethnic <- function(groups, model_name, y=0.6, height=0.68) {
+  or <- coefs_extended %>%
+    filter(data=="ACS 2014-18, expanded ethnic groups" &
+             model==model_name &
+             grepl(paste(groups,collapse="|"), variable) &
+             !grepl("Black", variable)) %>% #ugly hack, FIXME
+    calc_or_matrix()
   hc <- hclust(as.dist(or))
   or <- or[hc$order, rev(hc$order)]
   
@@ -327,7 +330,7 @@ heatmap_ethnic <- function(groups, model, y=0.6, height=0.68) {
                          name="odds ratio")+
     geom_text(aes(label=paste(round(or,2))))+
     labs(x=NULL, y=NULL,
-         caption=paste("model:", model))+
+         caption=paste("model:", model_name))+
     theme_minimal()+
     theme(legend.position = "left", 
           panel.grid.major = element_blank(),
@@ -345,12 +348,12 @@ heatmap_ethnic <- function(groups, model, y=0.6, height=0.68) {
 
 ### E&SE Asian Specific Ethnic Exogamy
 
-```{r}
+```{r asian-heat-maps}
 asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
-heatmap_ethnic(asian_groups, "base")
-heatmap_ethnic(asian_groups, "lendog")
-heatmap_ethnic(asian_groups, "bendog")
-heatmap_ethnic(asian_groups, "both")
+heatmap_ethnic(asian_groups, "Baseline")
+heatmap_ethnic(asian_groups, "+ language endogamy")
+heatmap_ethnic(asian_groups, "+ birthplace endogamy")
+heatmap_ethnic(asian_groups, "+ both")
 ```
 
 
@@ -388,14 +391,14 @@ Placeholder until I estimate these models
 
 ### Latino Specific Ethnic Exogamy
 
-```{r}
+```{r latino-heat-maps}
 latino_groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
                    "Salvadorian","Colombian","Ecuadorian","Peruvian",
                    "Dominican")
-heatmap_ethnic(latino_groups, "base", height=0.75)
-heatmap_ethnic(latino_groups, "lendog", height=0.75)
-heatmap_ethnic(latino_groups, "bendog", height=0.75)
-heatmap_ethnic(latino_groups, "both", height=0.75)
+heatmap_ethnic(latino_groups, "Baseline", height=0.75)
+heatmap_ethnic(latino_groups, "+ language endogamy", height=0.75)
+heatmap_ethnic(latino_groups, "+ birthplace endogamy", height=0.75)
+heatmap_ethnic(latino_groups, "+ both", height=0.75)
 ```
 
 #### Changes over time

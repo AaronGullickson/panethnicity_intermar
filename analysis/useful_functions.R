@@ -360,35 +360,20 @@ add_vars <- function(markets) {
 }
 
 #create a distance matrix from model output
-calc_or_matrix <- function(model_summary, var_name, selected) {
-  coefs <- model_summary$coef[,"coef"]
-  coefs <- coefs[grepl(var_name,names(coefs))]
-  #get single racial categories from names
-  temp <- gsub(var_name,"",names(coefs))
-  temp <- strsplit(temp, "\\.")
+calc_or_matrix <- function(coefs) {
+  temp <- strsplit(as.character(coefs$variable), "/")
   race1 <- sapply(temp, function(x) {x[1]})
   race2 <- sapply(temp, function(x) {x[2]})
   groups <- unique(c(race1,race2))
   tab <- matrix(0, length(groups), length(groups))
   rownames(tab) <- colnames(tab) <- groups
   for(i in 1:length(race1)) {
-    tab[race1[i], race2[i]] <- coefs[i]
-    tab[race2[i], race1[i]] <- coefs[i]
+    tab[race1[i], race2[i]] <- coefs$coef[i]
+    tab[race2[i], race1[i]] <- coefs$coef[i]
   }
-  tab <- tab[rownames(tab) %in% selected,colnames(tab) %in% selected]
   tab <- exp(-1 * tab)
-  #dist <- as.dist(tab)
   return(tab)
 }
-
-plot_dendrogram <- function(model) {
-  calc_distance(model)
-  hc <- hclust(dist, method="average")
-  plot(as.dendrogram(hc), 
-       las=1, xlab="", ylab="distance")
-  abline(h=1, lty=3, col="red")
-}
-
 
 sum_symmetric <- function(tab) {
   for(i in 1:nrow(tab)) {
