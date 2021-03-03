@@ -41,8 +41,10 @@ code_census_variables <- function(census) {
   census$language_sp <- ifelse(census$language_sp==0, NA, census$language_sp)
   
   # Country of Birth 
-  census$bpl <- code_bpl(census$bpl)
-  census$bpl_sp <- code_bpl(census$bpl_sp)
+  # The general codes are way to general. The detailed codes have some
+  # overspecifity in the codes, but not in the actual data used here.
+  census$bpld <- code_bpl(census$bpld)
+  census$bpld_sp <- code_bpl(census$bpld_sp)
   
   #Years living in USA
   #1n 1980 this is based on intervalled data with the actual value
@@ -145,11 +147,11 @@ code_educ <- function(educd) {
   return(educ)
 }
 
-code_bpl <- function(bpl) {
+code_bpl <- function(bpld) {
   #recode any one born in the US (99 or less) as a single number. Otherwise
   #we will be fitting state level endogamy. also code in missing values
-  return(ifelse(bpl>=900, NA, 
-                ifelse(bpl<100,1,bpl)))
+  return(ifelse(bpld>=95000, NA, 
+                ifelse(bpld<10000,1,bpld)))
 }
 
 is_single <- function(marst) {
@@ -176,8 +178,8 @@ create_unions <- function(census, years_mar, n_fakes) {
                      (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                      (is_single(marst) | dur_mar<=years_mar),
                    select=c("statefip","metarea","sex","hhwt","perwt","dur_mar","marst",
-                            "id","age","race","educ","bpl","language","marrno",
-                            "id_sp","age_sp","race_sp","educ_sp","bpl_sp","language_sp","marrno_sp"))
+                            "id","age","race","educ","bpld","language","marrno",
+                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp","marrno_sp"))
   
   # Actual couples who are within the marriage duration window of years_mar
   # both must be in a first time marriage for consistency with 1980 marriage
@@ -186,8 +188,8 @@ create_unions <- function(census, years_mar, n_fakes) {
                      !is.na(id_sp) & 
                      (marrno<2 & marrno_sp<2),
                    select=c("statefip","metarea","hhwt",
-                            "id","age","race","educ","bpl","language",
-                            "id_sp","age_sp","race_sp","educ_sp","bpl_sp","language_sp"))
+                            "id","age","race","educ","bpld","language",
+                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp"))
   colnames(unions) <- c("statefip","metarea","hhwt",
                         "idh","ageh","raceh","educh","bplh","languageh",
                         "idw","agew","racew","educw","bplw","languagew")
@@ -198,7 +200,7 @@ create_unions <- function(census, years_mar, n_fakes) {
   # Alternate Male Partners
   male_alternates <- subset(census, sex=="Male",
                             select=c("statefip","metarea","id","perwt",
-                                     "age","race","educ","bpl","language"))
+                                     "age","race","educ","bpld","language"))
   colnames(male_alternates) <- c("statefip","metarea","idh","perwt",
                                  "ageh","raceh","educh","bplh","languageh")
   male_alternates <- na.omit(as.data.frame(male_alternates))
@@ -208,7 +210,7 @@ create_unions <- function(census, years_mar, n_fakes) {
   # Alternate Female Partners
   female_alternates <- subset(census, sex=="Female",
                               select=c("statefip","metarea","id","perwt",
-                                       "age","race","educ","bpl","language",
+                                       "age","race","educ","bpld","language",
                                        "perwt"))
   colnames(female_alternates) <- c("statefip","metarea","idw", "perwt",
                                    "agew","racew","educw","bplw","languagew")
