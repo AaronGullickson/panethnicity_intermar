@@ -69,7 +69,7 @@ formulas_pentagon <- list(base=formula_base,
 #Race extended formulas
 formula_base <- formula(choice~agediff+I(agediff^2)+
                           hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
-                          race_exog_extended+race_filipino_hispanic+
+                          race_exog_extended+race_filipino_latino+
                           strata(group))
 formula_bendog <- update(formula_base, .~.+bpl_endog)
 formula_lendog <- update(formula_base, .~.+language_endog)

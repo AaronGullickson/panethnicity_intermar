@@ -117,13 +117,13 @@ markets_acs_full <- create_unions(acs, 5, 25)
 
 #now do one that is restricted to groups with a sufficiently large population
 #to do a full ethnicity-by-ethnicity breakout in ACS data
-restricted_race <- c("White","Black",
-                     "Mexican","Puerto Rican","Cuban", #basic Latino
-                     "Guatemalan","Salvadorian","Colombian","Ecuadorian","Peruvian","Dominican", #extra
-                     "Chinese","Japanese","Filipino","Korean","Vietnamese", #basic Asian
-                     #"Hmong","Laotian","Thai", #extra
-                     "Asian Indian", #basic South Asian
-                     "Pakistani") #extra
+restricted_race <- sort(c("White","Black","AIAN",
+                          "Mexican","Puerto Rican","Cuban", #basic Latino
+                          "Guatemalan","Salvadorian","Colombian","Ecuadorian","Peruvian","Dominican", #extra
+                          "Chinese","Japanese","Filipino","Korean","Vietnamese", #basic Asian
+                          #"Hmong","Laotian","Thai", #extra
+                          "Asian Indian", #basic South Asian
+                          "Pakistani")) #extra
 acs$race <- factor(acs$race, levels=restricted_race)
 acs$race_sp <- factor(acs$race_sp, levels=restricted_race)
 markets_acs_restricted <- create_unions(acs, 5, 25)

@@ -1,9 +1,13 @@
 ## useful_functions.R
 
-#I will put all of the coding variable stuff into a function to ensure that we do the 
-#same operations on both datasets when we make changes. I will then put each separate
-#variable coding into a sub-function to ensure that we do the same thing for each 
-#spouse. 
+
+# Functions to code raw data ----------------------------------------------
+
+#I will put all of the coding variable stuff into a function to ensure that we
+#do the same operations on both datasets when we make changes. I will then put
+#each separate variable coding into a sub-function to ensure that we do the same
+#thing for each spouse.
+
 code_census_variables <- function(census) {
   
   # Sex of respondent
@@ -95,7 +99,7 @@ code_race <- function(raced, hispand) {
     hispand>=400 & hispand!=450 ~ NA_character_,
     raced==100 ~ "White",
     raced==200 ~ "Black",
-    #(raced>=300 & raced<400) ~ "Indigenous",
+    (raced>=300 & raced<400) ~ "AIAN",
     raced==400 | raced==410 ~ "Chinese",
     raced==500 ~ "Japanese",
     raced==600 ~ "Filipino",
@@ -123,58 +127,6 @@ code_race <- function(raced, hispand) {
   return(race)
 }
 
-#code race back into the racial pentagon, plus Asian Indian
-code_race_pentagon <- function(race) {
-  race_pent <- ifelse(is.na(race), NA, 
-                      ifelse(race=="Chinese" | 
-                               race=="Japanese" | 
-                               race=="Korean" | 
-                               race=="Filipino" | 
-                               race=="Vietnamese" |
-                               race=="Cambodian" |
-                               race=="Hmong" |
-                               race=="Laotian" |
-                               race=="Thai" |
-                               race=="Burmese"  | 
-                               race=="Indonesian" | 
-                               race=="Malaysian" |
-                               race=="Bhutanese" |
-                               race=="Nepalese",
-                             "Asian", 
-                             ifelse(race=="Asian Indian" | 
-                                      race=="Pakistani" | 
-                                      race=="Bangladeshi" | 
-                                      race=="Sri Lankan", 
-                                    "South Asian",
-                                    ifelse(race=="Mexican" | 
-                                             race=="Cuban" | 
-                                             race=="Puerto Rican" | 
-                                             race=="Guatemalan" |
-                                             race=="Salvadorian" | 
-                                             race=="Dominican" |
-                                             race=="Colombian" |
-                                             race=="Costa Rican" |
-                                             race=="Honduran" |
-                                             race=="Nicaraguan" |
-                                             race=="Panamanian" |
-                                             race=="Argentinian" |
-                                             race=="Bolivian" | 
-                                             race=="Chilean" | 
-                                             race=="Ecuadorian" | 
-                                             race=="Peruvian" | 
-                                             race=="Venezuelan" | 
-                                             race=="Paraguayan" | 
-                                             race=="Uruguayan", 
-                                           "Hispanic",
-                                           as.character(race)))))
-  
-  race_pent <- factor(race_pent,
-                      levels=c("White","Black","Asian","Hispanic",
-                               "South Asian"))
-  return(race_pent)
-  
-}
-
 code_educ <- function(educd) {
   # We want to re-code the educd variable into the following simple
   # categories:
@@ -199,6 +151,14 @@ code_bpl <- function(bpl) {
   return(ifelse(bpl>=900, NA, 
                 ifelse(bpl<100,1,bpl)))
 }
+
+is_single <- function(marst) {
+  #TODO: what about separated people?
+  return(marst!="Married, spouse present" & marst!="Married, spouse absent")
+}
+
+
+# Functions for marriage market creation ----------------------------------
 
 #This function will take the given census data, separate out 
 #couples and alternate spouses, and create the marriage market data 
@@ -263,12 +223,6 @@ create_unions <- function(census, years_mar, n_fakes) {
   return(markets)
 }
 
-
-is_single <- function(marst) {
-  #TODO: what about separated people?
-  return(marst!="Married, spouse present" & marst!="Married, spouse absent")
-}
-
 #code variables for the marriage market dataset
 add_vars <- function(markets) {
   #age difference 
@@ -312,33 +266,21 @@ add_vars <- function(markets) {
   markets <- markets %>% 
     mutate(
       race_exog_pent=case_when(
-        raceh_pent=="Asian" & racew_pent=="Asian" & raceh!=racew ~ "Asian.Asian",
+        raceh_pent=="E&SE Asian" & racew_pent=="E&SE Asian" & raceh!=racew ~ "E&SE Asian.E&SE Asian",
         raceh_pent=="South Asian" & racew_pent=="South Asian" & 
           raceh!=racew ~ "South Asian.South Asian",
-        raceh_pent=="Hispanic" & racew_pent=="Hispanic" & raceh!=racew ~ "Hispanic.Hispanic",
+        raceh_pent=="Latino" & racew_pent=="Latino" & raceh!=racew ~ "Latino.Latino",
         TRUE ~ as.character(race_exog_pent)
       ),
       race_exog_extended=case_when(
-        race_exog_pent=="Asian.Asian" | 
+        race_exog_pent=="E&SE Asian.E&SE Asian" | 
           race_exog_pent=="South Asian.South Asian" |
-          race_exog_pent=="Hispanic.Hispanic" |
-          race_exog_pent=="Black.Hispanic" ~ as.character(race_exog_full),
+          race_exog_pent=="Latino.Latino" |
+          race_exog_pent=="Black.Latino" |
+          race_exog_pent=="Black.E&SE Asian" ~ as.character(race_exog_full),
         TRUE ~ as.character(race_exog_pent)
       )
     )
-                                   
-  #tests
-  # with(subset(markets, race_exog_pent=="Asian.Asian"), table(raceh, racew))
-  # with(subset(markets, race_exog_pent=="Hispanic.Hispanic"), table(raceh, racew))
-  # with(subset(markets, race_exog_pent=="Endog"), table(raceh, racew))
-  # with(subset(markets, race_exog_pent=="Asian.Asian"), 
-  #      table(race_exog_extended, exclude=NULL))
-  # with(subset(markets, race_exog_pent=="Hispanic.Hispanic"), 
-  #      table(race_exog_extended, exclude=NULL))
-  # with(subset(markets, race_exog_pent=="Black.Hispanic"), 
-  #           table(race_exog_extended, exclude=NULL))
-  # with(subset(markets, race_exog_pent=="South Asian.South Asian"), 
-  #     table(race_exog_extended, exclude=NULL))
 
   #turn into factors and set Endog as the reference
   markets$race_exog_pent <- relevel(factor(markets$race_exog_pent), "Endog")
@@ -349,15 +291,70 @@ add_vars <- function(markets) {
   #table(markets$race_exog_extended, markets$race_exog_pent)
   
   #dummy variable for Filipino/Latino
-  markets$race_filipino_hispanic <- markets$race_exog_extended=="Asian.Hispanic" & 
+  markets$race_filipino_latino <- markets$race_exog_extended=="Latino.E&SE Asian" & 
     (markets$raceh=="Filipino" | markets$racew=="Filipino") 
   
   #test
-  #with(subset(markets, race_filipino_hispanic),
+  #with(subset(markets, race_filipino_latino),
   #     table(raceh, racew))
   
   return(markets)
 }
+
+#code race back into the racial pentagon, plus Asian Indian
+code_race_pentagon <- function(race) {
+  race_pent <- ifelse(is.na(race), NA, 
+                      ifelse(race=="Chinese" | 
+                               race=="Japanese" | 
+                               race=="Korean" | 
+                               race=="Filipino" | 
+                               race=="Vietnamese" |
+                               race=="Cambodian" |
+                               race=="Hmong" |
+                               race=="Laotian" |
+                               race=="Thai" |
+                               race=="Burmese"  | 
+                               race=="Indonesian" | 
+                               race=="Malaysian" |
+                               race=="Bhutanese" |
+                               race=="Nepalese",
+                             "E&SE Asian", 
+                             ifelse(race=="Asian Indian" | 
+                                      race=="Pakistani" | 
+                                      race=="Bangladeshi" | 
+                                      race=="Sri Lankan", 
+                                    "South Asian",
+                                    ifelse(race=="Mexican" | 
+                                             race=="Cuban" | 
+                                             race=="Puerto Rican" | 
+                                             race=="Guatemalan" |
+                                             race=="Salvadorian" | 
+                                             race=="Dominican" |
+                                             race=="Colombian" |
+                                             race=="Costa Rican" |
+                                             race=="Honduran" |
+                                             race=="Nicaraguan" |
+                                             race=="Panamanian" |
+                                             race=="Argentinian" |
+                                             race=="Bolivian" | 
+                                             race=="Chilean" | 
+                                             race=="Ecuadorian" | 
+                                             race=="Peruvian" | 
+                                             race=="Venezuelan" | 
+                                             race=="Paraguayan" | 
+                                             race=="Uruguayan", 
+                                           "Latino",
+                                           as.character(race)))))
+  
+  race_pent <- factor(race_pent,
+                      levels=c("White","Black","AIAN","Latino","E&SE Asian",
+                               "South Asian"))
+  return(race_pent)
+  
+}
+
+
+# Functions for model output summaries ------------------------------------
 
 #create a distance matrix from model output
 calc_or_matrix <- function(coefs) {
@@ -372,18 +369,6 @@ calc_or_matrix <- function(coefs) {
     tab[race2[i], race1[i]] <- coefs$coef[i]
   }
   tab <- exp(-1 * tab)
-  return(tab)
-}
-
-sum_symmetric <- function(tab) {
-  for(i in 1:nrow(tab)) {
-    for(j in 1:ncol(tab)) {
-      if(j>i) {
-        tab[j,i] <- tab[i,j]+tab[j,i]
-        tab[i,j] <- NA
-      }
-    }
-  }
   return(tab)
 }
 
@@ -417,3 +402,20 @@ order_variables <- function(coefs, data_choice, model_choice) {
   coefs$variable <- factor(coefs$variable, levels=c(missing_vars,lvls))
   return(coefs)
 }
+
+
+# Miscellaneous -----------------------------------------------------------
+
+sum_symmetric <- function(tab) {
+  for(i in 1:nrow(tab)) {
+    for(j in 1:ncol(tab)) {
+      if(j>i) {
+        tab[j,i] <- tab[i,j]+tab[j,i]
+        tab[i,j] <- NA
+      }
+    }
+  }
+  return(tab)
+}
+
+
