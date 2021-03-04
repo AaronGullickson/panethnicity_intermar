@@ -519,7 +519,7 @@ coefs_pent %>%
   theme(legend.position = "right")
 ```
 
-Language and birthplace endogamy both increase the estimate of ethnic exogamy. The odds of ethnic exogamy are more substantial than for Latinos but less than for E&SE Asians. Regarding language, I do worry a little about the Urdu/Hindi issue. This is probably the most common case of language "exogamy", but these are generally considered to be so similar as to be dialects. This may artificially inflate the estimates when controlling for language endogamy. TODO: do a sensitivity analysis where I treat Urdu/Hindi as language endogamous.
+Language and birthplace endogamy both increase the estimate of ethnic exogamy. The odds of ethnic exogamy are more substantial than for Latinos but less than for E&SE Asians. Its worth noting that in the current language code, Urdu and Hindi are considered language endogamous, which is probably the correct way to do it.
 
 ```{r south-asian-exog-compare-dot}
 coefs_pent %>%
@@ -548,7 +548,11 @@ The figure above looks at South Asian racial exogamy. I also include ethnic exog
 
 The results show little difference in the ACS data with using only Asian Indians and using all four groups. In all cases, South Asian racial intermarriage has become *less* likely over time. The smallest drops are for Asian/South Asian which may reflect some form of pan-ethnicity I guess and South Asian/Black, but the latter case was close to zero already. 
 
-I do worry that these drops are driven by measurement issues. The Census lists "Asian Indian" as a category to help distinguish it from the case where people are looking for an American Indian category. My guess would be that people have gotten better over time at not mis-checking this box when they meant to select an American Indian category. Those mischeckers are probably more likely to intermarry with other groups given the historical legacy of the American Indian group. Thus, the later period may be witnessing a drop simply because it is more accurately capturing people who intended to check Asian Indian. In support of this hypothesis, the odds of intermarriage between American Indian and Asian Indian respondents is extremely high in 1980 (slightly over 1) and diminishes dramatically in the ACS data (TODO: re-do this model to show that effect and test this effect on the separate ethnic groups in ACS. If still present in ACS time period, we should see substantially higher odds of Asian Indian/American Indian intermarriage than other groups' intermarriage with American Indians).
+I do worry that these drops are driven by measurement issues. The Census lists "Asian Indian" as a category to help distinguish it from the case where people are looking for an American Indian category. My guess would be that people have gotten better over time at not mis-checking this box when they meant to select an American Indian category. Those mischeckers are probably more likely to intermarry with other groups given the historical legacy of the American Indian group. Thus, the later period may be witnessing a drop simply because it is more accurately capturing people who intended to check Asian Indian. In support of this hypothesis, the odds of intermarriage between American Indian and Asian Indian respondents is extremely high in 1980 (slightly over 1) and diminishes dramatically in the ACS data.
+
+```{r}
+#TODO: re-do this model to show that effect and test this effect on the separate ethnic groups in ACS. If still present in ACS time period, we should see substantially higher odds of Asian Indian/American Indian intermarriage than other groups' intermarriage with American Indians.
+```
 
 ## Ethnic-Group Specific Exogamy
 
@@ -584,7 +588,11 @@ This gives me a good sampling of Central American, Caribbean, and South American
 
 I also included specific variables for Black/Latino ethnicity and Black/Asian ethnicity rather than single Black/Latino and Black/Asian variables, respectively. This approach allows me to see whether the Black/non-Black divide works differently for some Latino and Asian ethnic groups. 
 
-For South Asians, none of the groups outside of Asian Indians are large enough to sustain an analysis. TODO: Could I consider a crude "religion" split, Asian Indians vs. all others? Its not perfect because some Asian Indians will also be Muslim.
+For South Asians, none of the groups outside of Asian Indians are large enough to sustain an analysis. 
+
+```{r}
+#TODO: Could I consider a crude "religion" split, Asian Indians vs. all others? Its not perfect because some Asian Indians will also be Muslim.
+```
 
 In addition to all of these parameters, I also include a Filipino/Latino dummy variable to capture particular affinities between Latinos and this "latinized" Asian ethnic group. 
 
@@ -645,8 +653,6 @@ In general, here is my summary of what I see:
 #### Changes over time
 
 ```{r asian-exog-change}
-#TODO: why is Korean/Vietnamese missing in 1980 data?
-#Vietnamese is not fitting well in most of these cases, so remove that group
 coefs_extended %>%
   filter(grepl(paste(asian_groups,collapse="|"), variable) & 
            !grepl("Vietnamese", variable) & !grepl("Black", variable) & 

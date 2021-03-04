@@ -155,7 +155,7 @@ code_bpl <- function(bpld) {
 }
 
 is_single <- function(marst) {
-  #TODO: what about separated people?
+  #I am going to consider separated people as single here
   return(marst!="Married, spouse present" & marst!="Married, spouse absent")
 }
 
