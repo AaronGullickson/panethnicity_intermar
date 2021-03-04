@@ -133,8 +133,15 @@ save(alternates_census, alternates_acs,
 
 #important to use five year windows to fix intervalled year of migration
 #data for census 1980
-census1980$race <- droplevels(census1980$race)
-census1980$race_sp <- droplevels(census1980$race_sp)
+#remove Vietnamese from 1980 data due to poor fit
+race_lvls1980 <- sort(c("White","Black","AIAN",
+                        "Mexican","Puerto Rican","Cuban", 
+                        "Chinese","Japanese","Filipino","Korean",
+                        "Asian Indian"))
+census1980$race <- factor(census1980$race,
+                          levels=race_lvls1980)
+census1980$race_sp <- factor(census1980$race_sp,
+                             levels=race_lvls1980)
 markets_census <- create_unions(census1980, years_mar, 25)
 
 #for the ACS, first calculate one based on the full racial categories
@@ -145,8 +152,8 @@ markets_acs_full <- create_unions(acs, years_mar, 25)
 restricted_race <- sort(c("White","Black","AIAN",
                           "Mexican","Puerto Rican","Cuban", #basic Latino
                           "Guatemalan","Salvadorian","Colombian","Ecuadorian","Peruvian","Dominican", #extra
-                          "Chinese","Japanese","Filipino","Korean","Vietnamese", #basic Asian
-                          #"Hmong","Laotian","Thai", #extra
+                          "Chinese","Japanese","Filipino","Korean",
+                          "Vietnamese", #extra
                           "Asian Indian", #basic South Asian
                           "Pakistani")) #extra
 acs$race <- factor(acs$race, levels=restricted_race)
@@ -155,8 +162,8 @@ markets_acs_restricted <- create_unions(acs, years_mar, 25)
 
 #Calculate another one after removing the categories not available in 1980
 #that will have groups consistent with Census 1980
-acs$race <- factor(acs$race, levels=levels(census1980$race))
-acs$race_sp <- factor(acs$race_sp, levels=levels(census1980$race))
+acs$race <- factor(acs$race, levels=race_lvls1980)
+acs$race_sp <- factor(acs$race_sp, levels=race_lvls1980)
 markets_acs_1980basis <- create_unions(acs, years_mar, 25)
 
 
