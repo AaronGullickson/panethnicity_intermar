@@ -96,9 +96,7 @@ arrows_extended <- coefs_extended %>%
 
 ## Analysis of Potential Partner Characteristics
 
-### Language and Birthplace Heterogeneity
-
-#### Language Heterogeneity
+### Language Heterogeneity
 
 ```{r ese-asian-language}
 alternates_acs %>%
@@ -205,7 +203,7 @@ alternates_acs %>%
 
 For Latinos, much less diversity. The only real diversity is given by the percentage of each group that speak English vs. Spanish.
 
-#### Birthplace Heterogeneity
+### Birthplace Heterogeneity
 
 ```{r ese-asian-birthplace}
 alternates_acs %>%
@@ -342,6 +340,39 @@ alternates_acs %>%
 ```
 
 ### Race Reporting among Latinos
+
+```{r}
+alternates_acs %>%
+  filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                     "Salvadorian","Argentinian","Bolivian","Chilean",
+                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                     "Uruguayan","Venezuelan","Dominican")) %>% 
+  mutate(race_report=factor(case_when(
+    raced==100 ~ "White",
+    raced==200 ~ "Black",
+    raced>=300 & raced<400 ~ "AIAN",
+    raced>=400 & raced<700 ~"API",
+    raced==700 ~ "Other",
+    raced>=800 ~ "Multiracial"),
+    levels=c("Multiracial","AIAN","API",
+             "Other","Black","White")),
+    race=fct_reorder(race, race_report=="White", mean)) %>%
+  ggplot(aes(x=race, fill=race_report))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c(brewer.pal(4, "Dark2"), "grey30", "grey90"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Race reporting among Latino ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Reported race")+
+  coord_flip()+
+  theme_bw()
+```
+
+Dominicans and Puerto Ricans are among the groups most likely to identify as black. The other two groups with high black reporting are Panamanians and Costa Ricans. Panamanians are much higher than all other categories, but unfortunately are too small a group to include in the analysis. 
+
+Dominicans are also the least likely to identify as white alone. Puerto Ricans are mor middling in this regard.
 
 ## Overall Ethnic Exogamy
 
