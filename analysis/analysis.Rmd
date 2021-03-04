@@ -14,6 +14,7 @@ library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","models.RData"))
+load(here("analysis","output","alternates.RData"))
 
 my_palette <- c("#7b3294","#008837","#a6dba0")
 ```
@@ -96,6 +97,259 @@ arrows_extended <- coefs_extended %>%
 ## Analysis of Potential Partner Characteristics
 
 ### Language and Birthplace Heterogeneity
+
+#### Language Heterogeneity
+
+```{r ese-asian-language}
+alternates_acs %>%
+  filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian",
+                     "Nepalese","Mongolian","Bhutanese")) %>%
+  mutate(lang=factor(case_when(
+    language==1 ~ "English",
+    language==37 ~ "Other Altaic",
+    language>=40 & language <=42 ~ "Dravidian",
+    language==43 ~ "Chinese",
+    language==44 ~ "Tibetan",
+    language==45 ~ "Burmese, Lisu, Lolo",
+    language==46 ~ "Kachin",
+    language==47 ~ "Thai, Siamese, Lao",
+    language==48 ~ "Japanese",
+    language==49 ~ "Korean",
+    language==50 ~ "Vietnamese",
+    language==51 ~ "Other E&SE Language",
+    language==52 ~ "Indonesian",
+    language==53 ~ "Other Malayan",
+    language==54 ~ "Filipino, Tagalog",
+    TRUE ~ "Other Language"),
+    levels=c("English","Chinese","Japanese","Korean","Vietnamese",
+             "Filipino, Tagalog","Thai, Siamese, Lao","Tibetan",
+             "Burmese, Lisu, Lolo","Indonesian","Other Malayan","Kachin",
+             "Dravidian","Other Altaic","Other E&SE Language",
+             "Other Language")),
+    race=fct_reorder(race, lang=="English", mean)
+  ) %>%
+  select(race, lang, language) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(lang)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
+                               "tomato","sienna","orchid","royalblue","maroon",
+                               "paleturquoise1","grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Language use among E&SE Asian ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Primary language spoken")+
+  coord_flip()+
+  theme_bw()
+```
+
+Clearly this shows a lot of diversity in language among Asian ethnic groups. It also reveals that the general language codes may be a bit problematic for a few Asian groups. I probably need to think more carefully about the language variable I use to define language endogamy. I probably can use the detailed language codes, but I may need to look at particular cases that need collapsing. This will take some work. Also, what is up with Hmong being listed as Tibetan? I checked and that seems accurate in the data.
+
+```{r south-asian-language}
+alternates_acs %>%
+  filter(race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan")) %>%
+  mutate(lang=factor(case_when(
+    language==1 ~ "English",
+    language>=40 & language <=42 ~ "Dravidian",
+    language==31 ~ "Hindi and related",
+    TRUE ~ "Other Language"),
+    levels=c("English","Dravidian","Hindi and related","Other Language")),
+    race=fct_reorder(race, lang=="English", mean)
+  ) %>%
+  select(race, lang, language) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(lang)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey","royalblue","orchid","grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Language use among South Asian ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Primary language spoken")+
+  coord_flip()+
+  theme_bw()
+```
+
+Mostly Hindi (and related) or Dravidian languages in South Asia, but I wonder if I need to go into more detail here for those language groups in languaged?
+
+```{r ese-latino-language}
+alternates_acs %>%
+  filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                     "Salvadorian","Argentinian","Bolivian","Chilean",
+                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                     "Uruguayan","Venezuelan","Dominican")) %>%
+  mutate(lang=factor(case_when(
+    language==1 ~ "English",
+    language==12 ~ "Spanish",
+    TRUE ~ "Other Language"),
+    levels=c("English","Spanish","Other Language")),
+    race=fct_reorder(race, lang=="English", mean)
+  ) %>%
+  select(race, lang, language) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(lang)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", "tomato","grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Language use among Latino ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Primary language spoken")+
+  coord_flip()+
+  theme_bw()
+```
+
+For Latinos, much less diversity. The only real diversity is given by the percentage of each group that speak English vs. Spanish.
+
+#### Birthplace Heterogeneity
+
+```{r ese-asian-birthplace}
+alternates_acs %>%
+  filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian",
+                     "Nepalese","Mongolian","Bhutanese")) %>%
+  mutate(birthplace=factor(case_when(
+    bpld==1 ~ "USA",
+    bpld==50000 ~ "China",
+    bpld==50010 ~ "Hong Kong",
+    bpld==50020 ~ "Macau",
+    bpld==50030 ~ "Mongolia",
+    bpld==50040 ~ "Taiwan",
+    bpld==50100 ~ "Japan",
+    bpld>=50200 & bpld<=50220 ~ "Korea",
+    bpld==51100 ~ "Cambodia",
+    bpld==51200 ~ "Indonesia",
+    bpld==51300 ~ "Laos",
+    bpld==51400 ~ "Malaysia",
+    bpld==51500 ~ "Philippines",
+    bpld==51600 ~ "Singapore",
+    bpld==51700 ~ "Thailand",
+    bpld==51800 ~ "Vietnam",
+    bpld==52100 ~ "India",
+    bpld==52110 ~ "Bangladesh",
+    bpld==52120 ~ "Bhutan",
+    bpld==52130 ~ "Myanmar",
+    bpld==52400 ~ "Nepal",
+    bpld==46500 ~ "Russia",
+    TRUE ~ "Other Place"),
+    levels=c("USA","China","Hong Kong","Macau","Taiwan","Japan","Korea",
+             "Cambodia","Indonesia","Laos","Malaysia","Philippines",
+             "Singapore","Thailand","Vietnam","India","Bangladesh","Bhutan",
+             "Myanmar","Nepal","Mongolia","Russia","Other Place")),
+    race=fct_reorder(race, birthplace=="USA", mean)
+  ) %>%
+  select(race, birthplace, bpld) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(birthplace)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
+                               "tomato","sienna","orchid","royalblue","maroon",
+                               "paleturquoise1","olivedrab",
+                               brewer.pal(6, "Set1"), "grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Birthplace among E&SE Asian ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Place of Birth")+
+  coord_flip()+
+  theme_bw()
+```
+
+This looking much better using the detailed birthplace codes. Mongolia is still a bit of an issue, but if you look at the actual code its "Other Asia, NEC" so not much that can be done with it. 
+
+In general, we see a lot of diversity here as one would expect. mostly the ethnic group corresponds pretty closely to a common birthplace, because of the implied nationality, but there are several cases where this is not true. 
+
+```{r south-asian-birthplace}
+alternates_acs %>%
+  filter(race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan")) %>%
+  mutate(birthplace=factor(case_when(
+    bpld==1 ~ "USA",
+    bpld==52100 ~ "India",
+    bpld==52110 ~ "Bangladesh",
+    bpld==52140 ~ "Pakistan",
+    bpld==52150 ~ "Sri Lanka",
+    bpld==30040 ~ "Guyana",
+    bpld==26060 ~ "Trinidad and Tobago",
+    bpld>=41000 & bpld<=41300 ~ "United Kingdom",
+    TRUE ~ "Other Place"),
+    levels=c("USA","India","Bangladesh","Pakistan","Sri Lanka",
+             "Guyana","Trinidad and Tobago","United Kingdom","Other Place")),
+    race=fct_reorder(race, birthplace=="USA", mean)
+  ) %>%
+  select(race, birthplace, bpld) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(birthplace)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"), "grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Birthplace among South Asian ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Place of Birth")+
+  coord_flip()+
+  theme_bw()
+```
+
+Mostly it ties closely to nationality, with pretty similar percentages born in the US. The Asian Indian population is more diverse in birthplace than other groups, partly reflecting transnational migration in the British Empire, I suspect.
+
+```{r ese-latino-birthplace}
+alternates_acs %>%
+  filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                     "Salvadorian","Argentinian","Bolivian","Chilean",
+                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                     "Uruguayan","Venezuelan","Dominican")) %>%
+  mutate(birthplace=factor(case_when(
+    bpld==1 ~ "USA",
+    bpld==20000 ~ "Mexico",
+    bpld==21020 ~ "Costa Rica",
+    bpld==21030 ~ "El Salvador",
+    bpld==21040 ~ "Guatemala",
+    bpld==21050 ~ "Honduras",
+    bpld==21060 ~ "Nicaragua",
+    bpld==21070 ~ "Panama",
+    bpld==30005 ~ "Argentina",
+    bpld==30010 ~ "Bolivia",
+    bpld==30020 ~ "Chile",
+    bpld==30025 ~ "Colombia",
+    bpld==30030 ~ "Ecuador",
+    bpld==30045 ~ "Paraguay",
+    bpld==30050 ~ "Peru",
+    bpld==30060 ~ "Uruguay",
+    bpld==30065 ~ "Venezuela",
+    bpld==25000 ~ "Cuba",
+    bpld==26010 ~ "Dominican Republic",
+    bpld==11000 ~ "Puerto Rico",
+    TRUE ~ "Other Place"),
+    levels=c("USA","Mexico","Costa Rica","El Salvador","Guatemala","Honduras",
+             "Nicaragua","Panama","Argentina","Bolivia","Chile",
+             "Colombia","Ecuador","Paraguay","Peru","Uruguay","Venezuela",
+             "Cuba","Dominican Republic","Puerto Rico","Other Place")),
+    race=fct_reorder(race, birthplace=="USA", mean)
+  ) %>%
+  select(race, birthplace, bpld) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(birthplace)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
+                               "tomato","sienna","orchid","royalblue","maroon",
+                               "paleturquoise1","olivedrab",
+                               brewer.pal(5, "Set1"), "grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Birthplace among E&SE Asian ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Place of Birth")+
+  coord_flip()+
+  theme_bw()
+```
 
 ### Race Reporting among Latinos
 
