@@ -104,8 +104,7 @@ arrows_extended <- coefs_extended %>%
 alternates_acs %>%
   filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
                      "Filipino","Cambodian","Hmong","Laotian",
-                     "Thai","Burmese","Indonesian","Malaysian",
-                     "Nepalese","Mongolian","Bhutanese")) %>%
+                     "Thai","Burmese","Indonesian","Malaysian")) %>%
   mutate(lang=factor(case_when(
     language==1 ~ "English",
     language==37 ~ "Other Altaic",
@@ -212,14 +211,12 @@ For Latinos, much less diversity. The only real diversity is given by the percen
 alternates_acs %>%
   filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
                      "Filipino","Cambodian","Hmong","Laotian",
-                     "Thai","Burmese","Indonesian","Malaysian",
-                     "Nepalese","Mongolian","Bhutanese")) %>%
+                     "Thai","Burmese","Indonesian","Malaysian")) %>%
   mutate(birthplace=factor(case_when(
     bpld==1 ~ "USA",
     bpld==50000 ~ "China",
     bpld==50010 ~ "Hong Kong",
     bpld==50020 ~ "Macau",
-    bpld==50030 ~ "Mongolia",
     bpld==50040 ~ "Taiwan",
     bpld==50100 ~ "Japan",
     bpld>=50200 & bpld<=50220 ~ "Korea",
@@ -231,17 +228,11 @@ alternates_acs %>%
     bpld==51600 ~ "Singapore",
     bpld==51700 ~ "Thailand",
     bpld==51800 ~ "Vietnam",
-    bpld==52100 ~ "India",
-    bpld==52110 ~ "Bangladesh",
-    bpld==52120 ~ "Bhutan",
     bpld==52130 ~ "Myanmar",
-    bpld==52400 ~ "Nepal",
-    bpld==46500 ~ "Russia",
     TRUE ~ "Other Place"),
     levels=c("USA","China","Hong Kong","Macau","Taiwan","Japan","Korea",
              "Cambodia","Indonesia","Laos","Malaysia","Philippines",
-             "Singapore","Thailand","Vietnam","India","Bangladesh","Bhutan",
-             "Myanmar","Nepal","Mongolia","Russia","Other Place")),
+             "Singapore","Thailand","Vietnam","Myanmar","Other Place")),
     race=fct_reorder(race, birthplace=="USA", mean)
   ) %>%
   select(race, birthplace, bpld) %>%
@@ -250,8 +241,7 @@ alternates_acs %>%
   geom_bar(position="fill")+
   scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
                                "tomato","sienna","orchid","royalblue","maroon",
-                               "paleturquoise1","olivedrab",
-                               brewer.pal(6, "Set1"), "grey30"))+
+                               "paleturquoise1","olivedrab", "grey30"))+
   scale_y_continuous(labels = scales::percent)+
   labs(x=NULL, y="cumulative percent",
        title="Birthplace among E&SE Asian ethnic groups",
@@ -857,7 +847,7 @@ Not a lot of change over time. The story is one of consistently low odds suggest
 ### Filipino/Latino Exogamy
 
 
-```{r}
+```{r flipino-latino-exog}
 #I need to grab this parameter from the original model summaries because it is not part of coefs_extended. Also, remember that this parameter is in addition to a general E&SE Asian/Latino parameter, so need to add them up to get the full effect.
 latino_filipino_effect <- sapply(models_acsres_extended, function(x)
   {return(x$coef["race_filipino_latinoTRUE",1])})
@@ -894,14 +884,14 @@ Filipino/Latino exogamy is considerably higher than E&SE Asian/Latino exogamy ov
 
 ### Census 1980
 
-```{r, results="asis"}
+```{r model-census-pentagon, results="asis"}
 knitreg(lapply(models_census_pentagon, convertModel),
         digits=3,
         caption="Model predicting union formation on Census 1980 data using racial pentagon categories",
         caption.above=TRUE)
 ```
 
-```{r, results="asis"}
+```{r model-census-extended, results="asis"}
 knitreg(lapply(models_census_extended, convertModel),
         digits=3,
         caption="Model predicting union formation on Census 1980 data using specific Asian and Latino ethnic categories",
@@ -910,28 +900,28 @@ knitreg(lapply(models_census_extended, convertModel),
 
 ### ACS 2014-18
 
-```{r, results="asis"}
+```{r model-acs1980-pentagon, results="asis"}
 knitreg(lapply(models_acs1980_pentagon, convertModel),
         digits=3,
         caption="Model predicting union formation on ACS 2014-18 data using racial pentagon categories and Asian/Latino ethnic groups available in 1980",
         caption.above=TRUE)
 ```
 
-```{r, results="asis"}
+```{r model-acs1980-extended, results="asis"}
 knitreg(lapply(models_acs1980_extended, convertModel),
         digits=3,
         caption="Model predicting union formation on ACS 2014-18 data using specific Asian and Latino ethnic categories and Asian/Latino ethnic groups available in 1980",
         caption.above=TRUE)
 ```
 
-```{r, results="asis"}
+```{r model-acsfull-pentagon, results="asis"}
 knitreg(lapply(models_acsfull_pentagon, convertModel),
         digits=3,
         caption="Model predicting union formation on ACS 2014-18 data using racial pentagon categories and all available Asian/Latino ethnic groups",
         caption.above=TRUE)
 ```
 
-```{r, results="asis"}
+```{r model-acsres-extended, results="asis"}
 knitreg(lapply(models_acsres_extended, convertModel),
         digits=3,
         caption="Model predicting union formation on ACS 2014-18 data using specific Asian and Latino ethnic categories and largest available Asian/Latino ethnic groups",
