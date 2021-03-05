@@ -592,10 +592,6 @@ I also included specific variables for Black/Latino ethnicity and Black/Asian et
 
 For South Asians, none of the groups outside of Asian Indians are large enough to sustain an analysis. 
 
-```{r}
-#TODO: Could I consider a crude "religion" split, Asian Indians vs. all others? Its not perfect because some Asian Indians will also be Muslim.
-```
-
 In addition to all of these parameters, I also include a Filipino/Latino dummy variable to capture particular affinities between Latinos and this "latinized" Asian ethnic group. 
 
 ```{r heat-map-function}
