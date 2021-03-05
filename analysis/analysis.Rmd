@@ -552,10 +552,6 @@ The results show little difference in the ACS data with using only Asian Indians
 
 I do worry that these drops are driven by measurement issues. The Census lists "Asian Indian" as a category to help distinguish it from the case where people are looking for an American Indian category. My guess would be that people have gotten better over time at not mis-checking this box when they meant to select an American Indian category. Those mischeckers are probably more likely to intermarry with other groups given the historical legacy of the American Indian group. Thus, the later period may be witnessing a drop simply because it is more accurately capturing people who intended to check Asian Indian. In support of this hypothesis, the odds of intermarriage between American Indian and Asian Indian respondents is extremely high in 1980 (slightly over 1) and diminishes dramatically in the ACS data.
 
-```{r}
-#TODO: re-do this model to show that effect and test this effect on the separate ethnic groups in ACS. If still present in ACS time period, we should see substantially higher odds of Asian Indian/American Indian intermarriage than other groups' intermarriage with American Indians.
-```
-
 ## Ethnic-Group Specific Exogamy
 
 I now turn to models that estimate full ethnicity-by-ethnicity terms within the E&SE Asian and Latino categories. These terms will allow me to create heat maps with combined dendrograms that show the patterns of association between specific ethnic groups within these big race categories. 
