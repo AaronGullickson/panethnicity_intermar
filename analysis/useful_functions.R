@@ -424,10 +424,6 @@ code_birthplace_endog <- function(markets) {
   ## Partial Flex 2: 1.75: Both, 1.5: Both, 1.25: Birthplace
   markets$bendog_flex2 <- bplh_1.5==bplw_1.5 | birthplace_endog
   
-  #TODO: need some checks on this
-  #summary(markets)
-  #table(markets$bendog_grad1, markets$bendog_grad2)
-  
   return(markets)
 }
 
