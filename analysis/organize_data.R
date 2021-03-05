@@ -105,6 +105,56 @@ acs$dur_mar <- ifelse(acs$yrmarr==0,
 tapply(acs$dur_mar, acs$marst, mean)
 
 
+# Code Age at Migration ---------------------------------------------------
+
+# Because of the intervalling of yrimmig in the 1980 data, I need to handle
+# this variable differently by dataset. 
+
+# These variables cannot be NA or the cases will be dropped when markets are
+# created, so I will assign a zero to all missing values (which are native-born)
+# individuals
+
+#Census 1980
+#Calculate years in USA based on midpoints of yrimmig intervals
+#The open ended category before 1949 is tricky. Going to assume 1940, but 
+#that will produce some negative values for age at entry
+census1980$yrimmig_mid <- case_when(
+  census1980$yrimmig==0 ~ NA_real_,
+  census1980$yrimmig==1980 ~ 1977.5,
+  census1980$yrimmig<1980 & census1980$yrimmig>1949 ~ census1980$yrimmig-2,
+  TRUE ~ 1940
+)
+table(census1980$yrimmig, census1980$yrimmig_mid, exclude=NULL)
+
+census1980$yrimmig_mid_sp <- case_when(
+  is.na(census1980$yrimmig_sp) | census1980$yrimmig_sp==0 ~ NA_real_,
+  census1980$yrimmig_sp==1980 ~ 1977.5,
+  census1980$yrimmig_sp<1980 & census1980$yrimmig_sp>1949 ~ census1980$yrimmig_sp-2,
+  TRUE ~ 1940
+)
+
+census1980$age_usa <- census1980$age-(1980-census1980$yrimmig_mid)
+census1980$age_usa <- ifelse(is.na(census1980$age_usa) | census1980$age_usa<0, 
+                             0, census1980$age_usa)
+summary(census1980$age_usa)
+census1980$age_usa_sp <- census1980$age_sp-(1980-census1980$yrimmig_mid_sp)
+census1980$age_usa_sp <- ifelse(is.na(census1980$age_usa_sp) | 
+                                  census1980$age_usa_sp<0, 
+                                0, census1980$age_usa_sp)
+summary(census1980$age_usa_sp)
+
+#ACS data
+#straightforward in ACS, but still get some negative values. Most of these are
+#just -1 values due to calendar year/birth year issues, but a few other cases
+#at older ages go back as far as -5. 
+acs$age_usa <- acs$age-acs$yr_usa
+acs$age_usa <- ifelse(is.na(acs$age_usa) | acs$age_usa<0, 0, acs$age_usa)
+summary(acs$age_usa)
+acs$age_usa_sp <- acs$age-acs$yr_usa_sp
+acs$age_usa_sp <- ifelse(is.na(acs$age_usa_sp) | acs$age_usa_sp<0, 
+                         0, acs$age_usa_sp)
+summary(acs$age_usa_sp)
+
 # Save alternate partner datasets -----------------------------------------
 
 # Need to create datasets of possible alternate partners for later analysis.

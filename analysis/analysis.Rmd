@@ -15,6 +15,8 @@ source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","models.RData"))
 load(here("analysis","output","alternates.RData"))
+load(here("analysis","output","models_bendog.RData"))
+
 
 my_palette <- c("#7b3294","#008837","#a6dba0")
 ```
@@ -341,7 +343,7 @@ alternates_acs %>%
 
 ### Race Reporting among Latinos
 
-```{r}
+```{r latino-race-reporting}
 alternates_acs %>%
   filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
                      "Guatemalan","Honduran","Nicaraguan","Panamanian",
@@ -916,6 +918,22 @@ df_fili %>%
 ```
 
 Filipino/Latino exogamy is considerably higher than E&SE Asian/Latino exogamy overall.
+
+## Comparison of Birth Endogamy Specifications
+
+```{r deviance-bendog}
+sapply(models_bendog, function(x) {-2*x$loglik[2]}) %>%
+  enframe(name="model",value="deviance") %>%
+  mutate(gen1.75=c("Birthplace","USA","Both",rep("USA",5),rep("Both",2)),
+         gen1.5 =c("Birthplace","USA","Both","Birthplace",rep("Both",2),
+                   rep("USA",2),"Birthplace","Both"),
+         gen1.25=c("Birthplace","USA","Both",rep("Birthplace",2),rep("Both",2),
+                   rep("Birthplace",3))) %>%
+  relocate(model, gen1.75, gen1.5, gen1.25, deviance) %>%
+  arrange(deviance) %>%
+  kbl(caption = "Deviance from models using different specifications of birthplace for 1.25, 1.5, and 1.75 generation") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
+```
 
 ## Full Model Output
 

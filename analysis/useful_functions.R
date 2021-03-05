@@ -178,8 +178,9 @@ create_unions <- function(census, years_mar, n_fakes) {
                      (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                      (is_single(marst) | dur_mar<=years_mar),
                    select=c("statefip","metarea","sex","hhwt","perwt","dur_mar","marst",
-                            "id","age","race","educ","bpld","language","marrno",
-                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp","marrno_sp"))
+                            "id","age","race","educ","bpld","language","marrno","age_usa",
+                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp",
+                            "marrno_sp","age_usa_sp"))
   
   # Actual couples who are within the marriage duration window of years_mar
   # both must be in a first time marriage for consistency with 1980 marriage
@@ -188,11 +189,11 @@ create_unions <- function(census, years_mar, n_fakes) {
                      !is.na(id_sp) & 
                      (marrno<2 & marrno_sp<2),
                    select=c("statefip","metarea","hhwt",
-                            "id","age","race","educ","bpld","language",
-                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp"))
+                            "id","age","race","educ","bpld","language","age_usa",
+                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp","age_usa_sp"))
   colnames(unions) <- c("statefip","metarea","hhwt",
-                        "idh","ageh","raceh","educh","bplh","languageh",
-                        "idw","agew","racew","educw","bplw","languagew")
+                        "idh","ageh","raceh","educh","bplh","languageh","age_usah",
+                        "idw","agew","racew","educw","bplw","languagew","age_usaw")
   unions <- na.omit(as.data.frame(unions))
   unions$metarea <- factor(as.character(unions$metarea))
   unions$statefip <- factor(as.character(unions$statefip))
@@ -200,9 +201,9 @@ create_unions <- function(census, years_mar, n_fakes) {
   # Alternate Male Partners
   male_alternates <- subset(census, sex=="Male",
                             select=c("statefip","metarea","id","perwt",
-                                     "age","race","educ","bpld","language"))
+                                     "age","race","educ","bpld","language","age_usa"))
   colnames(male_alternates) <- c("statefip","metarea","idh","perwt",
-                                 "ageh","raceh","educh","bplh","languageh")
+                                 "ageh","raceh","educh","bplh","languageh","age_usah")
   male_alternates <- na.omit(as.data.frame(male_alternates))
   male_alternates$metarea <- factor(as.character(male_alternates$metarea))
   male_alternates$statefip <- factor(as.character(male_alternates$statefip))
@@ -210,10 +211,9 @@ create_unions <- function(census, years_mar, n_fakes) {
   # Alternate Female Partners
   female_alternates <- subset(census, sex=="Female",
                               select=c("statefip","metarea","id","perwt",
-                                       "age","race","educ","bpld","language",
-                                       "perwt"))
+                                       "age","race","educ","bpld","language","age_usa"))
   colnames(female_alternates) <- c("statefip","metarea","idw", "perwt",
-                                   "agew","racew","educw","bplw","languagew")
+                                   "agew","racew","educw","bplw","languagew","age_usaw")
   female_alternates <- na.omit(as.data.frame(female_alternates))
   female_alternates$metarea <- factor(as.character(female_alternates$metarea))
   female_alternates$statefip <- factor(as.character(female_alternates$statefip))
@@ -230,8 +230,8 @@ add_vars <- function(markets) {
   #age difference 
   markets$agediff <- markets$ageh-markets$agew
   
-  #birthplace endogamy
-  markets$bpl_endog <- markets$bplh==markets$bplw
+  #birthplace endogamy - will produce several alternate specifications
+  markets <- code_birthplace_endog(markets)
   
   #language endogamy 
   markets$language_endog <- markets$languageh==markets$languagew
@@ -355,6 +355,81 @@ code_race_pentagon <- function(race) {
   
 }
 
+#code several different variables that indicate birthplace endogamy
+code_birthplace_endog <- function(markets) {
+  # I want to think carefully about how being a member of the 1.75 generation
+  # (0-5 at entry to US), 1.5 generation (6-12 at entry), and 1.25 generation
+  # (13-17 at entry) affect endogamy. I do this by how I consider endogamy, with
+  # three choices:
+  #
+  # USA - this group is considered to be US-born only for purposes of endogamy
+  # Both - this group is considered to be endogamous both with US and birthplace
+  # Birthplace - this group is considered to be endogamous with birthplace only
+  # 
+  # Given these different options, I can construct 10 different possible codings
+  # if we force the codings to be consistent so that a lower generation is never
+  # given a more "assimilated" coding than a higher generation
+  
+  #first create booleans for generations each spouse
+  is_h_1.75 <- markets$bplh!=1 & markets$age_usah<6
+  is_h_1.5  <- markets$bplh!=1 & markets$age_usah>5 & markets$age_usah<13
+  is_h_1.25 <- markets$bplh!=1 & markets$age_usah>12 & markets$age_usah<18
+  
+  is_w_1.75 <- markets$bplw!=1 & markets$age_usaw<6
+  is_w_1.5  <- markets$bplw!=1 & markets$age_usaw>5 & markets$age_usaw<13
+  is_w_1.25 <- markets$bplw!=1 & markets$age_usaw>12 & markets$age_usaw<18
+  
+  #now booleans for birthplace endog
+  birthplace_endog <- markets$bplh==markets$bplw
+  
+  #create switched birthplaces for USA endog, each one inclusive of laters
+  bplh_1.75 <- ifelse(is_h_1.75, 1, markets$bplh)
+  bplh_1.5  <- ifelse(is_h_1.75 | is_h_1.5, 1, markets$bplh)
+  bplh_1.25 <- ifelse(is_h_1.75 | is_h_1.5 | is_h_1.25, 1, markets$bplh)
+  
+  bplw_1.75 <- ifelse(is_w_1.75, 1, markets$bplw)
+  bplw_1.5  <- ifelse(is_w_1.75 | is_w_1.5, 1, markets$bplw)
+  bplw_1.25 <- ifelse(is_w_1.75 | is_w_1.5 | is_w_1.25, 1, markets$bplw)
+  
+  ## Create Variables ##
+  
+  ## Second Gen
+  #strictest coding treats all three cases the same as second gen (birthplace)
+  markets$bendog_all_second <- birthplace_endog
+  
+  ## Full USA - all are treated as born in the US
+  markets$bendog_all_usa <- bplh_1.25==bplw_1.25
+  
+  ## Full Flexibility - either birthplace or US is treated as endogamous for both
+  markets$bendog_all_flex <- bplh_1.25==bplw_1.25 | birthplace_endog
+  
+  ## Gradation 1: 1.75: USA, 1.5: Birthplace, 1.25: Birthplace
+  markets$bendog_grad1 <- bplh_1.75==bplw_1.75
+  
+  ## Gradation 3: 1.75: USA, 1.5: Both, 1.25: Both
+  markets$bendog_grad3 <- markets$bendog_grad1 | markets$bendog_all_usa
+  
+  ## Gradation 5: 1.75: USA, 1.5: USA, 1.25: Birthplace
+  markets$bendog_grad5 <- bplh_1.5==bplw_1.5
+
+  ## Gradation 4: 1.75: USA, 1.5: USA, 1.25: Both
+  markets$bendog_grad4 <- markets$bendog_grad5 | markets$bendog_all_usa
+  
+  ## Gradation 2: 1.75: USA, 1.5: Both, 1.25: Birthplace
+  markets$bendog_grad2 <-  markets$bendog_grad5 | markets$bendog_grad1
+  
+  ## Partial Flex 1: 1.75: Both, 1.5: Birthplace, 1.25: Birthplace
+  markets$bendog_flex1 <- bplh_1.75==bplw_1.75 | birthplace_endog
+  
+  ## Partial Flex 2: 1.75: Both, 1.5: Both, 1.25: Birthplace
+  markets$bendog_flex2 <- bplh_1.5==bplw_1.5 | birthplace_endog
+  
+  #TODO: need some checks on this
+  #summary(markets)
+  #table(markets$bendog_grad1, markets$bendog_grad2)
+  
+  return(markets)
+}
 
 # Functions for model output summaries ------------------------------------
 
