@@ -48,7 +48,7 @@ markets_acs_1980basis <- add_vars(markets_acs_1980basis)
 markets_acs_restricted <- add_vars(markets_acs_restricted)
 markets_acs_full <- add_vars(markets_acs_full)
 
-# Create functions --------------------------------------------------------
+# Create formulas --------------------------------------------------------
 
 #create formulas and put them into a list for faster processing of models
 
