@@ -33,6 +33,76 @@ load(here("analysis","output","markets_acs.RData"))
 #add variables to the market datasets
 markets_acs_full <- add_vars(markets_acs_full)
 
+
+# Some sanity checks ------------------------------------------------------
+
+#look at all husbands not born in the US and under 18 years of age when
+#migrated
+temp <- markets_acs_full %>%
+  filter(bplh!=1) %>%
+  mutate(genh=cut(age_usah, 
+                  breaks=c(-1,5,12,17,100), labels=c("gen1.75","gen1.5","gen1.25","gen2")),
+         genw=cut(age_usaw, 
+                  breaks=c(-1,5,12,17,100), labels=c("gen1.75","gen1.5","gen1.25","gen2")),
+         genw=ifelse(bplw==1, "native", as.character(genw))) %>%
+  select(group, idh, bplh,bplw,genh,genw,starts_with("bendog"))
+
+#where do we end up on endogamy parameter when wife is native?
+temp %>%
+  filter(genw=="native") %>%
+  group_by(genh) %>%
+  select(genh, starts_with("bendog")) %>%
+  summarize_all(mean) %>%
+  t()
+
+##Those all look correct
+
+#where do we end up on endogamy parameter when wife is the same birthplace?
+test <- temp %>%
+  filter(bplh==bplw) %>%
+  group_by(genh, genw) %>%
+  select(genh, genw, starts_with("bendog")) %>%
+  summarize_all(mean)
+
+#all look correct
+
+#lets do the same thing for wives to be sure
+temp <- markets_acs_full %>%
+  filter(bplw!=1) %>%
+  mutate(genw=cut(age_usaw, 
+                  breaks=c(-1,5,12,17,100), labels=c("gen1.75","gen1.5","gen1.25","gen2")),
+         genh=cut(age_usah, 
+                  breaks=c(-1,5,12,17,100), labels=c("gen1.75","gen1.5","gen1.25","gen2")),
+         genh=ifelse(bplh==1, "native", as.character(genh))) %>%
+  select(group, idh, bplh,bplw,genh,genw,starts_with("bendog"))
+
+#where do we end up on endogamy parameter when husband is native?
+temp %>%
+  filter(genh=="native") %>%
+  group_by(genw) %>%
+  select(genw, starts_with("bendog")) %>%
+  summarize_all(mean) %>%
+  t()
+
+##Those all look correct
+
+#where do we end up on endogamy parameter when wife is the same birthplace?
+test <- temp %>%
+  filter(bplh==bplw) %>%
+  group_by(genh, genw) %>%
+  select(genh, genw, starts_with("bendog")) %>%
+  summarize_all(mean)
+
+#looks correct
+
+#lets just make sure that everything works fine for natives
+markets_acs_full %>%
+  filter(bplw==bplh & bplw==1) %>%
+  select(starts_with("bendog")) %>%
+  summarize_all(mean)
+
+#everything looks good!
+
 # Create formulas --------------------------------------------------------
 
 #create formulas and put them into a list for faster processing of models
