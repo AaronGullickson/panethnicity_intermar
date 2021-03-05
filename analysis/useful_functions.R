@@ -296,6 +296,9 @@ add_vars <- function(markets) {
   markets$race_filipino_latino <- markets$race_exog_extended=="Latino.E&SE Asian" & 
     (markets$raceh=="Filipino" | markets$racew=="Filipino") 
   
+  markets$race_asianindian_aian <- markets$race_exog_extended=="AIAN.South Asian" & 
+    (markets$raceh=="Asian Indian" | markets$racew=="Asian Indian") 
+  
   #test
   #with(subset(markets, race_filipino_latino),
   #     table(raceh, racew))

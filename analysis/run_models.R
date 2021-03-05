@@ -134,3 +134,12 @@ save(models_census_pentagon, models_acs1980_pentagon, models_acsfull_pentagon,
      models_census_extended, models_acs1980_extended, models_acsres_extended,
      file=here("analysis","output","models.RData"))
 
+
+# Test Asian Indian/American Indian model ---------------------------------
+
+# model_sa.ai <- clogit(update(formulas_pentagon$both, 
+#                              .~.+race_asianindian_aian), 
+#                       data=markets_acs_full,
+#                       method="efron")
+
+#Commenting out because it has model-fitting issues.
