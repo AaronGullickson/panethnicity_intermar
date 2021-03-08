@@ -71,7 +71,7 @@ formula_base <- formula(choice~agediff+I(agediff^2)+
                           hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
                           race_exog_extended+race_filipino_latino+
                           strata(group))
-formula_bendog <- update(formula_base, .~.+bendox_flex2)
+formula_bendog <- update(formula_base, .~.+bendog_flex2)
 formula_lendog <- update(formula_base, .~.+language_endog)
 formula_both <- update(formula_bendog, .~.+language_endog)
 
