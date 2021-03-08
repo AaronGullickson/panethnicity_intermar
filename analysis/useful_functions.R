@@ -37,8 +37,8 @@ code_census_variables <- function(census) {
   # ultimately all we need to know is whether the two partners speak the same
   # language. We should however code in any missing values (0), although 
   # there do not appear to be any.
-  census$language <- ifelse(census$language==0, NA, census$language)
-  census$language_sp <- ifelse(census$language_sp==0, NA, census$language_sp)
+  census$lang <- code_language(census$languaged)
+  census$lang_sp <- code_language(census$languaged_sp)
   
   # Country of Birth 
   # The general codes are way to general. The detailed codes have some
@@ -154,6 +154,60 @@ code_bpl <- function(bpld) {
                 ifelse(bpld<10000,1,bpld)))
 }
 
+code_language <- function(language) {
+  #I need to use the detailed language codes as the general language codes 
+  #are too general. However the detailed language codes are too detailed in 
+  #some places, particularly in translating between the two time periods. Thus
+  #I make some corrections to the detailed codes for consistency between the
+  #two time periods.
+  
+  lang_recode <- language
+  
+  #the following cases will be collapsed to the their top two digit codes
+  #(starting at the 100 levels)
+  #1:27 - European language groups (e.g. English, French, German)
+  #35: Uralic
+  #37: Other Altaic
+  #43: Chinese
+  #47: Thai/Siamese/Lao (not separable in 1980)
+  #52: Indonesian
+  #53: Other Malay
+  #58:  Near East Arabic Dialect
+  collapsed_cases <- c(1:24,35,37,43,47,52,53,58)
+  collapsed_language <- floor(language/100)
+  lang_recode <- ifelse(collapsed_language %in% collapsed_cases,
+                        collapsed_language*100, lang_recode)
+  
+  #A couple of cases need to be put back into there other categories
+  #420: Afrikaans
+  #1140: Haitian Creole
+  #1150: Cajun
+  #2310: Croatian
+  #2320: Serbian
+  uncollapsed_cases <- c(420,1140,1150,2310,2320)
+  lang_recode <- ifelse(language %in% uncollapsed_cases,
+                        language, lang_recode)
+  
+  #put malay and other malay together
+  lang_recode <- ifelse(language==5270, 5300, lang_recode)
+  
+  #For 1980 consistency put all American Indian languages in one group
+  lang_recode <- ifelse(lang_recode>7000 & lang_recode<=9300, 7000, 
+                        lang_recode)
+  
+  #A few cases are "other" or "nec". These will be recoded as -1 and
+  #not treated as endogamy with each other
+  nec_codes <- c(3140,3150,3190,5290,6200,6390,6400,9400,9410,9420,9500,
+                 9600,9601,9602,9999)
+  lang_recode <- ifelse(lang_recode %in% nec_codes, -1, lang_recode)
+  
+  #code any missing values 
+  lang_recode <- ifelse(lang_recode==0, NA, lang_recode)
+  
+  return(lang_recode)
+  
+}
+
 is_single <- function(marst) {
   #I am going to consider separated people as single here
   return(marst!="Married, spouse present" & marst!="Married, spouse absent")
@@ -178,8 +232,8 @@ create_unions <- function(census, years_mar, n_fakes) {
                      (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                      (is_single(marst) | dur_mar<=years_mar),
                    select=c("statefip","metarea","sex","hhwt","perwt","dur_mar","marst",
-                            "id","age","race","educ","bpld","language","marrno","age_usa",
-                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp",
+                            "id","age","race","educ","bpld","lang","marrno","age_usa",
+                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","lang_sp",
                             "marrno_sp","age_usa_sp"))
   
   # Actual couples who are within the marriage duration window of years_mar
@@ -189,8 +243,9 @@ create_unions <- function(census, years_mar, n_fakes) {
                      !is.na(id_sp) & 
                      (marrno<2 & marrno_sp<2),
                    select=c("statefip","metarea","hhwt",
-                            "id","age","race","educ","bpld","language","age_usa",
-                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp","language_sp","age_usa_sp"))
+                            "id","age","race","educ","bpld","lang","age_usa",
+                            "id_sp","age_sp","race_sp","educ_sp","bpld_sp",
+                            "lang_sp","age_usa_sp"))
   colnames(unions) <- c("statefip","metarea","hhwt",
                         "idh","ageh","raceh","educh","bplh","languageh","age_usah",
                         "idw","agew","racew","educw","bplw","languagew","age_usaw")
@@ -201,7 +256,7 @@ create_unions <- function(census, years_mar, n_fakes) {
   # Alternate Male Partners
   male_alternates <- subset(census, sex=="Male",
                             select=c("statefip","metarea","id","perwt",
-                                     "age","race","educ","bpld","language","age_usa"))
+                                     "age","race","educ","bpld","lang","age_usa"))
   colnames(male_alternates) <- c("statefip","metarea","idh","perwt",
                                  "ageh","raceh","educh","bplh","languageh","age_usah")
   male_alternates <- na.omit(as.data.frame(male_alternates))
@@ -211,7 +266,7 @@ create_unions <- function(census, years_mar, n_fakes) {
   # Alternate Female Partners
   female_alternates <- subset(census, sex=="Female",
                               select=c("statefip","metarea","id","perwt",
-                                       "age","race","educ","bpld","language","age_usa"))
+                                       "age","race","educ","bpld","lang","age_usa"))
   colnames(female_alternates) <- c("statefip","metarea","idw", "perwt",
                                    "agew","racew","educw","bplw","languagew","age_usaw")
   female_alternates <- na.omit(as.data.frame(female_alternates))
@@ -234,7 +289,9 @@ add_vars <- function(markets) {
   markets <- code_birthplace_endog(markets)
   
   #language endogamy 
-  markets$language_endog <- markets$languageh==markets$languagew
+  # The -1 cases are NEC languages, so we assume non-endogamous
+  markets$language_endog <- ifelse(markets$languageh<0 | markets$languagew<0, 
+                                   FALSE, markets$languageh==markets$languagew)
   
   #educational hypergamy/hypogamy
   markets$hypergamy <- markets$educh > markets$educw

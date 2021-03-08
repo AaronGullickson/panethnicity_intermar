@@ -27,14 +27,14 @@ set.seed(39)
 
 
 census1980 <- read_fwf(here("analysis","input","census1980","usa_00105.dat.gz"), 
-                       col_positions = fwf_positions(start = c(1, 9,19,21,28,32,42,43,46,47,48,51,55,61,66,70,72,78,81,85,88,89,92,95,100,104,106,110),
-                                                     end   = c(8,18,20,23,31,41,42,45,46,47,49,53,57,65,69,71,75,80,84,87,88,91,94,99,103,105,109,112),
+                       col_positions = fwf_positions(start = c(1, 9,19,21,28,32,42,43,46,47,48,51,55,61,66,72,78,81,85,88,89,92,95,100,106,110),
+                                                     end   = c(8,18,20,23,31,41,42,45,46,47,49,53,57,65,69,75,80,84,87,88,91,94,99,103,109,112),
                                                      col_names = c("serial","hhwt","statefip","metarea",
                                                                    "pernum","perwt","sex","age","marst","marrno",
                                                                    "agemarr","raced","hispand","bpld","yrimmig",
-                                                                   "language","languaged","educd","pernum_sp","age_sp","marrno_sp",
+                                                                   "languaged","educd","pernum_sp","age_sp","marrno_sp",
                                                                    "raced_sp","hispand_sp","bpld_sp","yrimmig_sp",
-                                                                   "language_sp","languaged_sp","educd_sp")),
+                                                                   "languaged_sp","educd_sp")),
                        col_types = cols(.default = "i"),
                        progress = FALSE)
 #I had to cut out year for size reasons
@@ -42,13 +42,13 @@ census1980$year <- 1980
 
 #ACS data is split into three separate files for size, but the indices are 
 #identical
-acs_start <- c(1, 5,13,23,25,30,34,44,45,48,49,50,51,56,60,66,71,75,77,83,86,90,93,94,97,100,105,109,111,115)
-acs_end   <- c(4,12,22,24,29,33,43,44,47,48,49,50,54,58,62,70,74,76,80,85,89,92,93,96,99,104,108,110,114,117)
+acs_start <- c(1, 5,13,23,25,30,34,44,45,48,49,50,51,56,60,66,71,77,83,86,90,93,94,97,100,105,111,115)
+acs_end   <- c(4,12,22,24,29,33,43,44,47,48,49,50,54,58,62,70,74,80,85,89,92,93,96,99,104,108,114,117)
 acs_names <- c("year","serial","hhwt","statefip","metarea","pernum","perwt",
                "sex","age","marst","marrno","marrinyr","yrmarr","raced",
-               "hispand","bpld","yrimmig","language","languaged","educd","pernum_sp",
+               "hispand","bpld","yrimmig","languaged","educd","pernum_sp",
                "age_sp","marrno_sp","raced_sp","hispand_sp","bpld_sp",
-               "yrimmig_sp","language_sp","languaged_sp","educd_sp")
+               "yrimmig_sp","languaged_sp","educd_sp")
 
 acs <- rbind(read_fwf(here("analysis","input","acs1418","usa_00106.dat.gz"),
                       col_positions = fwf_positions(start = acs_start,
@@ -167,14 +167,14 @@ alternates_census <- subset(census1980, (is.na(yr_usa) | yr_usa>years_mar) &
                               (is_single(marst) | dur_mar<=years_mar),
                             select=c("statefip","metarea","sex","hhwt","perwt",
                                      "marst","age","race","educ","bpld","yr_usa",
-                                     "language","languaged","raced","hispand"))
+                                     "lang","raced","hispand"))
 
 alternates_acs <- subset(acs, (is.na(yr_usa) | yr_usa>years_mar) & 
                            (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                            (is_single(marst) | dur_mar<=years_mar),
                          select=c("statefip","metarea","sex","hhwt","perwt",
                                   "marst","age","race","educ","bpld","yr_usa",
-                                  "language","languaged","raced","hispand"))
+                                  "lang_sp","raced","hispand"))
 
 save(alternates_census, alternates_acs, 
      file=here("analysis","output","alternates.RData"))
