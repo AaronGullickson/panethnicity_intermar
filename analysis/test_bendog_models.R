@@ -28,17 +28,17 @@
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
-load(here("analysis","output","markets_acs.RData"))
+load(here("analysis","output","markets_acs_full.RData"))
 
 #add variables to the market datasets
-markets_acs_full <- add_vars(markets_acs_full)
+markets_acs_full <- mclapply(markets_acs_full, add_vars)
 
 
 # Some sanity checks ------------------------------------------------------
 
 #look at all husbands not born in the US and under 18 years of age when
 #migrated
-temp <- markets_acs_full %>%
+temp <- markets_acs_full[[1]] %>%
   filter(bplh!=1) %>%
   mutate(genh=cut(age_usah, 
                   breaks=c(-1,5,12,17,100), labels=c("gen1.75","gen1.5","gen1.25","gen2")),
@@ -67,7 +67,7 @@ test <- temp %>%
 #all look correct
 
 #lets do the same thing for wives to be sure
-temp <- markets_acs_full %>%
+temp <- markets_acs_full[[1]] %>%
   filter(bplw!=1) %>%
   mutate(genw=cut(age_usaw, 
                   breaks=c(-1,5,12,17,100), labels=c("gen1.75","gen1.5","gen1.25","gen2")),
@@ -96,7 +96,7 @@ test <- temp %>%
 #looks correct
 
 #lets just make sure that everything works fine for natives
-markets_acs_full %>%
+markets_acs_full[[1]] %>%
   filter(bplw==bplh & bplw==1) %>%
   select(starts_with("bendog")) %>%
   summarize_all(mean)
@@ -125,9 +125,9 @@ model_formulae <- list(all_second=update(formula_base, .~.+bendog_all_second),
 
 models_bendog <- mclapply(model_formulae,
                           function(formula) {
-                            summary(clogit(formula, 
-                                           data=markets_acs_full,
-                                           method="efron"))
+                            poolChoiceModel(formula, 
+                                            data=markets_acs_full,
+                                            method="efron")
                           })
 
 save(models_bendog, file=here("analysis","output","models_bendog.RData"))
