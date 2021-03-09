@@ -949,11 +949,9 @@ I created dummy variables for birthplace endogamy based on these 10 options and 
 ```{r deviance-bendog}
 sapply(models_bendog, function(x) {-2*x$loglik[2]}) %>%
   enframe(name="model",value="deviance") %>%
-  mutate(gen1.75=c("Birthplace","USA","Both",rep("USA",5),rep("Both",2)),
-         gen1.5 =c("Birthplace","USA","Both","Birthplace",rep("Both",2),
-                   rep("USA",2),"Birthplace","Both"),
-         gen1.25=c("Birthplace","USA","Both",rep("Birthplace",2),rep("Both",2),
-                   rep("Birthplace",3))) %>%
+  mutate(gen1.75=c("Birthplace","USA","Both","USA",       "USA",       "USA",       "USA", "USA", "Both",      "Both"),
+         gen1.5 =c("Birthplace","USA","Both","Both",      "Birthplace","USA",       "Both","USA", "Birthplace","Both"),
+         gen1.25=c("Birthplace","USA","Both","Birthplace","Birthplace","Birthplace","Both","Both","Birthplace","Birthplace")) %>%
   relocate(model, gen1.75, gen1.5, gen1.25, deviance) %>%
   arrange(deviance) %>%
   kbl(caption = "Deviance from models using different specifications of birthplace for 1.25, 1.5, and 1.75 generation") %>%

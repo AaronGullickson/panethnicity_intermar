@@ -112,16 +112,16 @@ formula_base <- formula(choice~agediff+I(agediff^2)+
                           hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
                           race_exog_pent+language_endog+
                           strata(group))
-model_formulae <- list(all_second=update(formula_base, .~.+bendog_all_second),
-                       all_usa=update(formula_base, .~.+bendog_all_usa),
+model_formulae <- list(all_first=update(formula_base, .~.+bendog_all_first),
+                       all_second=update(formula_base, .~.+bendog_all_second),
                        all_flex=update(formula_base, .~.+bendog_all_flex),
-                       grad1=update(formula_base, .~.+bendog_grad1),
-                       grad2=update(formula_base, .~.+bendog_grad2),
-                       grad3=update(formula_base, .~.+bendog_grad3),
-                       grad4=update(formula_base, .~.+bendog_grad4),
-                       grad5=update(formula_base, .~.+bendog_grad5),
-                       flex1=update(formula_base, .~.+bendog_flex1),
-                       flex2=update(formula_base, .~.+bendog_flex2))
+                       full_grade=update(formula_base, .~.+bendog_full_grade),
+                       steep_grade1.75=update(formula_base, .~.+bendog_steep_grade1.75),
+                       steep_grade1.5=update(formula_base, .~.+bendog_steep_grade1.5),
+                       slight_grade1.75=update(formula_base, .~.+bendog_slight_grade1.75),
+                       slight_grade1.5=update(formula_base, .~.+bendog_slight_grade1.5),
+                       partial_flex1.75=update(formula_base, .~.+bendog_partial_flex1.75),
+                       partial_flex1.5=update(formula_base, .~.+bendog_partial_flex1.5))
 
 models_bendog <- mclapply(model_formulae,
                           function(formula) {

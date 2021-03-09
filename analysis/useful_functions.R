@@ -456,36 +456,41 @@ code_birthplace_endog <- function(markets) {
   
   ## Create Variables ##
   
-  ## Second Gen
+  ## All First Gen
   #strictest coding treats all three cases the same as second gen (birthplace)
-  markets$bendog_all_second <- birthplace_endog
+  markets$bendog_all_first <- birthplace_endog
   
-  ## Full USA - all are treated as born in the US
-  markets$bendog_all_usa <- bplh_1.25==bplw_1.25
+  ## All Second Gen
+  ## all are treated as born in the US
+  markets$bendog_all_second <- bplh_1.25==bplw_1.25
   
-  ## Full Flexibility - either birthplace or US is treated as endogamous for both
+  ## All Flex
+  ## either birthplace or US is treated as endogamous for all
   markets$bendog_all_flex <- bplh_1.25==bplw_1.25 | birthplace_endog
   
-  ## Gradation 1: 1.75: USA, 1.5: Birthplace, 1.25: Birthplace
-  markets$bendog_grad1 <- bplh_1.75==bplw_1.75
-  
-  ## Gradation 3: 1.75: USA, 1.5: Both, 1.25: Both
-  markets$bendog_grad3 <- markets$bendog_grad1 | markets$bendog_all_usa
-  
-  ## Gradation 5: 1.75: USA, 1.5: USA, 1.25: Birthplace
-  markets$bendog_grad5 <- bplh_1.5==bplw_1.5
+  ## Steep Grade (1.75): 1.75: USA, 1.5: Birthplace, 1.25: Birthplace
+  markets$bendog_steep_grade1.75 <- bplh_1.75==bplw_1.75
 
-  ## Gradation 4: 1.75: USA, 1.5: USA, 1.25: Both
-  markets$bendog_grad4 <- markets$bendog_grad5 | markets$bendog_all_usa
+  ## Steep Grade (1.5): 1.75: USA, 1.5: USA, 1.25: Birthplace
+  markets$bendog_steep_grade1.5 <- bplh_1.5==bplw_1.5
   
-  ## Gradation 2: 1.75: USA, 1.5: Both, 1.25: Birthplace
-  markets$bendog_grad2 <-  markets$bendog_grad5 | markets$bendog_grad1
+  ## Slight Grade (1.75): 1.75: USA, 1.5: Both, 1.25: Both
+  markets$bendog_slight_grade1.75 <- markets$bendog_steep_grade1.75 | 
+    markets$bendog_all_second
+ 
+  ## Slight Grade (1.5): 1.75: USA, 1.5: USA, 1.25: Both
+  markets$bendog_slight_grade1.5 <- markets$bendog_steep_grade1.5 | 
+    markets$bendog_all_second
   
-  ## Partial Flex 1: 1.75: Both, 1.5: Birthplace, 1.25: Birthplace
-  markets$bendog_flex1 <- bplh_1.75==bplw_1.75 | birthplace_endog
+  ## Full Grade: 1.75: USA, 1.5: Both, 1.25: Birthplace
+  markets$bendog_full_grade <-  markets$bendog_steep_grade1.5 | 
+    markets$bendog_steep_grade1.75
   
-  ## Partial Flex 2: 1.75: Both, 1.5: Both, 1.25: Birthplace
-  markets$bendog_flex2 <- bplh_1.5==bplw_1.5 | birthplace_endog
+  ## Partial Flex (1.5): 1.75: Both, 1.5: Birthplace, 1.25: Birthplace
+  markets$bendog_partial_flex1.75 <- bplh_1.75==bplw_1.75 | birthplace_endog
+  
+  ## Partial Flex (1.75): 1.75: Both, 1.5: Both, 1.25: Birthplace
+  markets$bendog_partial_flex1.5 <- bplh_1.5==bplw_1.5 | birthplace_endog
   
   return(markets)
 }
