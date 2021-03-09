@@ -542,7 +542,7 @@ coefs_pent %>%
   theme(legend.position = "right")
 ```
 
-the results here are quite similar to the E&SE Asian case. The baseline ethnic exogamy is even higher and the increases with birthplace and language endogamy controls put ethnic exogamy at almost the exact same value as for E&SE Asians. It suggests to "ethnic" melting pots for Asians. 
+the results here are quite similar to the E&SE Asian case. The baseline ethnic exogamy is even higher and the increases with birthplace and language endogamy controls put ethnic exogamy at almost the exact same value as for E&SE Asians. It suggests two "ethnic" melting pots for Asians. 
 
 ```{r south-asian-exog-compare-dot}
 coefs_pent %>%
