@@ -106,36 +106,46 @@ alternates_acs %>%
                      "Filipino","Cambodian","Hmong","Laotian",
                      "Thai","Burmese","Indonesian","Malaysian")) %>%
   mutate(lang=factor(case_when(
-    language==1 ~ "English",
-    language==37 ~ "Other Altaic",
-    language>=40 & language <=42 ~ "Dravidian",
-    language==43 ~ "Chinese",
-    language==44 ~ "Tibetan",
-    language==45 ~ "Burmese, Lisu, Lolo",
-    language==46 ~ "Kachin",
-    language==47 ~ "Thai, Siamese, Lao",
-    language==48 ~ "Japanese",
-    language==49 ~ "Korean",
-    language==50 ~ "Vietnamese",
-    language==51 ~ "Other E&SE Language",
-    language==52 ~ "Indonesian",
-    language==53 ~ "Other Malayan",
-    language==54 ~ "Filipino, Tagalog",
+    lang==100 ~ "English",
+    lang==4300 ~ "Chinese",
+    lang==5400 ~ "Filipino, Tagalog",
+    lang==5000 ~ "Vietnamese",
+    lang==4900 ~ "Korean",
+    lang==4800 ~ "Japanese",
+    lang==4700 ~ "Thai, Siamese, Lao",
+    lang==4420 ~ "Miao, Hmong",
+    lang==5120 ~ "Mon-Khmer, Cambodian",
+    lang==5440 ~ "Llocano, Hocano",
+    lang==5200 ~ "Indonesian",
+    lang==1200 ~ "Spanish",
+    lang==4500 ~ "Burmese, Lisu, Lolo",
+    lang==5420 ~ "Sebuano",
+    lang==4430 ~ "Iu Mien",
+    lang==4510 ~ "Karen",
+    lang==5410 ~ "Bisayan",
+    lang==4410 ~ "Miao-Yao, Mien",
+    lang==5300 ~ "Malay",
+    lang==1100 ~ "French",
+    lang>=4000 & lang<5500 ~ "Other Asian Language",
     TRUE ~ "Other Language"),
     levels=c("English","Chinese","Japanese","Korean","Vietnamese",
-             "Filipino, Tagalog","Thai, Siamese, Lao","Tibetan",
-             "Burmese, Lisu, Lolo","Indonesian","Other Malayan","Kachin",
-             "Dravidian","Other Altaic","Other E&SE Language",
+             "Thai, Siamese, Lao","Mon-Khmer, Cambodian",
+             "Burmese, Lisu, Lolo","Karen",
+             "Filipino, Tagalog","Bisayan","Sebuano","Llocano, Hocano",
+             "Miao, Hmong","Iu Mien","Miao-Yao, Mien",
+             "Indonesian","Malay",
+             "Other Asian Language",
+             "Spanish","French",
              "Other Language")),
     race=fct_reorder(race, lang=="English", mean)
   ) %>%
-  select(race, lang, language) %>%
+  select(race, lang) %>%
   droplevels() %>%
   ggplot(aes(x=race, fill=fct_rev(lang)))+
   geom_bar(position="fill")+
   scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
                                "tomato","sienna","orchid","royalblue","maroon",
-                               "paleturquoise1","grey30"))+
+                               brewer.pal(7,"Set1"),"paleturquoise1","grey30"))+
   scale_y_continuous(labels = scales::percent)+
   labs(x=NULL, y="cumulative percent",
        title="Language use among E&SE Asian ethnic groups",
@@ -152,18 +162,29 @@ alternates_acs %>%
   filter(race %in% c("Asian Indian","Bangladeshi",
                      "Pakistani","Sri Lankan")) %>%
   mutate(lang=factor(case_when(
-    language==1 ~ "English",
-    language>=40 & language <=42 ~ "Dravidian",
-    language==31 ~ "Hindi and related",
+    lang==100 ~ "English",
+    lang==3101 ~ "Hindi/Urdu",
+    lang==3115 ~ "Gujarathi",
+    lang==3113 ~ "Panjabi",
+    lang==3112 ~ "Bengali",
+    lang==3123 ~ "Sinhalese",
+    lang==4003 ~ "Telugu",
+    lang==4005 ~ "Tamil",
+    lang==4004 ~ "Malayalam",
+    lang==3114 ~ "Marathi",
+    lang==3010 ~ "Pashto, Afghan",
     TRUE ~ "Other Language"),
-    levels=c("English","Dravidian","Hindi and related","Other Language")),
+    levels=c("English","Hindi/Urdu","Gujarathi","Panjabi","Bengali",
+             "Marathi","Sinhalese","Telugu","Tamil","Malayalam",
+             "Pashto, Afghan","Other Language")),
     race=fct_reorder(race, lang=="English", mean)
   ) %>%
-  select(race, lang, language) %>%
+  select(race, lang) %>%
   droplevels() %>%
   ggplot(aes(x=race, fill=fct_rev(lang)))+
   geom_bar(position="fill")+
-  scale_fill_manual(values = c("grey","royalblue","orchid","grey30"))+
+  scale_fill_manual(values = c("grey",brewer.pal(4, "Dark2"),
+                               brewer.pal(6, "Pastel1"),"grey30"))+
   scale_y_continuous(labels = scales::percent)+
   labs(x=NULL, y="cumulative percent",
        title="Language use among South Asian ethnic groups",
@@ -183,13 +204,13 @@ alternates_acs %>%
                      "Colombian","Ecuadorian","Paraguayan","Peruvian",
                      "Uruguayan","Venezuelan","Dominican")) %>%
   mutate(lang=factor(case_when(
-    language==1 ~ "English",
-    language==12 ~ "Spanish",
+    lang==100 ~ "English",
+    lang==1200 ~ "Spanish",
     TRUE ~ "Other Language"),
     levels=c("English","Spanish","Other Language")),
     race=fct_reorder(race, lang=="English", mean)
   ) %>%
-  select(race, lang, language) %>%
+  select(race, lang) %>%
   droplevels() %>%
   ggplot(aes(x=race, fill=fct_rev(lang)))+
   geom_bar(position="fill")+
@@ -521,7 +542,7 @@ coefs_pent %>%
   theme(legend.position = "right")
 ```
 
-Language and birthplace endogamy both increase the estimate of ethnic exogamy. The odds of ethnic exogamy are more substantial than for Latinos but less than for E&SE Asians. Its worth noting that in the current language code, Urdu and Hindi are considered language endogamous, which is probably the correct way to do it.
+the results here are quite similar to the E&SE Asian case. The baseline ethnic exogamy is even higher and the increases with birthplace and language endogamy controls put ethnic exogamy at almost the exact same value as for E&SE Asians. It suggests to "ethnic" melting pots for Asians. 
 
 ```{r south-asian-exog-compare-dot}
 coefs_pent %>%
