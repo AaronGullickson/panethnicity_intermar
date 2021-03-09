@@ -191,13 +191,16 @@ code_language <- function(language) {
   #put malay and other malay together
   lang_recode <- ifelse(language==5270, 5300, lang_recode)
   
+  #collapse Hindi and Urdu into 3101 (Hindustani)
+  lang_recode <- ifelse(language>3101 & language<=3104, 3101, lang_recode)
+  
   #For 1980 consistency put all American Indian languages in one group
   lang_recode <- ifelse(lang_recode>7000 & lang_recode<=9300, 7000, 
                         lang_recode)
   
   #A few cases are "other" or "nec". These will be recoded as -1 and
   #not treated as endogamy with each other
-  nec_codes <- c(3140,3150,3190,5290,6200,6390,6400,9400,9410,9420,9500,
+  nec_codes <- c(3140,3150,3190,5290,5590,6200,6390,6400,9400,9410,9420,9500,
                  9600,9601,9602,9999)
   lang_recode <- ifelse(lang_recode %in% nec_codes, -1, lang_recode)
   
