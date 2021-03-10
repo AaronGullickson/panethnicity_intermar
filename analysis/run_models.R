@@ -87,14 +87,14 @@ formulas_extended <- list(base=formula_base,
 #saving the model summary output should be fine
 
 ### First run comparable pentagon models for census and ACS
-models_census_pentagon <- mclapply(formulas_pentagon,
+models_census_pentagon <- lapply(formulas_pentagon,
                                    function(formula) {
                                      poolChoiceModel(formula,
                                                      data=markets_census,
                                                      method="efron")
                                    })
 
-models_acs1980_pentagon <- mclapply(formulas_pentagon,
+models_acs1980_pentagon <- lapply(formulas_pentagon,
                                     function(formula) {
                                       poolChoiceModel(formula, 
                                                       data=markets_acs_1980basis,
@@ -102,7 +102,7 @@ models_acs1980_pentagon <- mclapply(formulas_pentagon,
                                     })
 
 ### Then run a pentagon model on the ACS data with full set of ethnic groups
-models_acsfull_pentagon <- mclapply(formulas_pentagon,
+models_acsfull_pentagon <- lapply(formulas_pentagon,
                                     function(formula) {
                                       poolChoiceModel(formula, 
                                                       data=markets_acs_full,
@@ -110,14 +110,14 @@ models_acsfull_pentagon <- mclapply(formulas_pentagon,
                                     })
 
 ## Now try extended models for the 1980 basis data
-models_census_extended <- mclapply(formulas_extended,
+models_census_extended <- lapply(formulas_extended,
                                    function(formula) {
                                      poolChoiceModel(formula, 
                                                      data=markets_census,
                                                      method="efron")
                                    })
 
-models_acs1980_extended <- mclapply(formulas_extended,
+models_acs1980_extended <- lapply(formulas_extended,
                                    function(formula) {
                                      poolChoiceModel(formula, 
                                                      data=markets_acs_1980basis,
@@ -125,7 +125,7 @@ models_acs1980_extended <- mclapply(formulas_extended,
                                    })
 
 ### Now try an extended model for the ACS data
-models_acsres_extended <- mclapply(formulas_extended,
+models_acsres_extended <- lapply(formulas_extended,
                                    function(formula) {
                                      poolChoiceModel(formula, 
                                                      data=markets_acs_restricted,

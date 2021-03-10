@@ -123,7 +123,7 @@ model_formulae <- list(all_second=update(formula_base, .~.+bendog_all_second),
                        flex1=update(formula_base, .~.+bendog_flex1),
                        flex2=update(formula_base, .~.+bendog_flex2))
 
-models_bendog <- mclapply(model_formulae,
+models_bendog <- lapply(model_formulae,
                           function(formula) {
                             poolChoiceModel(formula, 
                                             data=markets_acs_full,

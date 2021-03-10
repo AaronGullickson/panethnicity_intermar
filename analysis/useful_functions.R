@@ -277,9 +277,12 @@ create_unions <- function(census, years_mar, n_fakes) {
   female_alternates$statefip <- factor(as.character(female_alternates$statefip))
   
   # Sample Counterfactual Spouses 
-  markets <- generateCouples(n_fakes, 
-                             unions, male_alternates, female_alternates,
-                             geo="statefip", weight="perwt", verbose=FALSE)
+  markets <- replicate(5,
+                       generateCouples(n_fakes, unions, male_alternates, 
+                                       female_alternates, geo="statefip", 
+                                       weight="perwt", verbose=FALSE),
+                       simplify=FALSE)
+  
   return(markets)
 }
 
