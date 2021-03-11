@@ -225,7 +225,7 @@ is_single <- function(marst) {
 #of who will be considered. Its important to keep in mind that intervalled
 #nature of years in the USA for the census 1980 data. years_mar that is not
 #consistent with those intervals can create problems
-create_unions <- function(census, years_mar, n_fakes) {
+create_unions <- function(census, years_mar, n_fakes, n_samples=3) {
   
   # eliminate individuals who:
   # a) have been in the USA less than the marriage window
@@ -277,7 +277,7 @@ create_unions <- function(census, years_mar, n_fakes) {
   female_alternates$statefip <- factor(as.character(female_alternates$statefip))
   
   # Sample Counterfactual Spouses 
-  markets <- replicate(5,
+  markets <- replicate(n_samples,
                        generateCouples(n_fakes, unions, male_alternates, 
                                        female_alternates, geo="statefip", 
                                        weight="perwt", verbose=FALSE),

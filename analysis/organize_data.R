@@ -192,13 +192,13 @@ census1980$race <- factor(census1980$race,
                           levels=race_lvls1980)
 census1980$race_sp <- factor(census1980$race_sp,
                              levels=race_lvls1980)
-markets_census <- create_unions(census1980, years_mar, 25)
+markets_census <- create_unions(census1980, years_mar, 20)
 save(markets_census, 
      file=here("analysis","output","markets_census.RData"))
 rm(markets_census)
 
 #for the ACS, first calculate one based on the full racial categories
-markets_acs_full <- create_unions(acs, years_mar, 25)
+markets_acs_full <- create_unions(acs, years_mar, 20)
 save(markets_acs_full, 
      file=here("analysis","output","markets_acs_full.RData"))
 rm(markets_acs_full)
@@ -214,7 +214,7 @@ restricted_race <- sort(c("White","Black","AIAN",
                           "Pakistani")) #extra
 acs$race <- factor(acs$race, levels=restricted_race)
 acs$race_sp <- factor(acs$race_sp, levels=restricted_race)
-markets_acs_restricted <- create_unions(acs, years_mar, 25)
+markets_acs_restricted <- create_unions(acs, years_mar, 20)
 save(markets_acs_restricted, 
      file=here("analysis","output","markets_acs_restricted.RData"))
 rm(markets_acs_restricted)
@@ -223,7 +223,7 @@ rm(markets_acs_restricted)
 #that will have groups consistent with Census 1980
 acs$race <- factor(acs$race, levels=race_lvls1980)
 acs$race_sp <- factor(acs$race_sp, levels=race_lvls1980)
-markets_acs_1980basis <- reate_unions(acs, years_mar, 25)
+markets_acs_1980basis <- create_unions(acs, years_mar, 20)
 save(markets_acs_1980basis, 
      file=here("analysis","output","markets_acs_1980basis.RData"))
 rm(markets_acs_1980basis)
