@@ -947,7 +947,7 @@ With three groups and three options, there are 27 possible options for how to co
 I created dummy variables for birthplace endogamy based on these 10 options and then ran a model on the ACS data with each dummy variable. I used the ACS data with the fullest set of ethnic groups, racial pentagon coding, and controls for age, educational assortative mating, and language endogamy. The results below show the deviance for each of the ten models, ranked from lowest deviance to highest deviance.
 
 ```{r deviance-bendog}
-sapply(models_bendog, function(x) {-2*x$loglik[2]}) %>%
+sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
   enframe(name="model",value="deviance") %>%
   mutate(gen1.75=c("Birthplace","USA","Both",rep("USA",5),rep("Both",2)),
          gen1.5 =c("Birthplace","USA","Both","Birthplace",rep("Both",2),
