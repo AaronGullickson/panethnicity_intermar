@@ -31,7 +31,7 @@ source(here("analysis","useful_functions.R"))
 load(here("analysis","output","markets_acs_full.RData"))
 
 #add variables to the market datasets
-markets_acs_full <- mclapply(markets_acs_full, add_vars)
+markets_acs_full <- lapply(markets_acs_full, add_vars)
 
 
 # Some sanity checks ------------------------------------------------------
@@ -124,10 +124,10 @@ model_formulae <- list(all_second=update(formula_base, .~.+bendog_all_second),
                        flex2=update(formula_base, .~.+bendog_flex2))
 
 models_bendog <- lapply(model_formulae,
-                          function(formula) {
-                            poolChoiceModel(formula, 
-                                            data=markets_acs_full,
-                                            method="efron")
-                          })
+                        function(formula) {
+                          poolChoiceModel(formula, 
+                                          data=markets_acs_full,
+                                          method="efron")
+                        })
 
 save(models_bendog, file=here("analysis","output","models_bendog.RData"))
