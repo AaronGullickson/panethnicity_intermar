@@ -225,7 +225,7 @@ is_single <- function(marst) {
 #of who will be considered. Its important to keep in mind that intervalled
 #nature of years in the USA for the census 1980 data. years_mar that is not
 #consistent with those intervals can create problems
-create_unions <- function(census, years_mar, n_fakes) {
+create_unions <- function(census, years_mar, n_fakes, n_samples=3) {
   
   # eliminate individuals who:
   # a) have been in the USA less than the marriage window
@@ -277,9 +277,12 @@ create_unions <- function(census, years_mar, n_fakes) {
   female_alternates$statefip <- factor(as.character(female_alternates$statefip))
   
   # Sample Counterfactual Spouses 
-  markets <- generateCouples(n_fakes, 
-                             unions, male_alternates, female_alternates,
-                             geo="statefip", weight="perwt", verbose=FALSE)
+  markets <- replicate(n_samples,
+                       generateCouples(n_fakes, unions, male_alternates, 
+                                       female_alternates, geo="statefip", 
+                                       weight="perwt", verbose=FALSE),
+                       simplify=FALSE)
+  
   return(markets)
 }
 
@@ -545,17 +548,15 @@ order_variables <- function(coefs, data_choice, model_choice) {
 }
 
 #A function to convert model summaries to something knitreg will understand
-#TODO: this will need to be changed whenever I get around to running pooled 
-#models
 convertModel <- function(model) {
   tr <- createTexreg(
     coef.names = rownames(model$coef), 
-    coef = model$coef[,"coef"], 
-    se = model$coef[,"se(coef)"], 
-    pvalues = model$coef[,"Pr(>|z|)"],
-    gof.names = c("Number of married couples", "Number of alternate unions per actual union"), 
-    gof = c(model$nevent, model$n/model$nevent-1), 
-    gof.decimal = c(F, F)
+    coef = model$coef[,"b.pool"], 
+    se = model$coef[,"se.pool"], 
+    pvalues = model$coef[,"pvalue.pool"],
+    gof.names = c("deviance"), 
+    gof = mean(model$deviance), 
+    gof.decimal = c(TRUE)
   )
 }
 

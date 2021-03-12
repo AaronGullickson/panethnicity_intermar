@@ -25,7 +25,7 @@ my_palette <- c("#7b3294","#008837","#a6dba0")
 ```{r create-coef-table}
 #extract coefficient values from model summary as tibble
 get_coefs <- function(x) {
-  temp <- coef(x)[,c(1,3)]
+  temp <- coef(x)[,c(1,2)]
   return(tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]))
 }
 #bind together the model summaries
@@ -418,7 +418,7 @@ coefs_pent %>%
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
                    position=position_dodgev(height=0.5))+
-  scale_color_manual(values=c("#7b3294","#008837","#a6dba0"))+
+  scale_color_manual(values=my_palette)+
   scale_x_continuous(limits=c(0,1))+
   labs(y=NULL, 
        x="Odds ratio of union formation for E&SE Asian ethnic intermarriage relative to ethnic endogamy",
@@ -947,7 +947,7 @@ With three groups and three options, there are 27 possible options for how to co
 I created dummy variables for birthplace endogamy based on these 10 options and then ran a model on the ACS data with each dummy variable. I used the ACS data with the fullest set of ethnic groups, racial pentagon coding, and controls for age, educational assortative mating, and language endogamy. The results below show the deviance for each of the ten models, ranked from lowest deviance to highest deviance.
 
 ```{r deviance-bendog}
-sapply(models_bendog, function(x) {-2*x$loglik[2]}) %>%
+sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
   enframe(name="model",value="deviance") %>%
   mutate(gen1.75=c("Birthplace","USA","Both","USA",       "USA",       "USA",       "USA", "USA", "Both",      "Both"),
          gen1.5 =c("Birthplace","USA","Both","Both",      "Birthplace","USA",       "Both","USA", "Birthplace","Both"),
