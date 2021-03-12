@@ -10,11 +10,11 @@
 # 
 # Dataset
 # * "census" for Census 1980
-# * "acs1980" for ACS data that only includes comparable Latino and Asian groups
-#   from 1980
-# * "acsres" for ACS that includes more groups than available in 1980, but 
-#   only those large enough to sustain a specific ethnicity analysis
-# * "acsfull" for ACS that includes all Asian and Latino groups regardless of 
+# * "acs_1980basis" for ACS data that only includes comparable Latino and Asian
+#   groups from 1980
+# * "acs_restricted" for ACS that includes more groups than available in 1980, 
+#   but only those large enough to sustain a specific ethnicity analysis
+# * "acs_full" for ACS that includes all Asian and Latino groups regardless of 
 #    size
 # Race Coding
 # * "pentagon" when using racial pentagon categories and simple dummies for 
@@ -39,14 +39,8 @@
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
-load(here("analysis","output","markets_census.RData"))
-load(here("analysis","output","markets_acs.RData"))
 
-#add variables to the market datasets
-markets_census <- add_vars(markets_census)
-markets_acs_1980basis <- add_vars(markets_acs_1980basis)
-markets_acs_restricted <- add_vars(markets_acs_restricted)
-markets_acs_full <- add_vars(markets_acs_full)
+#going to load and unload the data as I use it to save memory
 
 # Create formulas --------------------------------------------------------
 
@@ -84,62 +78,75 @@ formulas_extended <- list(base=formula_base,
 
 #saving the model summary output should be fine
 
-### First run comparable pentagon models for census and ACS
-models_census_pentagon <- mclapply(formulas_pentagon,
-                                   function(formula) {
-                                     summary(clogit(formula, 
-                                                    data=markets_census,
-                                                    method="efron"))
-                                   })
+## Census 1980                                                 ##
+#===============================================================#
+load(here("analysis","output","markets_census.RData"))
+markets_census <- lapply(markets_census, add_vars)
 
-models_acs1980_pentagon <- mclapply(formulas_pentagon,
-                                    function(formula) {
-                                      summary(clogit(formula, 
-                                                     data=markets_acs_1980basis,
-                                                     method="efron"))
-                                    })
+models_census_pentagon <- lapply(formulas_pentagon,
+                                 function(formula) {
+                                   poolChoiceModel(formula,
+                                                   data=markets_census,
+                                                   method="efron")
+                                 })
 
-### Then run a pentagon model on the ACS data with full set of ethnic groups
-models_acsfull_pentagon <- mclapply(formulas_pentagon,
-                                    function(formula) {
-                                      summary(clogit(formula, 
-                                                     data=markets_acs_full,
-                                                     method="efron"))
-                                    })
+models_census_extended <- lapply(formulas_extended,
+                                 function(formula) {
+                                   poolChoiceModel(formula, 
+                                                   data=markets_census,
+                                                   method="efron")
+                                 })
+rm(markets_census)
 
-## Now try extended models for the 1980 basis data
-models_census_extended <- mclapply(formulas_extended,
-                                   function(formula) {
-                                     summary(clogit(formula, 
-                                                    data=markets_census,
-                                                    method="efron"))
-                                   })
 
-models_acs1980_extended <- mclapply(formulas_extended,
-                                   function(formula) {
-                                     summary(clogit(formula, 
+## ACS, 1980 Basis                                             ##
+#===============================================================#
+load(here("analysis","output","markets_acs_1980basis.RData"))
+markets_acs_1980basis <- lapply(markets_acs_1980basis, add_vars)
+
+models_acs1980_pentagon <- lapply(formulas_pentagon,
+                                  function(formula) {
+                                    poolChoiceModel(formula, 
                                                     data=markets_acs_1980basis,
-                                                    method="efron"))
-                                   })
+                                                    method="efron")
+                                  })
 
-### Now try an extended model for the ACS data
-models_acsres_extended <- mclapply(formulas_extended,
-                                   function(formula) {
-                                     summary(clogit(formula, 
-                                                    data=markets_acs_restricted,
-                                                    method="efron"))
-                                   })
+models_acs1980_extended <- lapply(formulas_extended,
+                                  function(formula) {
+                                    poolChoiceModel(formula, 
+                                                    data=markets_acs_1980basis,
+                                                    method="efron")
+                                  })
 
-save(models_census_pentagon, models_acs1980_pentagon, models_acsfull_pentagon, 
-     models_census_extended, models_acs1980_extended, models_acsres_extended,
+rm(markets_acs_1980basis)
+
+## ACS, Full                                                   ##
+#===============================================================#
+load(here("analysis","output","markets_acs_full.RData"))
+markets_acs_full <- lapply(markets_acs_full, add_vars)
+
+models_acsfull_pentagon <- lapply(formulas_pentagon,
+                                  function(formula) {
+                                    poolChoiceModel(formula, 
+                                                    data=markets_acs_full,
+                                                    method="efron")
+                                  })
+
+rm(markets_acs_full)
+
+## ACS, Full                                                   ##
+#===============================================================#
+load(here("analysis","output","markets_acs_restricted.RData"))
+markets_acs_restricted <- lapply(markets_acs_restricted, add_vars)
+
+models_acsres_extended <- lapply(formulas_extended,
+                                 function(formula) {
+                                   poolChoiceModel(formula, 
+                                                   data=markets_acs_restricted,
+                                                   method="efron")
+                                 })
+rm(markets_acs_restricted)
+
+save(models_census_pentagon, models_census_extended, models_acs1980_pentagon, 
+     models_acs1980_extended, models_acsfull_pentagon, models_acsres_extended,
      file=here("analysis","output","models.RData"))
-
-
-# Test Asian Indian/American Indian model ---------------------------------
-
-# model_sa.ai <- clogit(update(formulas_pentagon$both, 
-#                              .~.+race_asianindian_aian), 
-#                       data=markets_acs_full,
-#                       method="efron")
-
-#Commenting out because it has model-fitting issues.
