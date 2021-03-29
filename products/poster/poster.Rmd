@@ -50,101 +50,108 @@ showtext_auto()
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
-load(here("analysis","output","models_restricted.RData"))
+load(here("analysis","output","models.RData"))
+load(here("analysis","output","alternates.RData"))
+load(here("analysis","output","models_bendog.RData"))
 ```
 
-```{r coef-table}
-#extract coefficicent values
+```{r create-coef-table}
+#extract coefficient values from model summary as tibble
 get_coefs <- function(x) {
-  return(coef(x)[,c(1,3)])
+  temp <- coef(x)[,c(1,2)]
+  return(tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]))
 }
-temp <- lapply(models_census_summary, get_coefs)
-coef_table <- NULL
-for(i in 1:length(temp)) {
-  coef_table <- rbind(coef_table, 
-                      tibble(variable=rownames(temp[[i]]),
-                             coef=temp[[i]][,"coef"],
-                             se=temp[[i]][,"se(coef)"],
-                             model=paste("Model",i),
-                             data="Census 1980"))
+#bind together the model summaries
+bind_models <- function(models_summary) {
+  temp <- lapply(models_summary, get_coefs) %>%
+    bind_rows(.id="model") %>%
+    filter(grepl("race_exog", variable))
+  return(temp)
 }
-temp <- lapply(models_acs_short_summary, get_coefs)
-for(i in 1:length(temp)) {
-  coef_table <- rbind(coef_table, 
-                      tibble(variable=rownames(temp[[i]]),
-                             coef=temp[[i]][,"coef"],
-                             se=temp[[i]][,"se(coef)"],
-                             model=paste("Model",i),
-                             data="ACS 2014-18"))
-}
-coef_table$racial_exog <- grepl("race_exog", coef_table$variable)
-#fix up the names
-temp_names <- unique(coef_table$variable)
-better_names <- c("age difference", "age difference squared",
-                  "female educational hypergamy", "female educational hypogamy",
-                  "educational crossing LHS/HS", "educational crossing HS/SC",
-                  "educational crossing SC/C", "Black/White","Indigenous/White",
-                  "Asian/White","Hispanic/White","Asian Indian/White",
-                  "Black/Indigenous","Black/Asian","Black/Hispanic",
-                  "Black/Asian Indian","Indigenous/Asian","Indigenous/Hispanic",
-                  "Indigenous/Asian Indian","Asian/Hispanic",
-                  "Asian/Asian Indian","Hispanic/Asian Indian",
-                  "Asian ethnic exogamy","Hispanic ethnic exogamy", 
-                  "birthplace endogamy","language endogamy")
-names(better_names) <- temp_names
-coef_table$variable <- better_names[coef_table$variable]
-coef_table$model <- factor(coef_table$model,
-                           levels=paste("Model",1:4),
-                           labels=c("Baseline", "+ birthplace endogamy",
-                                    "+ language endogamy", "+ both"))
-coef_table$data <- factor(coef_table$data,
-                          levels=c("Census 1980", "ACS 2014-18"))
+
+## Pentagon Models ##
+coefs_pent <- list(census=models_census_pentagon,
+                    acs_1980basis=models_acs1980_pentagon,
+                    acs_full=models_acsfull_pentagon) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline", "+ birthplace endogamy",
+                               "+ language endogamy", "+ both")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis","acs_full"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups",
+                              "ACS 2014-18, all ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+#create a dataset that can be used for the arrows in the graph
+#need a reworked dataset for arrows
+arrows_pent <- coefs_pent %>%
+  filter(model=="+ both" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, all ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
+
+## Extended Models ##
+coefs_extended <- list(census=models_census_extended,
+                       acs_1980basis=models_acs1980_extended,
+                       acs_full=models_acsres_extended) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_extended"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline", "+ birthplace endogamy",
+                               "+ language endogamy", "+ both")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis","acs_full"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups",
+                              "ACS 2014-18, expanded ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+#arrows
+arrows_extended <- coefs_extended %>%
+  filter(model=="+ both" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
 ```{r bigsplash, include=FALSE}
-#create the splash image figure here
-temp <- coef_table %>%
-  filter(model=="+ both") %>%
-  dcast(variable+racial_exog~data, value.var="coef") %>%
-  rename(coef.census=`Census 1980`, coef.acs=`ACS 2014-18`)
-
-#reorder based on ACS values
-temp$variable <- reorder(temp$variable, temp$coef.acs, max)
-coef_table$variable <- factor(coef_table$variable,
-                              levels=levels(temp$variable))
-#put in missing values for two cases in temp to get rid of really small
-#arrows
-temp$coef.census <- ifelse(abs(temp$coef.census-temp$coef.acs)<.1, NA,
-                           temp$coef.census)
-
 svg('big_splash.svg', height=17, width=20, pointsize=12)
-ggplot(subset(coef_table, racial_exog & model=="+ both"), 
-       aes(x=variable, y=exp(coef)))+
-  geom_hline(yintercept = 1, linetype=2, color="#EAEBEE", size=2)+
-  geom_segment(data=subset(temp, racial_exog), size=2,
-               aes(x=variable, xend=variable, 
-                   y=exp(coef.census), yend=exp(coef.acs)),
-               arrow = arrow(length = unit(0.02, "npc")),
-               color="#EAEBEE")+
-  geom_point(aes(color=data), size=8)+
-  annotate("rect", xmin = 13.5, xmax = 14.5, ymin = 0, ymax = 1.5,
-           alpha = 0.4, color=NA, fill="#EAEBEE")+
-  annotate("rect", xmin = 16.5, xmax = 17.5, ymin = 0, ymax = 1.5,
-           alpha = 0.4, color=NA, fill="#EAEBEE")+
-  coord_flip()+
-  scale_y_log10()+
-  scale_color_manual(values=c("red","#FFFF00"))+
-  #scale_color_manual(values=lacroix_palette("PassionFruit", type="discrete"))+
-  #scale_color_manual(values=wes_palette("Moonrise2"))+
-  labs(x=NULL, 
-       y="odds ratio of union formation relative to racially\nendogamous union, logarithmic scale",
-       color="data source")+
+coefs_pent %>% 
+  filter(variable=="E&SE Asian ethnic exogamy" | variable=="Latino ethnic exogamy") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1, size=2)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3, size=2)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5), size=4)+
+  #scale_color_manual(values=my_palette)+
+  scale_x_continuous(limits=c(0,1), expand=c(0,0))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for ethnic\nintermarriage relative to ethnic endogamy",
+       color="Data source")+
+  facet_wrap(~variable)+
   theme_bw()+
   theme(text = element_text(colour="#EAEBEE", family="Lato"),
-        axis.line = element_line(colour="#EAEBEE", size = 2),
+        axis.line.x = element_line(colour="#EAEBEE", size = 2),
+        axis.line.y = element_blank(),
         axis.ticks = element_line(colour="#EAEBEE", size = 1),
         axis.title = element_text(size=40),
         axis.text = element_text(size=30, colour="#EAEBEE"),
+        strip.text = element_text(size=40, colour="#23395b"),
         plot.title = element_text(size=60, hjust=0),
         plot.title.position = "panel",
         plot.subtitle = element_text(size=40, hjust=0),
@@ -152,15 +159,100 @@ ggplot(subset(coef_table, racial_exog & model=="+ both"),
         plot.caption.position = "panel",
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
-        legend.title = element_text(size=40),
-        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        legend.text = element_text(size=25),
         panel.border = element_rect(fill=NA, colour=NA),
+        panel.spacing = unit(5, "lines"),
         panel.background = element_rect(fill = "#23395b",colour = NA),
         plot.background = element_rect(fill = "#23395b",colour = NA),
         legend.background = element_rect(fill = "#23395b",colour = NA),
         legend.key = element_rect(fill = "#23395b",colour = NA), 
         legend.position = "bottom")
 dev.off()
+```
+
+
+```{r ese-asian-language}
+alternates_acs %>%
+  filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian")) %>%
+  mutate(lang=factor(case_when(
+    lang==100 ~ "English",
+    lang==4300 ~ "Chinese",
+    lang==5400 ~ "Filipino, Tagalog",
+    lang==5000 ~ "Vietnamese",
+    lang==4900 ~ "Korean",
+    lang==4800 ~ "Japanese",
+    lang==4700 ~ "Thai, Siamese, Lao",
+    lang==4420 ~ "Miao, Hmong",
+    lang==5120 ~ "Mon-Khmer, Cambodian",
+    lang==5440 ~ "Llocano, Hocano",
+    lang==5200 ~ "Indonesian",
+    lang==1200 ~ "Spanish",
+    lang==4500 ~ "Burmese, Lisu, Lolo",
+    lang==5420 ~ "Sebuano",
+    lang==4430 ~ "Iu Mien",
+    lang==4510 ~ "Karen",
+    lang==5410 ~ "Bisayan",
+    lang==4410 ~ "Miao-Yao, Mien",
+    lang==5300 ~ "Malay",
+    lang==1100 ~ "French",
+    lang>=4000 & lang<5500 ~ "Other Asian Language",
+    TRUE ~ "Other Language"),
+    levels=c("English","Chinese","Japanese","Korean","Vietnamese",
+             "Thai, Siamese, Lao","Mon-Khmer, Cambodian",
+             "Burmese, Lisu, Lolo","Karen",
+             "Filipino, Tagalog","Bisayan","Sebuano","Llocano, Hocano",
+             "Miao, Hmong","Iu Mien","Miao-Yao, Mien",
+             "Indonesian","Malay",
+             "Other Asian Language",
+             "Spanish","French",
+             "Other Language")),
+    race=fct_reorder(race, lang=="English", mean)
+  ) %>%
+  select(race, lang) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(lang)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
+                               "tomato","sienna","orchid","royalblue","maroon",
+                               brewer.pal(7,"Set1"),"paleturquoise1","grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Language use among E&SE Asian ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Primary language spoken")+
+  coord_flip()+
+  theme_bw()
+```
+
+```{r ese-latino-language}
+alternates_acs %>%
+  filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                     "Salvadorian","Argentinian","Bolivian","Chilean",
+                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                     "Uruguayan","Venezuelan","Dominican")) %>%
+  mutate(lang=factor(case_when(
+    lang==100 ~ "English",
+    lang==1200 ~ "Spanish",
+    TRUE ~ "Other Language"),
+    levels=c("English","Spanish","Other Language")),
+    race=fct_reorder(race, lang=="English", mean)
+  ) %>%
+  select(race, lang) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(lang)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", "tomato","grey30"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="cumulative percent",
+       title="Language use among Latino ethnic groups",
+       caption="Data Source: ACS 2014-18, partner alternates",
+       fill="Primary language spoken")+
+  coord_flip()+
+  theme_bw()
 ```
 
 ## Research Questions
@@ -171,23 +263,10 @@ The 1980 Census data and American Community Survey since 2013 both measure the d
 * How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?  
 * How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?
 
-## Methods
-
-I use a counterfactual marriage model:
-
-1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines. 
-1. For each real union, I sample 25 alternate partners for one randomly determined spouse from the same state of residence. 
-2. I use a conditional logit model to predict which union is the real union based on partner characteristics.
-3. In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.
-
-| Data source | Number of actual unions |    
-|:------------|------------------------:|
-| Census 1980 | 288,377                 |
-| ACS 2014-18 | 486,271                 |
 
 ## Do Language and Birthplace Endogamy Matter?
 
-```{r panethnic-coef-fig, fig.cap="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.", dpi=300}
+```{r panethnic-coef-fig, fig.cap="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.", dpi=300, eval=FALSE}
 ggplot(subset(coef_table, 
               variable=="Asian ethnic exogamy" | 
                 variable=="Hispanic ethnic exogamy"), 
@@ -217,6 +296,21 @@ Black/White interracial marriage increased substantially in likelihood but all i
 ### Growing boundaries for Indigenous and Asian Indian populations 
 
 Intermarriage declined systematically over the time period for Asian Indians and Indigenous populations. However this decline may be driven in part by issues of identification and measurement for these groups.
+
+## Methods
+
+I use a counterfactual marriage model:
+
+1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines. 
+1. For each real union, I sample 25 alternate partners for one randomly determined spouse from the same state of residence. 
+2. I use a conditional logit model to predict which union is the real union based on partner characteristics.
+3. In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.
+
+| Data source | Number of actual unions |    
+|:------------|------------------------:|
+| Census 1980 | 288,377                 |
+| ACS 2014-18 | 486,271                 |
+
 
 ## Notes
 
