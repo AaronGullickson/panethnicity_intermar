@@ -44,6 +44,7 @@ knitr::opts_chunk$set(results = 'asis',
 options(knitr.table.format = "html")
 library(ggplot2)
 library(showtext)
+library(gridExtra)
 font_add_google("Lato")
 font_add_google("Indie Flower")
 showtext_auto()
@@ -171,12 +172,104 @@ coefs_pent %>%
 dev.off()
 ```
 
-
-```{r ese-asian-language}
+```{r bplace-hetero}
 alternates_acs %>%
   filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
                      "Filipino","Cambodian","Hmong","Laotian",
-                     "Thai","Burmese","Indonesian","Malaysian")) %>%
+                     "Thai","Burmese","Indonesian","Malaysian",
+                     "Mexican","Puerto Rican","Cuban","Costa Rican",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                     "Salvadorian","Argentinian","Bolivian","Chilean",
+                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                     "Uruguayan","Venezuelan","Dominican")) %>%
+  mutate(birthplace=factor(case_when(
+    bpld==1 ~ "USA",
+    bpld==50000 ~ "China",
+    bpld==50010 ~ "Hong Kong",
+    bpld==50020 ~ "Macau",
+    bpld==50040 ~ "Taiwan",
+    bpld==50100 ~ "Japan",
+    bpld>=50200 & bpld<=50220 ~ "Korea",
+    bpld==51100 ~ "Cambodia",
+    bpld==51200 ~ "Indonesia",
+    bpld==51300 ~ "Laos",
+    bpld==51400 ~ "Malaysia",
+    bpld==51500 ~ "Philippines",
+    bpld==51600 ~ "Singapore",
+    bpld==51700 ~ "Thailand",
+    bpld==51800 ~ "Vietnam",
+    bpld==52130 ~ "Myanmar",
+    bpld==20000 ~ "Mexico",
+    bpld==21020 ~ "Costa Rica",
+    bpld==21030 ~ "El Salvador",
+    bpld==21040 ~ "Guatemala",
+    bpld==21050 ~ "Honduras",
+    bpld==21060 ~ "Nicaragua",
+    bpld==21070 ~ "Panama",
+    bpld==30005 ~ "Argentina",
+    bpld==30010 ~ "Bolivia",
+    bpld==30020 ~ "Chile",
+    bpld==30025 ~ "Colombia",
+    bpld==30030 ~ "Ecuador",
+    bpld==30045 ~ "Paraguay",
+    bpld==30050 ~ "Peru",
+    bpld==30060 ~ "Uruguay",
+    bpld==30065 ~ "Venezuela",
+    bpld==25000 ~ "Cuba",
+    bpld==26010 ~ "Dominican Republic",
+    bpld==11000 ~ "Puerto Rico",
+    TRUE ~ "Other Place"),
+    levels=c("USA","China","Hong Kong","Macau","Taiwan","Japan","Korea",
+             "Cambodia","Indonesia","Laos","Malaysia","Philippines",
+             "Singapore","Thailand","Vietnam","Myanmar","Mexico",
+             "Costa Rica","El Salvador","Guatemala","Honduras",
+             "Nicaragua","Panama","Argentina","Bolivia","Chile",
+             "Colombia","Ecuador","Paraguay","Peru","Uruguay","Venezuela",
+             "Cuba","Dominican Republic","Puerto Rico","Other Place")),
+    race=fct_reorder(race, birthplace=="USA", mean),
+    group=factor(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                             "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                             "Salvadorian","Argentinian","Bolivian","Chilean",
+                             "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                             "Uruguayan","Venezuelan","Dominican"),
+                 levels=c(FALSE,TRUE),
+                 labels=c("E & SE Asian","Latino"))) %>%
+  select(race, birthplace, group) %>%
+  droplevels() %>%
+  ggplot(aes(x=race, fill=fct_rev(birthplace)))+
+  geom_bar(position="fill")+
+  scale_fill_manual(values = c("grey", brewer.pal(9, "Set1"),
+                               "tomato","orchid","maroon","paleturquoise1",
+                               brewer.pal(8, "Dark2"),
+                               brewer.pal(12,"Set3"),"grey30"))+
+  scale_y_continuous(labels = scales::percent, expand=c(0,0))+
+  labs(x=NULL, y="cumulative percent by birthplace",
+       title="Birthplace heterogeneity is high within and between Asian and Latino ethnic groups",
+       caption="Data Source: ACS 2014-18, single and recently married adults",
+       fill="Birthplace")+
+  coord_flip()+
+  facet_wrap(~group, scales="free_y")+
+  guides(fill = guide_legend(reverse = TRUE, ncol=7))+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=5),
+        legend.title = element_text(size=8),
+        axis.text.y = element_text(size=5),
+        title = element_text(size=10),
+        strip.text= element_text(size=9, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA))
+```
+
+```{r language-hetero}
+alternates_acs %>%
+  filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian",
+                     "Mexican","Puerto Rican","Cuban","Costa Rican",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                     "Salvadorian","Argentinian","Bolivian","Chilean",
+                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                     "Uruguayan","Venezuelan","Dominican")) %>%
   mutate(lang=factor(case_when(
     lang==100 ~ "English",
     lang==4300 ~ "Chinese",
@@ -198,7 +291,6 @@ alternates_acs %>%
     lang==4410 ~ "Miao-Yao, Mien",
     lang==5300 ~ "Malay",
     lang==1100 ~ "French",
-    lang>=4000 & lang<5500 ~ "Other Asian Language",
     TRUE ~ "Other Language"),
     levels=c("English","Chinese","Japanese","Korean","Vietnamese",
              "Thai, Siamese, Lao","Mon-Khmer, Cambodian",
@@ -206,53 +298,42 @@ alternates_acs %>%
              "Filipino, Tagalog","Bisayan","Sebuano","Llocano, Hocano",
              "Miao, Hmong","Iu Mien","Miao-Yao, Mien",
              "Indonesian","Malay",
-             "Other Asian Language",
              "Spanish","French",
              "Other Language")),
-    race=fct_reorder(race, lang=="English", mean)
-  ) %>%
-  select(race, lang) %>%
+    lang=fct_reorder(lang, lang, length, .desc=TRUE),
+    lang=fct_relevel(lang, "English", after=0),
+    lang=fct_relevel(lang, "Other Language", after=Inf),
+    race=fct_reorder(race, lang=="English", mean),
+    group=factor(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                             "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                             "Salvadorian","Argentinian","Bolivian","Chilean",
+                             "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                             "Uruguayan","Venezuelan","Dominican"),
+                 levels=c(FALSE,TRUE),
+                 labels=c("E & SE Asian","Latino"))) %>%
+  select(race, lang, group) %>%
   droplevels() %>%
   ggplot(aes(x=race, fill=fct_rev(lang)))+
   geom_bar(position="fill")+
-  scale_fill_manual(values = c("grey", brewer.pal(7, "Dark2"),
-                               "tomato","sienna","orchid","royalblue","maroon",
-                               brewer.pal(7,"Set1"),"paleturquoise1","grey30"))+
-  scale_y_continuous(labels = scales::percent)+
-  labs(x=NULL, y="cumulative percent",
-       title="Language use among E&SE Asian ethnic groups",
-       caption="Data Source: ACS 2014-18, partner alternates",
-       fill="Primary language spoken")+
+  scale_fill_manual(values = c("grey", brewer.pal(6, "Dark2"),
+                               "tomato","sienna","orchid","maroon","paleturquoise1",
+                               brewer.pal(6,"Set2"),"red","royalblue","grey30"))+
+  scale_y_continuous(labels = scales::percent, expand=c(0,0))+
+  labs(x=NULL, y="cumulative percent by primary language spoken",
+       title="Language heterogeneity is much higher among Asians than Latinos",
+       caption="Data Source: ACS 2014-18, single and recently married adults",
+       fill="Primary language")+
   coord_flip()+
-  theme_bw()
-```
-
-```{r ese-latino-language}
-alternates_acs %>%
-  filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
-                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
-                     "Salvadorian","Argentinian","Bolivian","Chilean",
-                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
-                     "Uruguayan","Venezuelan","Dominican")) %>%
-  mutate(lang=factor(case_when(
-    lang==100 ~ "English",
-    lang==1200 ~ "Spanish",
-    TRUE ~ "Other Language"),
-    levels=c("English","Spanish","Other Language")),
-    race=fct_reorder(race, lang=="English", mean)
-  ) %>%
-  select(race, lang) %>%
-  droplevels() %>%
-  ggplot(aes(x=race, fill=fct_rev(lang)))+
-  geom_bar(position="fill")+
-  scale_fill_manual(values = c("grey", "tomato","grey30"))+
-  scale_y_continuous(labels = scales::percent)+
-  labs(x=NULL, y="cumulative percent",
-       title="Language use among Latino ethnic groups",
-       caption="Data Source: ACS 2014-18, partner alternates",
-       fill="Primary language spoken")+
-  coord_flip()+
-  theme_bw()
+  facet_wrap(~group, scales="free_y")+
+  guides(fill = guide_legend(reverse = TRUE, ncol=6))+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=5),
+        legend.title = element_text(size=8),
+        axis.text.y = element_text(size=6),
+        title = element_text(size=10),
+        strip.text= element_text(size=9, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA))
 ```
 
 ## Research Questions
