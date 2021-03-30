@@ -1,5 +1,5 @@
 ---
-title: Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018
+title: Changes in Pan-Ethnic Intermarriage in the United States, 1980-2018
 author:
   - name: Aaron Gullickson
     affil: 1
@@ -33,7 +33,7 @@ link-citations: true
 bibliography: ../project.bib
 ---
 
-```{r, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(results = 'asis',
                       echo = FALSE,
                       warning = FALSE,
@@ -56,7 +56,7 @@ load(here("analysis","output","alternates.RData"))
 load(here("analysis","output","models_bendog.RData"))
 ```
 
-```{r create-coef-table}
+```{r create-coef-table, include=FALSE}
 #extract coefficient values from model summary as tibble
 get_coefs <- function(x) {
   temp <- coef(x)[,c(1,2)]
@@ -171,6 +171,15 @@ coefs_pent %>%
         legend.position = "bottom")
 dev.off()
 ```
+
+## Research Questions
+
+* How has the likelihood of ethnic intermarriage (e.g. Japanese and Korean, Mexican and Puerto Rican) changed among Asians and Latinos?
+* How does accounting for language and birthplace endogamy affect the likelihood of ethnic intermarriage?
+
+I use 1980 Census data and recent American Community Survey data, which include variables on marriage timing, to address this question using newly-formed marriages. 
+
+## Birthplace and Language Variation
 
 ```{r bplace-hetero}
 alternates_acs %>%
@@ -336,65 +345,94 @@ alternates_acs %>%
         strip.background = element_rect(fill = "#23395b",colour = NA))
 ```
 
-## Research Questions
-
-The 1980 Census data and American Community Survey since 2013 both measure the duration of current marriages allowing us to reliably measure changes in assortative mating patterns across the two time periods. For this project, I utilize these two data points to address the following questions: 
-
-* How has the likelihood of interracial marriage changed among newly-wed couples across the time periods? 
-* How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?  
-* How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?
 
 
-## Do Language and Birthplace Endogamy Matter?
 
-```{r panethnic-coef-fig, fig.cap="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.", dpi=300, eval=FALSE}
-ggplot(subset(coef_table, 
-              variable=="Asian ethnic exogamy" | 
-                variable=="Hispanic ethnic exogamy"), 
-       aes(x=model, y=exp(coef)))+
-  facet_grid(data~variable)+
+## Interracial vs Interethnic Marriage
+
+```{r exog-compare-dot, fig.height=6}
+temp1 <- coefs_pent %>%
+  filter(model=="+ both" & grepl("E&SE Asian",variable) 
+         & !grepl("AIAN", variable)) %>%
+    select(variable, coef, data) %>%
+  mutate(group="E&SE Asian Intermarriage")
+
+temp2 <- coefs_pent %>%
+  filter(model=="+ both" & grepl("Latino",variable) & 
+           !grepl("AIAN",variable)) %>%
+    select(variable, coef, data) %>%
+  mutate(group="Latino Intermarriage")
+
+temp <- bind_rows(temp1, temp2)
+temp <- left_join(temp, arrows_pent)
+temp$extended <- temp$data=="ACS 2014-18, all ethnic groups"
+
+rect_data <- tibble(xmin=c(4.5,3.5), xmax=c(5.5,4.5), 
+                    ymin=c(0,0), ymax=c(1.1,1.1),
+                    group=c("E&SE Asian Intermarriage","Latino Intermarriage"))
+
+ggplot(temp, aes(x=variable, y=exp(coef)))+
+  geom_rect(data=rect_data, 
+            aes(x=NULL, y=NULL, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
+            fill="yellow", alpha=0.4)+
+  geom_hline(yintercept = 1, linetype=2, size=1)+
+  geom_point(aes(color=data), size=4, alpha=0.6)+
+  geom_segment(aes(x=variable, xend=variable,
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.03, "npc")),
+                color="grey40", size=1)+
+  facet_wrap(~group, scales = "free_y", ncol = 1)+
   coord_flip()+
-  geom_point(size=4, color="#23395b")+
+  scale_y_continuous(limits=c(0,1.1), expand=c(0,0))+
   labs(x=NULL, 
-       y="odds ratio of union formation for Hispanic/Asian\nethnic intermarriage relative to ethnic endogamy")+
+       y="odds ratio of union formation relative to ethnoracial endogamy",
+       color="data source",
+       title=NULL)+
+  guides(color = guide_legend(ncol=1))+
   theme_bw()+
-  theme(#text = element_text(family="Lato"),
-        axis.text = element_text(size=14),
-        strip.text= element_text(size=14, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA),
-        axis.title = element_text(size=16))
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=12),
+        legend.title = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        axis.title.x = element_text(size=12),
+        title = element_text(size=14),
+        strip.text= element_text(size=12, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA))
 ```
 
-* Language and birthplace endogamy strongly reduce the tendency toward pan-ethnic intermarriage for Asians.
-* Birthplace endogamy slightly reduced the tendency toward pan-ethnic intermarriage among Hispanics, but language endogamy has no effect, likely due to the dominance of Spanish and English. 
+## Results for South Asians
 
-## Additional Findings
+```{r south-asian-exog-lolly}
+coefs_pent %>%
+  filter(variable=="South Asian ethnic exogamy") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  #scale_color_manual(values=my_palette[3])+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of union formation for South Asian ethnic intermarriage relative to ethnic endogamy",
+       color="Data source",
+       title="Odds ratio of South Asian ethnic exogamy",
+       subtitle="by year and data source")+
+  theme_bw()+
+  theme(legend.position = "right")
+```
 
-### Persistent Black/non-Black divide
-
-Black/White interracial marriage increased substantially in likelihood but all intermarriages involving a black spouse remain the least likely form of union overall.
-
-### Growing boundaries for Indigenous and Asian Indian populations 
-
-Intermarriage declined systematically over the time period for Asian Indians and Indigenous populations. However this decline may be driven in part by issues of identification and measurement for these groups.
+## Findings
 
 ## Methods
 
-I use a counterfactual marriage model:
+I use a [counterfactual marriage model](https://www.demographic-research.org/volumes/vol44/22/default.htm):
 
 1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines. 
-1. For each real union, I sample 25 alternate partners for one randomly determined spouse from the same state of residence. 
+1. For each real union, I sample 20 alternate partners for one randomly determined spouse from the same state of residence. 
 2. I use a conditional logit model to predict which union is the real union based on partner characteristics.
-3. In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.
+3. All models control for age and educational differences between spouses.
 
 | Data source | Number of actual unions |    
 |:------------|------------------------:|
 | Census 1980 | 288,377                 |
 | ACS 2014-18 | 486,271                 |
-
-
-## Notes
-
-* This poster was prepared for the Population Association of America Annual Meeting, 2021. 
-
-* [Click here](https://aarongullickson.netlify.app/) or use the QR code to get the full paper associated with this poster. 
