@@ -11,9 +11,8 @@ affiliation:
   - num: 1
     address: Department of Sociology, University of Oregon
 main_findings:
-  - 'After accounting for birthplace and language endogamy, Asian ethnic exogamy increased substantially over time while Latino ethnic exogamy was relatively static.'
+  - 'After accounting for birthplace and language endogamy, Asian ethnic exogamy increased substantially over time while Latino ethnic exogamy remained relatively less likely.'
   - '![](big_splash.svg)'
-logoright_name: '![](https://raw.githubusercontent.com/brentthorne/posterdown/master/images/qr-code-black.png){.main-img-right}'
 main_picwidth: 90%
 main_textsize: "90px"
 main_textcol: "#FFFF0090"
@@ -81,7 +80,7 @@ coefs_pent <- list(census=models_census_pentagon,
   mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
          model=factor(model,
                       levels=c("base","bendog","lendog","both"),
-                      labels=c("Baseline", "+ birthplace endogamy",
+                      labels=c("Baseline model", "+ birthplace endogamy",
                                "+ language endogamy", "+ both")),
          data=factor(data,
                      levels=c("census","acs_1980basis","acs_full"),
@@ -111,7 +110,7 @@ coefs_extended <- list(census=models_census_extended,
   mutate(variable=convert_intermar_names(variable, "race_exog_extended"),
          model=factor(model,
                       levels=c("base","bendog","lendog","both"),
-                      labels=c("Baseline", "+ birthplace endogamy",
+                      labels=c("Baseline model", "+ birthplace endogamy",
                                "+ language endogamy", "+ both")),
          data=factor(data,
                      levels=c("census","acs_1980basis","acs_full"),
@@ -255,7 +254,7 @@ alternates_acs %>%
                                brewer.pal(8, "Dark2"),
                                brewer.pal(12,"Set3"),"grey30"))+
   scale_y_continuous(labels = scales::percent, expand=c(0,0))+
-  labs(x=NULL, y="cumulative percent by birthplace",
+  labs(x=NULL, y="Cumulative percent by birthplace",
        title="Birthplace heterogeneity is high within and between Asian and Latino ethnic groups",
        caption="Data Source: ACS 2014-18, single and recently married adults",
        fill="Birth-\nplace")+
@@ -332,7 +331,7 @@ alternates_acs %>%
                                "tomato","sienna","orchid","maroon","paleturquoise1",
                                brewer.pal(6,"Set2"),"red","royalblue","grey30"))+
   scale_y_continuous(labels = scales::percent, expand=c(0,0))+
-  labs(x=NULL, y="cumulative percent by primary language spoken",
+  labs(x=NULL, y="Cumulative percent by primary language spoken",
        title="Language heterogeneity is much higher among Asians than Latinos",
        caption="Data Source: ACS 2014-18, single and recently married adults",
        fill="Primary\nlanguage")+
