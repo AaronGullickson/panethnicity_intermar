@@ -54,6 +54,8 @@ source(here("analysis","useful_functions.R"))
 load(here("analysis","output","models.RData"))
 load(here("analysis","output","alternates.RData"))
 load(here("analysis","output","models_bendog.RData"))
+
+my_palette <- c("#7b3294","#008837","#a6dba0")
 ```
 
 ```{r create-coef-table, include=FALSE}
@@ -139,10 +141,10 @@ coefs_pent %>%
   geom_vline(xintercept = 1, color="grey70", linetype=3, size=2)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
                    position=position_dodgev(height=0.5), size=4)+
-  #scale_color_manual(values=my_palette)+
+  scale_color_manual(values=my_palette)+
   scale_x_continuous(limits=c(0,1), expand=c(0,0))+
   labs(y=NULL, 
-       x="Odds ratio of union formation for ethnic\nintermarriage relative to ethnic endogamy",
+       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
        color="Data source")+
   facet_wrap(~variable)+
   theme_bw()+
@@ -375,7 +377,7 @@ ggplot(temp, aes(x=variable, y=exp(coef)))+
   geom_rect(data=rect_data, 
             aes(x=NULL, y=NULL, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
             fill="yellow", alpha=0.4)+
-  geom_hline(yintercept = 1, linetype=2, size=1)+
+  geom_hline(yintercept = 1, linetype=3, size=1)+
   geom_point(aes(color=data), size=4, alpha=0.6)+
   geom_segment(aes(x=variable, xend=variable,
                    y=exp(coef.census), yend=exp(coef.acs)),
@@ -384,9 +386,10 @@ ggplot(temp, aes(x=variable, y=exp(coef)))+
   facet_wrap(~group, scales = "free_y", ncol = 1)+
   coord_flip()+
   scale_y_continuous(limits=c(0,1.1), expand=c(0,0))+
+  scale_color_manual(values = my_palette)+
   labs(x=NULL, 
-       y="odds ratio of union formation relative to ethnoracial endogamy",
-       color="data source",
+       y=")dds ratio of exogamy relative to ethnoracial endogamy",
+       color="Data source",
        title=NULL)+
   guides(color = guide_legend(ncol=1))+
   theme_bw()+
@@ -406,19 +409,24 @@ ggplot(temp, aes(x=variable, y=exp(coef)))+
 coefs_pent %>%
   filter(variable=="South Asian ethnic exogamy") %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
-  geom_vline(xintercept = 0, color="grey70", linetype=1)+
-  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_vline(xintercept = 1, linetype=3, size=1)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
-                   position=position_dodgev(height=0.5))+
-  #scale_color_manual(values=my_palette[3])+
-  scale_x_continuous(limits=c(0,1))+
+                   position=position_dodgev(height=0.5), size=2)+
+  scale_color_manual(values=my_palette[3])+
+  scale_x_continuous(limits=c(0,1.1), expand=c(0,0))+
   labs(y=NULL, 
-       x="Odds ratio of union formation for South Asian ethnic intermarriage relative to ethnic endogamy",
+       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
        color="Data source",
-       title="Odds ratio of South Asian ethnic exogamy",
-       subtitle="by year and data source")+
+       data=NULL)+
   theme_bw()+
-  theme(legend.position = "right")
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=12),
+        legend.title = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        axis.title.x = element_text(size=12),
+        title = element_text(size=14),
+        strip.text= element_text(size=12, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA))
 ```
 
 ## Findings
