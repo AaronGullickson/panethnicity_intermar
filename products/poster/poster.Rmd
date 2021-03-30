@@ -11,7 +11,7 @@ affiliation:
   - num: 1
     address: Department of Sociology, University of Oregon
 main_findings:
-  - 'Asian ethnic exogamy increased substantially over time while Hispanic ethnic exogamy was static.'
+  - 'After accounting for birthplace and language endogamy, Asian ethnic exogamy increased substantially over time while Latino ethnic exogamy was relatively static.'
   - '![](big_splash.svg)'
 logoright_name: '![](https://raw.githubusercontent.com/brentthorne/posterdown/master/images/qr-code-black.png){.main-img-right}'
 main_picwidth: 90%
@@ -393,7 +393,7 @@ ggplot(temp, aes(x=variable, y=exp(coef)))+
   labs(x=NULL, 
        y="Odds ratio of exogamy relative to ethnoracial endogamy",
        color="Data source",
-       title=NULL)+
+       title="Asian ethnic exogamy is much more likely than\nAsian interracial marriage, but Latino/White marriage\nis almost as common as Latino ethnic exogamy")+
   guides(color = guide_legend(ncol=1))+
   theme_bw()+
   theme(legend.position = "bottom",
@@ -401,7 +401,7 @@ ggplot(temp, aes(x=variable, y=exp(coef)))+
         legend.title = element_text(size=12),
         axis.text.y = element_text(size=12),
         axis.title.x = element_text(size=12),
-        title = element_text(size=14),
+        title = element_text(size=12),
         strip.text= element_text(size=12, color="#EAEBEE"),
         strip.background = element_rect(fill = "#23395b",colour = NA))
 ```
@@ -420,19 +420,17 @@ coefs_pent %>%
   labs(y=NULL, 
        x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
        color="Data source",
-       data=NULL)+
+       title="Ethnic exogamy among South Asians is also very high\nafter accounting for birthplace and language endogamy")+
   theme_bw()+
   theme(legend.position = "bottom",
         legend.text = element_text(size=12),
         legend.title = element_text(size=12),
         axis.text.y = element_text(size=12),
         axis.title.x = element_text(size=12),
-        title = element_text(size=14),
+        title = element_text(size=12),
         strip.text= element_text(size=12, color="#EAEBEE"),
         strip.background = element_rect(fill = "#23395b",colour = NA))
 ```
-
-## Findings
 
 ## Methods
 
