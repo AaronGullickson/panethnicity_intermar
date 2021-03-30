@@ -228,7 +228,7 @@ alternates_acs %>%
     bpld==30060 ~ "Uruguay",
     bpld==30065 ~ "Venezuela",
     bpld==25000 ~ "Cuba",
-    bpld==26010 ~ "Dominican Republic",
+    bpld==26010 ~ "Dominican Rep.",
     bpld==11000 ~ "Puerto Rico",
     TRUE ~ "Other Place"),
     levels=c("USA","China","Hong Kong","Macau","Taiwan","Japan","Korea",
@@ -237,7 +237,7 @@ alternates_acs %>%
              "Costa Rica","El Salvador","Guatemala","Honduras",
              "Nicaragua","Panama","Argentina","Bolivia","Chile",
              "Colombia","Ecuador","Paraguay","Peru","Uruguay","Venezuela",
-             "Cuba","Dominican Republic","Puerto Rico","Other Place")),
+             "Cuba","Dominican Rep.","Puerto Rico","Other Place")),
     race=fct_reorder(race, birthplace=="USA", mean),
     group=factor(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
                              "Guatemalan","Honduran","Nicaraguan","Panamanian",
@@ -258,17 +258,17 @@ alternates_acs %>%
   labs(x=NULL, y="cumulative percent by birthplace",
        title="Birthplace heterogeneity is high within and between Asian and Latino ethnic groups",
        caption="Data Source: ACS 2014-18, single and recently married adults",
-       fill="Birthplace")+
+       fill="Birth-\nplace")+
   coord_flip()+
   facet_wrap(~group, scales="free_y")+
   guides(fill = guide_legend(reverse = TRUE, ncol=7))+
   theme_bw()+
   theme(legend.position = "bottom",
-        legend.text = element_text(size=5),
+        legend.text = element_text(size=8),
         legend.title = element_text(size=8),
-        axis.text.y = element_text(size=5),
+        axis.text.y = element_text(size=7),
         title = element_text(size=10),
-        strip.text= element_text(size=9, color="#EAEBEE"),
+        strip.text= element_text(size=10, color="#EAEBEE"),
         strip.background = element_rect(fill = "#23395b",colour = NA),
         plot.margin = unit(c(0,0.5,0,0), "cm"))
 ```
@@ -335,15 +335,15 @@ alternates_acs %>%
   labs(x=NULL, y="cumulative percent by primary language spoken",
        title="Language heterogeneity is much higher among Asians than Latinos",
        caption="Data Source: ACS 2014-18, single and recently married adults",
-       fill="Primary language")+
+       fill="Primary\nlanguage")+
   coord_flip()+
   facet_wrap(~group, scales="free_y")+
-  guides(fill = guide_legend(reverse = TRUE, ncol=6))+
+  guides(fill = guide_legend(reverse = TRUE, ncol=5))+
   theme_bw()+
   theme(legend.position = "bottom",
-        legend.text = element_text(size=5),
+        legend.text = element_text(size=7),
         legend.title = element_text(size=8),
-        axis.text.y = element_text(size=6),
+        axis.text.y = element_text(size=8),
         title = element_text(size=10),
         strip.text= element_text(size=9, color="#EAEBEE"),
         strip.background = element_rect(fill = "#23395b",colour = NA),
