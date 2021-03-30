@@ -170,7 +170,8 @@ coefs_pent %>%
         plot.background = element_rect(fill = "#23395b",colour = NA),
         legend.background = element_rect(fill = "#23395b",colour = NA),
         legend.key = element_rect(fill = "#23395b",colour = NA), 
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.margin = unit(c(0,1,0,0), "cm"))
 dev.off()
 ```
 
@@ -268,7 +269,8 @@ alternates_acs %>%
         axis.text.y = element_text(size=5),
         title = element_text(size=10),
         strip.text= element_text(size=9, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA))
+        strip.background = element_rect(fill = "#23395b",colour = NA),
+        plot.margin = unit(c(0,0.5,0,0), "cm"))
 ```
 
 ```{r language-hetero}
@@ -344,7 +346,8 @@ alternates_acs %>%
         axis.text.y = element_text(size=6),
         title = element_text(size=10),
         strip.text= element_text(size=9, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA))
+        strip.background = element_rect(fill = "#23395b",colour = NA),
+        plot.margin = unit(c(0,0.5,0,0), "cm"))
 ```
 
 
@@ -388,7 +391,7 @@ ggplot(temp, aes(x=variable, y=exp(coef)))+
   scale_y_continuous(limits=c(0,1.1), expand=c(0,0))+
   scale_color_manual(values = my_palette)+
   labs(x=NULL, 
-       y=")dds ratio of exogamy relative to ethnoracial endogamy",
+       y="Odds ratio of exogamy relative to ethnoracial endogamy",
        color="Data source",
        title=NULL)+
   guides(color = guide_legend(ncol=1))+
