@@ -11,7 +11,7 @@ affiliation:
   - num: 1
     address: Department of Sociology, University of Oregon
 main_findings:
-  - 'After accounting for birthplace and language endogamy, Asian ethnic exogamy increased substantially over time while Latino ethnic exogamy remained relatively less likely.'
+  - 'After accounting for birthplace and language endogamy, E&SE Asian ethnic exogamy increased substantially over time while Latino ethnic exogamy remained relatively less likely.'
   - '![](big_splash.svg)'
 main_picwidth: 90%
 main_textsize: "90px"
@@ -435,12 +435,8 @@ coefs_pent %>%
 
 I use a [counterfactual marriage model](https://www.demographic-research.org/volumes/vol44/22/default.htm):
 
-1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines. 
+1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US. 
 1. For each real union, I sample 20 alternate partners for one randomly determined spouse from the same state of residence. 
-2. I use a conditional logit model to predict which union is the real union based on partner characteristics.
+2. I use a conditional logit model to predict which union is the real union.
 3. All models control for age and educational differences between spouses.
-
-| Data source | Number of actual unions |    
-|:------------|------------------------:|
-| Census 1980 | 288,377                 |
-| ACS 2014-18 | 486,271                 |
+4. The 1980 Census data only allow for the identification of Chinese, East Indian, Filipino, Japanese, Korean, and Vietnamese ethnicities among Asians and Mexican, Cuban, and Puerto Rican ethnicities among Latinos.
