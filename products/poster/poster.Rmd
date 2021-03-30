@@ -55,7 +55,7 @@ load(here("analysis","output","models.RData"))
 load(here("analysis","output","alternates.RData"))
 load(here("analysis","output","models_bendog.RData"))
 
-my_palette <- c("#7b3294","#008837","#a6dba0")
+my_palette <- c("#1b9e77","#e7298a","#7570b3")
 ```
 
 ```{r create-coef-table, include=FALSE}
