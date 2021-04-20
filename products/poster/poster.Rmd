@@ -233,7 +233,7 @@ I use a [counterfactual marriage model](https://www.demographic-research.org/vol
 
 ## The role of birthplace and language
 
-```{r bplace-hetero, fig.height=6}
+```{r lang-bplace-diversity, fig.height=6}
 #Going to use Greenberg's Monolingual Non-Weighted Method which
 #basically gives the of probability of any two randomly chosen individuals
 #from the population not belonging to the same category. 
@@ -360,7 +360,7 @@ diversity_pan <- temp %>%
   mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
   full_join(temp2) %>%
   bind_rows(diversity_pan)  %>%
-  mutate(type="within pan-ethnic group")
+  mutate(type="pan-ethnic group")
 
 temp2 <- diversity_ethnic %>%
   group_by(group, data) %>%
@@ -378,7 +378,7 @@ diversity_pan <- diversity_ethnic %>%
   ungroup() %>%
   mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
   bind_rows(temp2)  %>%
-  mutate(type="mean within ethnic groups") %>%
+  mutate(type="mean of ethnic groups") %>%
   bind_rows(diversity_pan) %>%
   pivot_longer(cols=starts_with("diversity_"), names_to="variable",
                values_to="diversity") %>%
@@ -483,7 +483,7 @@ coefs_pent %>%
 
 ## Results for South Asians
 
-```{r south-asian-exog-lolly, fig.height=3.3, eval=TRUE}
+```{r south-asian-exog-lolly, fig.height=3.5, eval=TRUE}
 coefs_pent %>%
   filter(variable=="South Asian ethnic exogamy") %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
