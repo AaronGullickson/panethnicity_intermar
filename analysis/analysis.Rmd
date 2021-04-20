@@ -362,12 +362,253 @@ alternates_acs %>%
   theme_bw()
 ```
 
+### Summary Diversity Measure
+
+Another approach to this issue is to use the formula:
+
+$$1-\sum p_i^2$$
+Where $i$ is a given category of a variable and $p_i$ is the proportion of the population that belongs to the given category. This measure is basically the Simpson index but reversed to indicate diversity rather than concentration (I believe this is the Gini-Simpson index). The measure gives the probability that two randomly selected individuals from a given population will belong to different categories. I can use this to calculate a language and birthplace diversity measure for each race and pan-ethnic group.  I am going to calculate this for the three separate pan-ethnic groups and also calculate it within each specific ethnic group. 
+
+The Gibbs–Martin index of sociology, psychology and management studies,[13] which is also known as the Blau index, is the same measure as the Gini–Simpson index.
+
+```{r divserity}
+temp <- alternates_census %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  mutate(group=case_when(
+    race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian") ~ "E&SE Asian",
+    race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan") ~ "South Asian",
+    race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
+    group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
+
+diversity_ethnic <- temp %>%
+  count(race, group, bpld) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980")
+
+diversity_ethnic <- temp %>%
+  count(race, group, lang) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  full_join(diversity_ethnic)
+
+diversity_pan <- temp %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980")
+
+diversity_pan <- temp %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  full_join(diversity_pan)
+
+temp <- alternates_acs %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  mutate(group=case_when(
+    race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian") ~ "E&SE Asian",
+    race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan") ~ "South Asian",
+    race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
+    group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
+
+temp2 <- temp %>%
+  count(race, group, bpld) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18")
+
+diversity_ethnic <- temp %>%
+  count(race, group, lang) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_ethnic) %>%
+  select(race, group, data, diversity_bpl, diversity_lang)
+
+temp2 <- temp %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\nall ethnic groups")
+
+diversity_pan <- temp %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\nall ethnic groups") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_pan)
+
+races1980 <- as.character(subset(diversity_ethnic, data=="Census 1980")$race)
+
+temp2 <- temp %>%
+  filter(race %in% races1980) %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups")
+
+diversity_pan <- temp %>%
+  filter(race %in% races1980) %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_pan)  %>%
+  mutate(type="within pan-ethnic group")
+
+# ggplot(diversity_ethnic, aes(x=diversity_lang, y=diversity_bpl,
+#                              color=group))+
+#   geom_point()+
+#   #geom_point(data=diversity_pan, shape=17, size=5)+
+#   facet_wrap(~data)+
+#   theme_bw()
+
+temp2 <- diversity_ethnic %>%
+  group_by(group, data) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(data=ifelse(data=="ACS 2014-18", "ACS 2014-18\nall ethnic groups",
+                     data))
+
+diversity_pan <- diversity_ethnic %>%
+  filter(race %in% races1980 & data=="ACS 2014-18") %>%
+  group_by(group, data) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  bind_rows(temp2)  %>%
+  mutate(type="mean within ethnic groups") %>%
+  bind_rows(diversity_pan) %>%
+  pivot_longer(cols=starts_with("diversity_"), names_to="variable",
+               values_to="diversity") %>%
+  mutate(variable=ifelse(variable=="diversity_bpl",
+                     "Birthplace diversity",
+                     "Language diversity"),
+         diversity=ifelse(group=="South Asian" & 
+                            data!="ACS 2014-18\nall ethnic groups",
+                          NA, diversity),
+         data=factor(data,
+                     levels=c("Census 1980", 
+                              "ACS 2014-18\n1980 ethnic groups",
+                              "ACS 2014-18\nall ethnic groups")),
+         group=factor(group, 
+                      levels=c("E&SE Asian", "Latino","South Asian")))
+```
+
+```{r diversity-pan-bar}
+ggplot(diversity_pan, aes(x=group, y=diversity, fill=type))+
+  geom_col(position="dodge")+
+  facet_grid(data~variable)+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x=NULL, y="Probability two members do not share the same category")+
+  #coord_flip()+
+  theme_bw()+
+  theme(legend.position = "bottom")
+```
+
+
+```{r diversity-full, fig.height=6}
+temp <- diversity_pan %>%
+  filter((data=="ACS 2014-18\n1980 ethnic groups" | data=="Census 1980")) %>%
+  mutate(data=ifelse(data=="ACS 2014-18\n1980 ethnic groups",
+                     "ACS 2014-18", as.character(data)))
+
+dg <- diversity_ethnic %>%
+  pivot_longer(cols=starts_with("diversity_"), names_to="variable",
+               values_to="diversity") %>%
+  mutate(variable=ifelse(variable=="diversity_bpl",
+                         "Birthplace diversity",
+                         "Language diversity"),
+         data=relevel(factor(data), "Census 1980")) %>%
+  arrange(data, variable, diversity) %>%
+  mutate(order = row_number())
+
+ggplot(dg, aes(y=order, x=diversity, color=group))+
+  geom_pointrange(aes(xmin=0, xmax=diversity),
+                  position=position_dodgev(height=1), 
+                  alpha=0.8)+
+  geom_vline(data=temp, 
+             aes(xintercept=diversity, color=group, 
+                 linetype=type))+
+  scale_x_continuous(labels=scales::percent, expand=c(0,0),
+                     limits = c(0,0.85))+
+  #scale_color_manual(values=my_palette)+
+  scale_linetype_manual(values=c(4,1))+
+  scale_y_continuous(breaks = dg$order, labels = dg$race,
+                     expand = c(0,0))+
+  facet_wrap(variable~relevel(factor(data), "Census 1980"),
+             scales="free_y")+
+  labs(x="Diversity (Gini-Simpson Index)",
+       y=NULL,
+       caption="vertical lines give pan-ethnic group diversity",
+       color="Pan-ethnic group")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+```
+
+
 ### Race Reporting among Latinos
 
 ```{r latino-race-reporting}
 alternates_acs %>%
   filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
-                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") %>%
+  group_by(group) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(type="mean within ethnic groups") %>%
+  bind_rows(diversity_pan) %>%
+  mutate(type=ifelse(is.na(type), "within pan-ethnic group", type)) %>%
+  pivot_longer(cols=starts_with("diversity")) %>%
+  mutate(name=ifelse(name=="diversity_bpl","Birthplace diversity",
+                     "Language diversity")),"Honduran","Nicaraguan","Panamanian",
                      "Salvadorian","Argentinian","Bolivian","Chilean",
                      "Colombian","Ecuadorian","Paraguayan","Peruvian",
                      "Uruguayan","Venezuelan","Dominican")) %>% 
