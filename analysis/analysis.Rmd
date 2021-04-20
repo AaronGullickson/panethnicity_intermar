@@ -549,10 +549,10 @@ ggplot(diversity_pan, aes(x=group, y=diversity, fill=type))+
 ```
 
 
-```{r diversity-full, fig.height=6}
+```{r diversity-full, fig.height=10}
 temp <- diversity_pan %>%
-  filter((data=="ACS 2014-18\n1980 ethnic groups" | data=="Census 1980")) %>%
-  mutate(data=ifelse(data=="ACS 2014-18\n1980 ethnic groups",
+  filter((data=="ACS 2014-18\nall ethnic groups" | data=="Census 1980")) %>%
+  mutate(data=ifelse(data=="ACS 2014-18\nall ethnic groups",
                      "ACS 2014-18", as.character(data)))
 
 dg <- diversity_ethnic %>%
@@ -588,27 +588,64 @@ ggplot(dg, aes(y=order, x=diversity, color=group))+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 ```
+```{r}
+temp <- alternates_acs %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  group_by(race) %>%
+  summarize(prop_english=mean(lang==100, na.rm=TRUE),
+            prop_born_us=mean(bpld==1, na.rm=TRUE)) %>%
+  ungroup() %>%
+  mutate(data="ACS 2014-18")
 
+temp <- alternates_census %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  group_by(race) %>%
+  summarize(prop_english=mean(lang==100, na.rm=TRUE),
+            prop_born_us=mean(bpld==1, na.rm=TRUE)) %>%
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  bind_rows(temp) %>%
+  full_join(diversity_ethnic) %>%
+  mutate(data=relevel(factor(data), "Census 1980"))
+
+theoretical <- tibble(x=seq(from=0.01,to=0.99, by=0.01),
+                      y=1-(x^2+(1-x)^2))
+
+ggplot(temp, aes(x=prop_english, y=diversity_lang, color=group))+
+  geom_point()+
+  geom_smooth(se=FALSE, method="lm", formula=y~x+I(x^2))+
+  geom_line(data=theoretical, aes(x=x, y=y), color="grey",
+            linetype=2)+
+  theme_bw()+
+  scale_y_continuous(labels=scales::percent)+
+  scale_x_continuous(labels=scales::percent)+
+  labs(x="Percent who speak English as primary language",
+       y="Language diversity (Gini-Simpson Index)",
+       color="Pan-ethnic group",
+       caption="dashed grey line is exact diversity index in two group situation")+
+  facet_wrap(~data)
+
+ggplot(temp, aes(x=prop_born_us, y=diversity_bpl, color=group))+
+  geom_point()+
+  geom_smooth(se=FALSE, method="lm", formula=y~x+I(x^2))+
+  geom_line(data=theoretical, aes(x=x, y=y), color="grey",
+            linetype=2)+
+  theme_bw()+
+  scale_y_continuous(labels=scales::percent)+
+  scale_x_continuous(labels=scales::percent)+
+  labs(x="Percent who were born in the US",
+       y="Birthplace diversity (Gini-Simpson Index)",
+       color="Pan-ethnic group",
+       caption="dashed grey line is exact diversity index in two group situation")+
+  facet_wrap(~data)
+```
 
 ### Race Reporting among Latinos
 
 ```{r latino-race-reporting}
 alternates_acs %>%
   filter(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
-                "Guatemalan","Honduran","Nicaraguan","Panamanian",
-                "Salvadorian","Argentinian","Bolivian","Chilean",
-                "Colombian","Ecuadorian","Paraguayan","Peruvian",
-                "Uruguayan","Venezuelan","Dominican") %>%
-  group_by(group) %>%
-  summarize(diversity_bpl=mean(diversity_bpl),
-            diversity_lang=mean(diversity_lang)) %>%
-  ungroup() %>%
-  mutate(type="mean within ethnic groups") %>%
-  bind_rows(diversity_pan) %>%
-  mutate(type=ifelse(is.na(type), "within pan-ethnic group", type)) %>%
-  pivot_longer(cols=starts_with("diversity")) %>%
-  mutate(name=ifelse(name=="diversity_bpl","Birthplace diversity",
-                     "Language diversity")),"Honduran","Nicaraguan","Panamanian",
+                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
                      "Salvadorian","Argentinian","Bolivian","Chilean",
                      "Colombian","Ecuadorian","Paraguayan","Peruvian",
                      "Uruguayan","Venezuelan","Dominican")) %>% 
