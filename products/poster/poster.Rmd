@@ -11,17 +11,19 @@ affiliation:
   - num: 1
     address: Department of Sociology, University of Oregon
 main_findings:
-  - 'After accounting for birthplace and language endogamy, E&SE Asian ethnic exogamy increased substantially over time while Latino ethnic exogamy remained relatively less likely.'
+  - 'Accounting for birthplace and language endogamy, Asian ethnic exogamy has become more common and is more likely than interracial marriage, while Latino ethnic exogamy has changed little over time and remains less common.'
   - '![](big_splash.svg)'
-main_picwidth: 90%
+main_picwidth: "100%"
 main_textsize: "90px"
-main_textcol: "#FFFF0090"
+main_textcol: "#FFFF00"
+main_width: 0.45
 font_family: "Lato"
 main_fontfamily: "Indie Flower"
 primary_colour: "#23395b"
 secondary_colour: "#23395b"
 accent_colour: "#EAEBEE"
 title_textsize: "60pt"
+poster_width: "52in"
 output: 
   posterdown::posterdown_betterland:
     self_contained: false
@@ -44,6 +46,7 @@ options(knitr.table.format = "html")
 library(ggplot2)
 library(showtext)
 library(gridExtra)
+library(ggrepel)
 font_add_google("Lato")
 font_add_google("Indie Flower")
 showtext_auto()
@@ -80,8 +83,8 @@ coefs_pent <- list(census=models_census_pentagon,
   mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
          model=factor(model,
                       levels=c("base","bendog","lendog","both"),
-                      labels=c("Baseline model", "+ birthplace endogamy",
-                               "+ language endogamy", "+ both")),
+                      labels=c("Baseline\nmodel", "+ birthplace\nendogamy",
+                               "+ language\nendogamy", "+ both")),
          data=factor(data,
                      levels=c("census","acs_1980basis","acs_full"),
                      labels=c("Census 1980", 
@@ -98,8 +101,9 @@ arrows_pent <- coefs_pent %>%
   select(variable, coef, data) %>% 
   pivot_wider(names_from=data, values_from=coef) %>%
   rename(coef.census=`Census 1980`, 
-         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
-  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`)
+#%>%
+#  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 
 ## Extended Models ##
 coefs_extended <- list(census=models_census_extended,
@@ -127,25 +131,55 @@ arrows_extended <- coefs_extended %>%
   select(variable, coef, data) %>% 
   pivot_wider(names_from=data, values_from=coef) %>%
   rename(coef.census=`Census 1980`, 
-         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
-  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) 
+
+#%>%
+#  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
 ```{r bigsplash, include=FALSE}
-svg('big_splash.svg', height=17, width=20, pointsize=12)
-coefs_pent %>% 
-  filter(variable=="E&SE Asian ethnic exogamy" | variable=="Latino ethnic exogamy") %>%
-  ggplot(aes(y=model, x=exp(coef), color=data))+
-  geom_vline(xintercept = 0, color="grey70", linetype=1, size=2)+
-  geom_vline(xintercept = 1, color="grey70", linetype=3, size=2)+
-  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
-                   position=position_dodgev(height=0.5), size=4)+
-  scale_color_manual(values=my_palette)+
-  scale_x_continuous(limits=c(0,1), expand=c(0,0))+
-  labs(y=NULL, 
-       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
-       color="Data source")+
-  facet_wrap(~variable)+
+svg('big_splash.svg', height=17, width=23, pointsize=12)
+temp1 <- coefs_pent %>%
+  filter(model=="+ both" & grepl("E&SE Asian",variable) 
+         & !grepl("AIAN", variable)) %>%
+    select(variable, coef, data) %>%
+  mutate(group="East & Southeast (E&SE) Asian Intermarriage")
+
+temp2 <- coefs_pent %>%
+  filter(model=="+ both" & grepl("Latino",variable) & 
+           !grepl("AIAN",variable)) %>%
+    select(variable, coef, data) %>%
+  mutate(group="Latino Intermarriage")
+
+temp <- bind_rows(temp1, temp2)
+temp <- left_join(temp, arrows_pent)
+temp$extended <- temp$data=="ACS 2014-18, all ethnic groups"
+
+rect_data <- tibble(xmin=c(4.5,3.5), xmax=c(5.5,4.5), 
+                    ymin=c(0,0), ymax=c(1.1,1.1),
+                    group=c("East & Southeast (E&SE) Asian Intermarriage",
+                            "Latino Intermarriage"))
+
+ggplot(temp, aes(x=variable, y=exp(coef)))+
+  geom_rect(data=rect_data, 
+            aes(x=NULL, y=NULL, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
+            fill="#23395b", color="yellow", linetype=3, size=3)+
+  geom_hline(yintercept = 1, linetype=3, size=1, color="#EAEBEE")+
+  geom_point(aes(color=data, shape=data), size=20, alpha=0.8)+
+  geom_segment(aes(x=variable, xend=variable,
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               arrow = arrow(length = unit(0.03, "npc")),
+                color="#EAEBEE", size=3)+
+  facet_wrap(~group, scales = "free_y", ncol = 1)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,1.1), expand=c(0,0))+
+  scale_color_manual(values = my_palette)+
+  scale_shape_manual(values = c(16,16,17))+
+  labs(x=NULL, 
+       y="Odds ratio of exogamy relative to ethnoracial endogamy,\n accounting for birthplace and language endogamy",
+       title=NULL,
+       color="Data source", shape="Data source")+
+  guides(color = guide_legend(ncol=1), shape=guide_legend(ncol=1))+
   theme_bw()+
   theme(text = element_text(colour="#EAEBEE", family="Lato"),
         axis.line.x = element_line(colour="#EAEBEE", size = 2),
@@ -163,8 +197,7 @@ coefs_pent %>%
         panel.grid.minor = element_blank(), 
         legend.title = element_text(size=30),
         legend.text = element_text(size=25),
-        panel.border = element_rect(fill=NA, colour=NA),
-        panel.spacing = unit(5, "lines"),
+        panel.border = element_rect(fill=NA, colour="#EAEBEE"),
         panel.background = element_rect(fill = "#23395b",colour = NA),
         plot.background = element_rect(fill = "#23395b",colour = NA),
         legend.background = element_rect(fill = "#23395b",colour = NA),
@@ -176,267 +209,304 @@ dev.off()
 
 ## Research Questions
 
-* How has the likelihood of ethnic intermarriage (e.g. Japanese and Korean, Mexican and Puerto Rican) changed among Asians and Latinos?
-* How does accounting for language and birthplace endogamy affect the likelihood of ethnic intermarriage?
+1. How has the likelihood of ethnic exogamy (e.g. Japanese and Korean, Mexican and Puerto Rican) changed among Asians and Latinos?
+2. How does accounting for language and birthplace endogamy affect the likelihood of ethnic exogamy?
 
-I use 1980 Census data and recent American Community Survey data, which include variables on marriage timing, to address this question using newly-formed marriages. 
-
-## Birthplace and Language Variation
-
-```{r bplace-hetero}
-alternates_acs %>%
-  filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
-                     "Filipino","Cambodian","Hmong","Laotian",
-                     "Thai","Burmese","Indonesian","Malaysian",
-                     "Mexican","Puerto Rican","Cuban","Costa Rican",
-                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
-                     "Salvadorian","Argentinian","Bolivian","Chilean",
-                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
-                     "Uruguayan","Venezuelan","Dominican")) %>%
-  mutate(birthplace=factor(case_when(
-    bpld==1 ~ "USA",
-    bpld==50000 ~ "China",
-    bpld==50010 ~ "Hong Kong",
-    bpld==50020 ~ "Macau",
-    bpld==50040 ~ "Taiwan",
-    bpld==50100 ~ "Japan",
-    bpld>=50200 & bpld<=50220 ~ "Korea",
-    bpld==51100 ~ "Cambodia",
-    bpld==51200 ~ "Indonesia",
-    bpld==51300 ~ "Laos",
-    bpld==51400 ~ "Malaysia",
-    bpld==51500 ~ "Philippines",
-    bpld==51600 ~ "Singapore",
-    bpld==51700 ~ "Thailand",
-    bpld==51800 ~ "Vietnam",
-    bpld==52130 ~ "Myanmar",
-    bpld==20000 ~ "Mexico",
-    bpld==21020 ~ "Costa Rica",
-    bpld==21030 ~ "El Salvador",
-    bpld==21040 ~ "Guatemala",
-    bpld==21050 ~ "Honduras",
-    bpld==21060 ~ "Nicaragua",
-    bpld==21070 ~ "Panama",
-    bpld==30005 ~ "Argentina",
-    bpld==30010 ~ "Bolivia",
-    bpld==30020 ~ "Chile",
-    bpld==30025 ~ "Colombia",
-    bpld==30030 ~ "Ecuador",
-    bpld==30045 ~ "Paraguay",
-    bpld==30050 ~ "Peru",
-    bpld==30060 ~ "Uruguay",
-    bpld==30065 ~ "Venezuela",
-    bpld==25000 ~ "Cuba",
-    bpld==26010 ~ "Dominican Rep.",
-    bpld==11000 ~ "Puerto Rico",
-    TRUE ~ "Other Place"),
-    levels=c("USA","China","Hong Kong","Macau","Taiwan","Japan","Korea",
-             "Cambodia","Indonesia","Laos","Malaysia","Philippines",
-             "Singapore","Thailand","Vietnam","Myanmar","Mexico",
-             "Costa Rica","El Salvador","Guatemala","Honduras",
-             "Nicaragua","Panama","Argentina","Bolivia","Chile",
-             "Colombia","Ecuador","Paraguay","Peru","Uruguay","Venezuela",
-             "Cuba","Dominican Rep.","Puerto Rico","Other Place")),
-    race=fct_reorder(race, birthplace=="USA", mean),
-    group=factor(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
-                             "Guatemalan","Honduran","Nicaraguan","Panamanian",
-                             "Salvadorian","Argentinian","Bolivian","Chilean",
-                             "Colombian","Ecuadorian","Paraguayan","Peruvian",
-                             "Uruguayan","Venezuelan","Dominican"),
-                 levels=c(FALSE,TRUE),
-                 labels=c("E & SE Asian","Latino"))) %>%
-  select(race, birthplace, group) %>%
-  droplevels() %>%
-  ggplot(aes(x=race, fill=fct_rev(birthplace)))+
-  geom_bar(position="fill")+
-  scale_fill_manual(values = c("grey", brewer.pal(9, "Set1"),
-                               "tomato","orchid","maroon","paleturquoise1",
-                               brewer.pal(8, "Dark2"),
-                               brewer.pal(12,"Set3"),"grey30"))+
-  scale_y_continuous(labels = scales::percent, expand=c(0,0))+
-  labs(x=NULL, y="Cumulative percent by birthplace",
-       title="Birthplace heterogeneity is high within and between Asian and Latino ethnic groups",
-       caption="Data Source: ACS 2014-18, single and recently married adults",
-       fill="Birth-\nplace")+
-  coord_flip()+
-  facet_wrap(~group, scales="free_y")+
-  guides(fill = guide_legend(reverse = TRUE, ncol=7))+
-  theme_bw()+
-  theme(legend.position = "bottom",
-        legend.text = element_text(size=8),
-        legend.title = element_text(size=8),
-        axis.text.y = element_text(size=7),
-        title = element_text(size=10),
-        strip.text= element_text(size=10, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA),
-        plot.margin = unit(c(0,0.5,0,0), "cm"))
-```
-
-```{r language-hetero}
-alternates_acs %>%
-  filter(race %in% c("Chinese","Korean","Japanese","Vietnamese",
-                     "Filipino","Cambodian","Hmong","Laotian",
-                     "Thai","Burmese","Indonesian","Malaysian",
-                     "Mexican","Puerto Rican","Cuban","Costa Rican",
-                     "Guatemalan","Honduran","Nicaraguan","Panamanian",
-                     "Salvadorian","Argentinian","Bolivian","Chilean",
-                     "Colombian","Ecuadorian","Paraguayan","Peruvian",
-                     "Uruguayan","Venezuelan","Dominican")) %>%
-  mutate(lang=factor(case_when(
-    lang==100 ~ "English",
-    lang==4300 ~ "Chinese",
-    lang==5400 ~ "Filipino, Tagalog",
-    lang==5000 ~ "Vietnamese",
-    lang==4900 ~ "Korean",
-    lang==4800 ~ "Japanese",
-    lang==4700 ~ "Thai, Siamese, Lao",
-    lang==4420 ~ "Miao, Hmong",
-    lang==5120 ~ "Mon-Khmer, Cambodian",
-    lang==5440 ~ "Llocano, Hocano",
-    lang==5200 ~ "Indonesian",
-    lang==1200 ~ "Spanish",
-    lang==4500 ~ "Burmese, Lisu, Lolo",
-    lang==5420 ~ "Sebuano",
-    lang==4430 ~ "Iu Mien",
-    lang==4510 ~ "Karen",
-    lang==5410 ~ "Bisayan",
-    lang==4410 ~ "Miao-Yao, Mien",
-    lang==5300 ~ "Malay",
-    lang==1100 ~ "French",
-    TRUE ~ "Other Language"),
-    levels=c("English","Chinese","Japanese","Korean","Vietnamese",
-             "Thai, Siamese, Lao","Mon-Khmer, Cambodian",
-             "Burmese, Lisu, Lolo","Karen",
-             "Filipino, Tagalog","Bisayan","Sebuano","Llocano, Hocano",
-             "Miao, Hmong","Iu Mien","Miao-Yao, Mien",
-             "Indonesian","Malay",
-             "Spanish","French",
-             "Other Language")),
-    lang=fct_reorder(lang, lang, length, .desc=TRUE),
-    lang=fct_relevel(lang, "English", after=0),
-    lang=fct_relevel(lang, "Other Language", after=Inf),
-    race=fct_reorder(race, lang=="English", mean),
-    group=factor(race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
-                             "Guatemalan","Honduran","Nicaraguan","Panamanian",
-                             "Salvadorian","Argentinian","Bolivian","Chilean",
-                             "Colombian","Ecuadorian","Paraguayan","Peruvian",
-                             "Uruguayan","Venezuelan","Dominican"),
-                 levels=c(FALSE,TRUE),
-                 labels=c("E & SE Asian","Latino"))) %>%
-  select(race, lang, group) %>%
-  droplevels() %>%
-  ggplot(aes(x=race, fill=fct_rev(lang)))+
-  geom_bar(position="fill")+
-  scale_fill_manual(values = c("grey", brewer.pal(6, "Dark2"),
-                               "tomato","sienna","orchid","maroon","paleturquoise1",
-                               brewer.pal(6,"Set2"),"red","royalblue","grey30"))+
-  scale_y_continuous(labels = scales::percent, expand=c(0,0))+
-  labs(x=NULL, y="Cumulative percent by primary language spoken",
-       title="Language heterogeneity is much higher among Asians than Latinos",
-       caption="Data Source: ACS 2014-18, single and recently married adults",
-       fill="Primary\nlanguage")+
-  coord_flip()+
-  facet_wrap(~group, scales="free_y")+
-  guides(fill = guide_legend(reverse = TRUE, ncol=5))+
-  theme_bw()+
-  theme(legend.position = "bottom",
-        legend.text = element_text(size=7),
-        legend.title = element_text(size=8),
-        axis.text.y = element_text(size=8),
-        title = element_text(size=10),
-        strip.text= element_text(size=9, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA),
-        plot.margin = unit(c(0,0.5,0,0), "cm"))
-```
-
-
-
-
-## Interracial vs Interethnic Marriage
-
-```{r exog-compare-dot, fig.height=6}
-temp1 <- coefs_pent %>%
-  filter(model=="+ both" & grepl("E&SE Asian",variable) 
-         & !grepl("AIAN", variable)) %>%
-    select(variable, coef, data) %>%
-  mutate(group="E&SE Asian Intermarriage")
-
-temp2 <- coefs_pent %>%
-  filter(model=="+ both" & grepl("Latino",variable) & 
-           !grepl("AIAN",variable)) %>%
-    select(variable, coef, data) %>%
-  mutate(group="Latino Intermarriage")
-
-temp <- bind_rows(temp1, temp2)
-temp <- left_join(temp, arrows_pent)
-temp$extended <- temp$data=="ACS 2014-18, all ethnic groups"
-
-rect_data <- tibble(xmin=c(4.5,3.5), xmax=c(5.5,4.5), 
-                    ymin=c(0,0), ymax=c(1.1,1.1),
-                    group=c("E&SE Asian Intermarriage","Latino Intermarriage"))
-
-ggplot(temp, aes(x=variable, y=exp(coef)))+
-  geom_rect(data=rect_data, 
-            aes(x=NULL, y=NULL, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
-            fill="yellow", alpha=0.4)+
-  geom_hline(yintercept = 1, linetype=3, size=1)+
-  geom_point(aes(color=data), size=4, alpha=0.6)+
-  geom_segment(aes(x=variable, xend=variable,
-                   y=exp(coef.census), yend=exp(coef.acs)),
-               arrow = arrow(length = unit(0.03, "npc")),
-                color="grey40", size=1)+
-  facet_wrap(~group, scales = "free_y", ncol = 1)+
-  coord_flip()+
-  scale_y_continuous(limits=c(0,1.1), expand=c(0,0))+
-  scale_color_manual(values = my_palette)+
-  labs(x=NULL, 
-       y="Odds ratio of exogamy relative to ethnoracial endogamy",
-       color="Data source",
-       title="Asian ethnic exogamy is much more likely than\nAsian interracial marriage, but Latino/White marriage\nis almost as common as Latino ethnic exogamy")+
-  guides(color = guide_legend(ncol=1))+
-  theme_bw()+
-  theme(legend.position = "bottom",
-        legend.text = element_text(size=12),
-        legend.title = element_text(size=12),
-        axis.text.y = element_text(size=12),
-        axis.title.x = element_text(size=12),
-        title = element_text(size=12),
-        strip.text= element_text(size=12, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA))
-```
-
-## Results for South Asians
-
-```{r south-asian-exog-lolly}
-coefs_pent %>%
-  filter(variable=="South Asian ethnic exogamy") %>%
-  ggplot(aes(y=model, x=exp(coef), color=data))+
-  geom_vline(xintercept = 1, linetype=3, size=1)+
-  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
-                   position=position_dodgev(height=0.5), size=2)+
-  scale_color_manual(values=my_palette[3])+
-  scale_x_continuous(limits=c(0,1.1), expand=c(0,0))+
-  labs(y=NULL, 
-       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
-       color="Data source",
-       title="Ethnic exogamy among South Asians is also very high\nafter accounting for birthplace and language endogamy")+
-  theme_bw()+
-  theme(legend.position = "bottom",
-        legend.text = element_text(size=12),
-        legend.title = element_text(size=12),
-        axis.text.y = element_text(size=12),
-        axis.title.x = element_text(size=12),
-        title = element_text(size=12),
-        strip.text= element_text(size=12, color="#EAEBEE"),
-        strip.background = element_rect(fill = "#23395b",colour = NA))
-```
+I use 1980 Census data and recent American Community Survey data, which include variables on marriage timing, to answer these questions using newly-formed marriages. 
 
 ## Methods
 
 I use a [counterfactual marriage model](https://www.demographic-research.org/volumes/vol44/22/default.htm):
 
 1. I select all marriages formed within the previous five years, excluding those unions formed before migration to the US. 
-1. For each real union, I sample 20 alternate partners for one randomly determined spouse from the same state of residence. 
+1. For each real union, I sample 20 alternate partners for one randomly determined spouse from the same state. 
 2. I use a conditional logit model to predict which union is the real union.
 3. All models control for age and educational differences between spouses.
-4. The 1980 Census data only allow for the identification of Chinese, East Indian, Filipino, Japanese, Korean, and Vietnamese ethnicities among Asians and Mexican, Cuban, and Puerto Rican ethnicities among Latinos.
+4. The 1980 Census data only allows for the identification of Chinese, East Indian, Filipino, Japanese, Korean, and Vietnamese ethnicities among Asians and Mexican, Cuban, and Puerto Rican ethnicities among Latinos.
+
+## Findings
+
+1. Birthplace and language endogamy substantially suppress ethnic exogamy among Asians, but not among Latinos.
+2. Accounting for birthplace and language endogamy, ethnic exogamy among E&SE Asians is high and has grown more common over time. Ethnic exogamy is also high among South Asians, but a historical comparison is not possible.
+3. Exogamy between E&SE Asians and South Asians has become less common over time, suggesting two distinct "melting pots" of Asian pan-ethnicity.
+3. Ethnic exogamy among Latinos is low and has not increased. Latinos are no more like to marry a a non-co-ethnic Latino than they are to marry a white person. 
+
+## The role of birthplace and language
+
+```{r bplace-hetero, fig.height=6}
+#Going to use Greenberg's Monolingual Non-Weighted Method which
+#basically gives the of probability of any two randomly chosen individuals
+#from the population not belonging to the same category. 
+#http://jse.amstat.org/v15n2/kader.pdf
+temp <- alternates_census %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  mutate(group=case_when(
+    race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian") ~ "E&SE Asian",
+    race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan") ~ "South Asian",
+    race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
+    group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
+
+diversity_ethnic <- temp %>%
+  count(race, group, bpld) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980")
+
+diversity_ethnic <- temp %>%
+  count(race, group, lang) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  full_join(diversity_ethnic)
+
+diversity_pan <- temp %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980")
+
+diversity_pan <- temp %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  full_join(diversity_pan)
+
+temp <- alternates_acs %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  mutate(group=case_when(
+    race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian") ~ "E&SE Asian",
+    race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan") ~ "South Asian",
+    race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
+    group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
+
+temp2 <- temp %>%
+  count(race, group, bpld) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18")
+
+diversity_ethnic <- temp %>%
+  count(race, group, lang) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_ethnic) %>%
+  select(race, group, data, diversity_bpl, diversity_lang)
+
+temp2 <- temp %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\nall ethnic groups")
+
+diversity_pan <- temp %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\nall ethnic groups") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_pan)
+
+races1980 <- as.character(subset(diversity_ethnic, data=="Census 1980")$race)
+
+temp2 <- temp %>%
+  filter(race %in% races1980) %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups")
+
+diversity_pan <- temp %>%
+  filter(race %in% races1980) %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_pan)  %>%
+  mutate(type="within pan-ethnic group")
+
+temp2 <- diversity_ethnic %>%
+  group_by(group, data) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(data=ifelse(data=="ACS 2014-18", "ACS 2014-18\nall ethnic groups",
+                     data))
+
+diversity_pan <- diversity_ethnic %>%
+  filter(race %in% races1980 & data=="ACS 2014-18") %>%
+  group_by(group, data) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  bind_rows(temp2)  %>%
+  mutate(type="mean within ethnic groups") %>%
+  bind_rows(diversity_pan) %>%
+  pivot_longer(cols=starts_with("diversity_"), names_to="variable",
+               values_to="diversity") %>%
+  mutate(variable=ifelse(variable=="diversity_bpl",
+                     "Birthplace diversity",
+                     "Language diversity"),
+         diversity=ifelse(group=="South Asian" & 
+                            data!="ACS 2014-18\nall ethnic groups",
+                          NA, diversity),
+         data=factor(data,
+                     levels=c("Census 1980", 
+                              "ACS 2014-18\n1980 ethnic groups",
+                              "ACS 2014-18\nall ethnic groups")),
+         group=factor(group, 
+                      levels=c("E&SE Asian", "Latino","South Asian"))) %>%
+  filter(group!="South Asian" & data!="ACS 2014-18\n1980 ethnic groups")
+
+ggplot(diversity_pan, aes(x=group, y=diversity, fill=type))+
+  geom_col(position="dodge")+
+  facet_grid(data~variable)+
+  scale_y_continuous(labels = scales::percent)+
+  scale_fill_manual(values = my_palette[1:2])+
+  labs(x=NULL, y="Probability that two members do not\nshare the same birthplace/language",
+       title="Pan-ethnic birthplace and langugage diversity\nis higher among E&SE Asians than Latinos")+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=16),
+        axis.text = element_text(size=14),
+        axis.title = element_text(size=16),
+        title = element_text(size=18),
+        strip.text= element_text(size=14, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA),
+        plot.margin = unit(c(0,0.5,0,0), "cm"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
+
+# diversity_ethnic %>%
+#   group_by(group) %>%
+#   summarize(diversity_bpl=mean(diversity_bpl),
+#             diversity_lang=mean(diversity_lang)) %>%
+#   ungroup() %>%
+#   mutate(type="mean within ethnic groups") %>%
+#   bind_rows(diversity_pan) %>%
+#   mutate(type=ifelse(is.na(type), "within pan-ethnic group", type)) %>%
+#   pivot_longer(cols=starts_with("diversity")) %>%
+#   mutate(name=ifelse(name=="diversity_bpl","Birthplace diversity",
+#                      "Language diversity")) %>%
+#   ggplot(aes(x=group, y=value, fill=type))+
+#   geom_col(position="dodge")+
+#   facet_wrap(~name)+
+#   scale_y_continuous(labels = scales::percent)+
+#   scale_fill_manual(values = my_palette[1:2])+
+#   labs(x=NULL, y="Probability that two members\ndo not share the same category",
+#        title="Pan-ethnic birthplace and langugage diversity\nis higher among E&SE Asians than Latinos")+
+#   theme_bw()+
+#   theme(legend.position = "bottom",
+#         legend.text = element_text(size=14),
+#         legend.title = element_text(size=16),
+#         axis.text = element_text(size=14),
+#         axis.title = element_text(size=16),
+#         title = element_text(size=18),
+#         strip.text= element_text(size=16, color="#EAEBEE"),
+#         strip.background = element_rect(fill = "#23395b",colour = NA),
+#         plot.margin = unit(c(0,0.5,0,0), "cm"),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.minor.x = element_blank())
+```
+
+```{r exog-compare-dot, fig.height=6, eval=TRUE}
+coefs_pent %>% 
+  filter(variable=="E&SE Asian ethnic exogamy" | variable=="Latino ethnic exogamy") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data, shape=data, linetype=data))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1, size=1)+
+  #geom_vline(xintercept = 1, color="grey70", linetype=3, size=1)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5), size=1)+
+  scale_color_manual(values=my_palette)+
+  scale_shape_manual(values=c(16,16,17))+
+  scale_linetype_manual(values=c(1,1,2))+
+  scale_x_continuous(limits=c(0,1), expand=c(0,0))+
+  labs(y=NULL, 
+       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
+       color="Data source", shape="Data source", linetype="Data source",
+       title="Controlling for birthplace and language\nendogamy increases Asian ethnic exogamy\nbut does not change Latino ethnic exogamy")+
+  facet_wrap(~variable)+
+  guides(color = guide_legend(ncol=1))+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=16),
+        axis.text = element_text(size=14),
+        axis.title = element_text(size=16),
+        title = element_text(size=18),
+        strip.text= element_text(size=14, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA),
+        plot.margin = unit(c(0,0.5,0,0), "cm"),
+        panel.spacing = unit(2, "lines"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank())
+```
+
+## Results for South Asians
+
+```{r south-asian-exog-lolly, fig.height=3.3, eval=TRUE}
+coefs_pent %>%
+  filter(variable=="South Asian ethnic exogamy") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 1, linetype=3, size=1)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5), size=1,
+                   linetype=2, shape=17)+
+  scale_color_manual(values=my_palette[3])+
+  scale_x_continuous(limits=c(0,1.1), expand=c(0,0))+
+  labs(y=NULL, 
+       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
+       color="Data source")+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=16),
+        axis.text = element_text(size=14),
+        axis.title = element_text(size=16),
+        title = element_text(size=18),
+        strip.text= element_text(size=14, color="#EAEBEE"),
+        strip.background = element_rect(fill = "#23395b",colour = NA),
+        plot.margin = unit(c(0,0.5,0,0), "cm"),
+        panel.spacing = unit(2, "lines"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank())
+```
