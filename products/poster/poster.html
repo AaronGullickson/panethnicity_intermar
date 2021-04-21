@@ -8,7 +8,7 @@
 
 
 
-<title>Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018</title>
+<title>Changes in Pan-Ethnic Intermarriage in the United States, 1980-2018</title>
 
 <script src="poster_files/accessible-code-block-0.0.1/empty-anchor.js"></script>
 
@@ -33,7 +33,7 @@ Here are the required style attributes for css to make this poster work :)
 -->
 <style>
 @page {
-size: 46in 32in;
+size: 52in 32in;
 margin: 0;
 padding: 0;
 background-color: #ffffff;
@@ -41,7 +41,7 @@ background-color: #ffffff;
 body {
 margin: 0px;
 padding: 0px;
-width: 46in;
+width: 52in;
 height: 32in;
 text-align: justify;
 font-size: 45px;
@@ -126,7 +126,7 @@ float: left;
 padding: 0px;
 }
 .outer {
-width: 46in;
+width: 52in;
 height: 32in;
 -webkit-column-count: 2; /* Chrome, Safari, Opera */
 -moz-column-count: 2; /* Firefox */
@@ -206,12 +206,12 @@ color: #000000;
 text-align: left;
 }
 .main {
-width: calc(46in / 2);
+width: calc(52in / 2);
 height: 32in;
 position: absolute;
-margin-left: calc(46in / 4);
+margin-left: calc(52in / 4);
 background-color: #23395b;
-color: #FFFF0090;
+color: #FFFF00;
 font-family: Indie Flower;
 background-image: linear-gradient(#23395b 50%, #23395b);
 }
@@ -255,7 +255,7 @@ font-size: 5px;
 text-decoration: none;
 }
 .poster_wrap {
-width: 46in;
+width: 52in;
 height: 32in;
 padding: 0cm;
 background-color: #ffffff;
@@ -272,7 +272,7 @@ span > #tab:mytable {
   padding-right: 30mm;
 }
 .main_pic {
-  width: 90%;
+  width: 100%;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -289,7 +289,7 @@ span > #tab:mytable {
 <div class="column outer">
 <br>
 <div class="title section">
-<h1 id="title">Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018</h1>
+<h1 id="title">Changes in Pan-Ethnic Intermarriage in the United States, 1980-2018</h1>
 <br>
 <h3 id="author" class="author">
 
@@ -309,79 +309,47 @@ Aaron Gullickson<sup> 1, <a class="orcid" href="https://orcid.org/0000-0001-7237
 </div>
 <div id="research-questions" class="section level2">
 <h2>Research Questions</h2>
-<p>The 1980 Census data and American Community Survey since 2013 both measure the duration of current marriages allowing us to reliably measure changes in assortative mating patterns across the two time periods. For this project, I utilize these two data points to address the following questions:</p>
-<ul>
-<li>How has the likelihood of interracial marriage changed among newly-wed couples across the time periods?</li>
-<li>How has the likelihood of intermarriage among Asian/Hispanic ethnic groups (e.g. Japanese and Korean, Mexican and Puerto Rican) changed across the time periods?<br />
-</li>
-<li>How is the likelihood of pan-ethnic intermarriage affected by language and birthplace endogamy?</li>
-</ul>
+<ol style="list-style-type: decimal">
+<li>How has the likelihood of ethnic exogamy (e.g. Japanese and Korean, Mexican and Puerto Rican) changed among Asians and Latinos?</li>
+<li>How does accounting for language and birthplace endogamy affect the likelihood of ethnic exogamy?</li>
+</ol>
+<p>I use 1980 Census data and recent American Community Survey data, which include variables on marriage timing, to answer these questions using newly-formed marriages.</p>
 </div>
 <div id="methods" class="section level2">
 <h2>Methods</h2>
-<p>I use a counterfactual marriage model:</p>
+<p>I use a <a href="https://www.demographic-research.org/volumes/vol44/22/default.htm">counterfactual marriage model</a>:</p>
 <ol style="list-style-type: decimal">
-<li>I select all marriages formed within the previous five years, excluding those unions formed before migration to the US or when one partner migrated across state lines.</li>
-<li>For each real union, I sample 25 alternate partners for one randomly determined spouse from the same state of residence.</li>
-<li>I use a conditional logit model to predict which union is the real union based on partner characteristics.</li>
-<li>In addition to parameters for racial and pan-ethnic unions, I control for age differences, educational differences, language endogamy, and birthplace endogamy.</li>
+<li>I select all marriages formed within the previous five years, excluding those unions formed before migration to the US.</li>
+<li>For each real union, I sample 20 alternate partners for one randomly determined spouse from the same state.</li>
+<li>I use a conditional logit model to predict which union is the real union.</li>
+<li>All models control for age and educational differences between spouses.</li>
+<li>The 1980 Census data only allows for the identification of Chinese, East Indian, Filipino, Japanese, Korean, and Vietnamese ethnicities among Asians and Mexican, Cuban, and Puerto Rican ethnicities among Latinos.</li>
 </ol>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Data source</th>
-<th align="right">Number of actual unions</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Census 1980</td>
-<td align="right">288,377</td>
-</tr>
-<tr class="even">
-<td align="left">ACS 2014-18</td>
-<td align="right">486,271</td>
-</tr>
-</tbody>
-</table>
 </div>
-<div id="do-language-and-birthplace-endogamy-matter" class="section level2">
-<h2>Do Language and Birthplace Endogamy Matter?</h2>
-<div class="figure" style="text-align: center"><span id="fig:panethnic-coef-fig"></span>
-<img src="poster_files/figure-html/panethnic-coef-fig-1.png" alt="Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses." width="100%" />
-<p class="caption">
-Figure 1: Strength of Hispanic/Asian ethnic exogamy based on different model specifications and time periods. Baseline model controls for age and educational differences between spouses.
-</p>
+<div id="findings" class="section level2">
+<h2>Findings</h2>
+<ol style="list-style-type: decimal">
+<li>Birthplace and language endogamy substantially suppress ethnic exogamy among Asians, but not among Latinos.</li>
+<li>Accounting for birthplace and language endogamy, ethnic exogamy among E&amp;SE Asians is high and has grown more common over time. Ethnic exogamy is also high among South Asians, but a historical comparison is not possible.</li>
+<li>Exogamy between E&amp;SE Asians and South Asians has become less common over time, suggesting two distinct “melting pots” of Asian pan-ethnicity.</li>
+<li>Ethnic exogamy among Latinos is low and has not increased. Latinos are no more like to marry a a non-co-ethnic Latino than they are to marry a white person.</li>
+</ol>
 </div>
-<ul>
-<li>Language and birthplace endogamy strongly reduce the tendency toward pan-ethnic intermarriage for Asians.</li>
-<li>Birthplace endogamy slightly reduced the tendency toward pan-ethnic intermarriage among Hispanics, but language endogamy has no effect, likely due to the dominance of Spanish and English.</li>
-</ul>
+<div id="the-role-of-birthplace-and-language" class="section level2">
+<h2>The role of birthplace and language</h2>
+<p><img src="poster_files/figure-html/lang-bplace-diversity-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="poster_files/figure-html/exog-compare-dot-1.png" width="100%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="additional-findings" class="section level2">
-<h2>Additional Findings</h2>
-<div id="persistent-blacknon-black-divide" class="section level3">
-<h3>Persistent Black/non-Black divide</h3>
-<p>Black/White interracial marriage increased substantially in likelihood but all intermarriages involving a black spouse remain the least likely form of union overall.</p>
-</div>
-<div id="growing-boundaries-for-indigenous-and-asian-indian-populations" class="section level3">
-<h3>Growing boundaries for Indigenous and Asian Indian populations</h3>
-<p>Intermarriage declined systematically over the time period for Asian Indians and Indigenous populations. However this decline may be driven in part by issues of identification and measurement for these groups.</p>
-</div>
-</div>
-<div id="notes" class="section level2">
-<h2>Notes</h2>
-<ul>
-<li><p>This poster was prepared for the Population Association of America Annual Meeting, 2021.</p></li>
-<li><p><a href="https://aarongullickson.netlify.app/">Click here</a> or use the QR code to get the full paper associated with this poster.</p></li>
-</ul>
+<div id="results-for-south-asians" class="section level2">
+<h2>Results for South Asians</h2>
+<p><img src="poster_files/figure-html/south-asian-exog-lolly-1.png" width="100%" style="display: block; margin: auto;" /></p>
 </div>
 
 </div>
 <div class="main">
-<p>Asian ethnic exogamy increased substantially over time while Hispanic ethnic exogamy was static.<br><br> <img src="big_splash.svg" /></p>
+<p>Accounting for birthplace and language endogamy, Asian ethnic exogamy has become more common and is more likely than interracial marriage, while Latino ethnic exogamy has changed little over time and remains less common.<br><br> <img src="big_splash.svg" /></p>
 
-<img src="https://raw.githubusercontent.com/brentthorne/posterdown/master/images/qr-code-black.png" class="main-img-right" />
+
 </div>
 </div>
 
