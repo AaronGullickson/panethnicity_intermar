@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
@@ -542,10 +542,7 @@ ggplot(diversity_pan, aes(x=group, y=diversity, fill=type))+
   geom_col(position="dodge")+
   facet_grid(data~variable)+
   scale_y_continuous(labels = scales::percent)+
-  labs(x=NULL, y="Probability two members do not share the same category")+
-  #coord_flip()+
-  theme_bw()+
-  theme(legend.position = "bottom")
+  labs(x=NULL, y="Probability two members do not share the same category")
 ```
 
 
