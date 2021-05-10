@@ -20,19 +20,111 @@ fontfamily: mathpazo
 fontsize: 11pt
 anonymous: false #anonymize, double-space, and ragged right
 endnotes: false #make footnotes endnotes
-endfloat: false #move table and figures to the end
+endfloat: true #move table and figures to the end
 bibliography: ../project.bib
 biblio-style: ./resources/ajs.bst
 ---
 
-```{r setup, echo=FALSE, warning=FALSE, error=FALSE, include=FALSE}
-# If you want to do things in one R Markdown document then use the 
-# chunk option eval to toggle between running with and without 
-# compiling R code chunks
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, 
-                      warning = FALSE, eval = TRUE)
-#load data
-#load libraries
+                      warning = FALSE, eval = TRUE,
+                      fig.height=3.5)
+library(here)
+source(here("analysis","check_packages.R"))
+source(here("analysis","useful_functions.R"))
+load(here("analysis","output","models.RData"))
+load(here("analysis","output","alternates.RData"))
+load(here("analysis","output","models_bendog.RData"))
+#you need to load kableExtra in the doc
+options(kableExtra.latex.load_packages = FALSE)
+library(kableExtra)
+
+my_palette <- c("#7b3294","#008837","#a6dba0")
+
+#instead of loading markets, which takes forever, hardcoding sample
+#sizes but be sure to adjust if this changes
+#load(here("analysis","output","markets_census.RData"))
+#load(here("analysis","output","markets_acs_full.RData"))
+#census_n <- sum(markets_census[[1]]$choice)
+#acs_n <- sum(markets_acs_full[[1]]$choice)
+census_n <- 285523
+acs_n <- 503348
+
+```
+
+
+```{r create-coef-table}
+#extract coefficient values from model summary as tibble
+get_coefs <- function(x) {
+  temp <- coef(x)[,c(1,2)]
+  return(tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]))
+}
+#bind together the model summaries
+bind_models <- function(models_summary) {
+  temp <- lapply(models_summary, get_coefs) %>%
+    bind_rows(.id="model") %>%
+    filter(grepl("race_exog", variable))
+  return(temp)
+}
+
+## Pentagon Models ##
+coefs_pent <- list(census=models_census_pentagon,
+                    acs_1980basis=models_acs1980_pentagon,
+                    acs_full=models_acsfull_pentagon) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline model", "+ birthplace\nendogamy",
+                               "+ language\nendogamy", "+ birthplace and\nlanguage endogamy")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis","acs_full"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups",
+                              "ACS 2014-18, all ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+#create a dataset that can be used for the arrows in the graph
+#need a reworked dataset for arrows
+arrows_pent <- coefs_pent %>%
+  filter(model=="+ birthplace and\nlanguage endogamy" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, all ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
+
+## Extended Models ##
+coefs_extended <- list(census=models_census_extended,
+                       acs_1980basis=models_acs1980_extended,
+                       acs_full=models_acsres_extended) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_extended"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline", "+ birthplace endogamy",
+                               "+ language endogamy", "+ both")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis","acs_full"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups",
+                              "ACS 2014-18, expanded ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+#arrows
+arrows_extended <- coefs_extended %>%
+  filter(model=="+ both" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+  filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
 # Introduction
@@ -41,6 +133,357 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE,
 
 # Data and Methods
 
+The data for this analysis come from the microdata sample of the 1980 US Census and American Community Survey (ACS). The ACS is an annual 1-in-100 survey of the United States population, conducted by the United States Census Bureau. To increase sample size for smaller ethnoracial categories, I pool five years of ACS data from 2014-2018. Both data sources were extracted from the Integrated Public Use Microdata Series (IPUMS) [@ruggles_ipums_2020].
+
+The modeling approach that I use here is a counterfactual marriage model [@qian_marriage_2018; @gullickson_counterfactual_2021]. Using information on marriage duration, I identify all marriages in the data that were formed in the previous year. For each marriage, I then construct a choice set of one real union and twenty fictional unions. Fictional unions are created by sampling alternate partners for one randomly determined spouse from a pool of potential partners. I then use a conditional logit model to predict how partner characteristics the likelihood of observing the true union, as follows:
+$$P_{ij}=\frac{e^{\mathbf{x}_{ij}\beta}}{\sum_{k=1}^J e^{\mathbf{x}_{ik}\beta}}$$
+where $P_{ij}$ is the probability that union $j$ within choice set $i$ is the actual union. $J$ is the total number of unions in the choice set (in this case, twenty-one). The vector $\mathbf{x}_{ij}$ defines the characteristics of the union and $\beta$ estimate log-odds ratios that indicate how the odds of an actual change with $\mathbf{x}_{ij}$. The model can be estimated as a fixed-effects logistic regression model with fixed effects for each choice set. 
+
+The set of alternate partners is made up of all unmarried adults as well as those who were married in the previous year. To better capture the supply of potential partners in local marriage markets, alternate partners are sampled from among individuals residing in the same state. Because of uncertainty regarding timing of migration and marriage, individuals who migrated to the US or across state lines in the previous year are excluded from analysis as both actual and alternate marriage partners.
+
+PARAGRAPH JUSTIFYING THIS APPROACH RELATIVE TO OTHER APPROACHES
+
+Table 1 shows the sample size for marriages and alternate partners from each data source. Table 1 also shows the sample size of alternate partners for all ethnoracial groups included in the analysis. The 1980 Census data provided only a limited set of ethnic groups for individuals identifying as Asian or Latino, while the ACS data allows for a much fuller range through a write-in response option. In order to enable comparisons across time, I limit some of the models using ACS data to only include the Asian and Latino ethnic groups available in the Census 1980 data.
+
+```{r sample-size-table}
+
+temp <- c(table(alternates_acs$race)) %>% enframe()
+tab_samp <- c(table(alternates_census$race)) %>% 
+  enframe() %>%
+  right_join(temp, by="name") %>%
+  rename(ethnorace=name, census=value.x, acs=value.y) %>%
+  mutate(race_big=case_when(
+    ethnorace=="Chinese" ~ "East and Southeast Asian",
+    ethnorace=="Japanese" ~ "East and Southeast Asian",
+    ethnorace=="Korean" ~ "East and Southeast Asian",
+    ethnorace=="Filipino" ~ "East and Southeast Asian",
+    ethnorace=="Vietnamese" ~ "East and Southeast Asian",
+    ethnorace=="Cambodian" ~ "East and Southeast Asian",
+    ethnorace=="Hmong" ~ "East and Southeast Asian",
+    ethnorace=="Laotian" ~ "East and Southeast Asian",
+    ethnorace=="Thai" ~ "East and Southeast Asian",
+    ethnorace=="Burmese" ~ "East and Southeast Asian",
+    ethnorace=="Indonesian" ~ "East and Southeast Asian",
+    ethnorace=="Malaysian" ~ "East and Southeast Asian",
+    ethnorace=="Bhutanese" ~ "East and Southeast Asian",
+    ethnorace=="Nepalese" ~ "East and Southeast Asian",
+    ethnorace=="Asian Indian"  ~ "South Asian",
+    ethnorace=="Pakistani" ~ "South Asian",
+    ethnorace=="Bangladeshi" ~ "South Asian",
+    ethnorace=="Sri Lankan" ~ "South Asian",
+    ethnorace=="Mexican" ~ "Latino", 
+    ethnorace=="Cuban" ~ "Latino", 
+    ethnorace=="Puerto Rican" ~ "Latino", 
+    ethnorace=="Guatemalan" ~ "Latino", 
+    ethnorace=="Salvadorian" ~ "Latino", 
+    ethnorace=="Dominican" ~ "Latino", 
+    ethnorace=="Colombian" ~ "Latino", 
+    ethnorace=="Costa Rican" ~ "Latino", 
+    ethnorace=="Honduran" ~ "Latino", 
+    ethnorace=="Nicaraguan" ~ "Latino", 
+    ethnorace=="Panamanian" ~ "Latino", 
+    ethnorace=="Argentinian" ~ "Latino", 
+    ethnorace=="Bolivian" ~ "Latino", 
+    ethnorace=="Chilean" ~ "Latino", 
+    ethnorace=="Ecuadorian" ~ "Latino", 
+    ethnorace=="Peruvian" ~ "Latino", 
+    ethnorace=="Venezuelan" ~ "Latino", 
+    ethnorace=="Paraguayan" ~ "Latino", 
+    ethnorace=="Uruguayan"  ~ "Latino"
+  ))
+
+temp <- tab_samp %>% group_by(race_big) %>%
+  summarize(census=sum(census, na.rm=TRUE), acs=sum(acs, na.rm=TRUE)) %>%
+  na.omit() %>%
+  rename(ethnorace=race_big)
+
+tab_samp <- tab_samp %>% select(ethnorace, census, acs) %>%
+  bind_rows(temp)
+
+temp <- tibble(ethnorace="Marriages in the previous year",
+               census=census_n, acs=acs_n)
+
+tab_samp <- tab_samp %>% 
+  bind_rows(temp)
+                    
+ord <- c("Marriages in the previous year",
+         "White","Black","AIAN","Latino",
+         "Mexican","Puerto Rican","Cuban","Salvadorian","Dominican","Guatemalan",
+         "Colombian","Honduran","Peruvian","Ecuadorian","Nicaraguan","Argentinian",
+         "Venezuelan","Panamanian","Chilean","Costa Rican","Bolivian",
+         "Uruguayan","Paraguayan",
+         "East and Southeast Asian",
+         "Chinese","Filipino","Vietnamese","Korean","Japanese","Cambodian",
+         "Hmong","Laotian","Thai","Burmese","Indonesian","Malaysian",
+         "South Asian",
+         "Asian Indian","Pakistani","Bangladeshi","Sri Lankan")
+
+tab_samp <- as.data.frame(tab_samp)
+rownames(tab_samp) <- tab_samp$ethnorace
+tab_samp <- tab_samp[ord,]
+rownames(tab_samp) <- NULL
+
+options(knitr.kable.NA = '')
+
+tab_samp %>%
+  mutate(census=format(census, big.mark=","),
+         census=ifelse(census=="       NA","",census),
+         acs=format(acs, big.mark=",")) %>%
+  kbl(caption = "Sample size of marriages and alternate partners by data source and ethnoracial category.", booktabs=T, longtable=F,
+      linesep = NULL,
+      col.names=c("Category","Census 1980", "ACS 2014-2018"),
+      align = c("l","r","r")) %>%
+  kable_styling(full_width = TRUE) %>%
+  add_indent(c(6:24,26:37,39:42)) %>%
+  pack_rows("Marriages", 1, 1) %>%
+  pack_rows("Alternate Partners", 2, 42) %>%
+  column_spec(1, width = "6cm")
+```
+
+
+All models used here include controls for age and educational differences between potential partners. Age differences are modeled by taking the numerical age difference between partners and its square. Educational differences are modeled using educational crossing parameters (CITATION). All respondents are categorized as having less than a high school education, a high school diploma, some college education, or at least a four-year college degree. Three dummy variables indicate whether a particular union involves crossing the pairwise boundaries between these four categories. Results are cumulative such that a marriage involving one partner with less than a high school education and one partner with a four-year college degree would require passing all three boundaries.
+
+The key parameters in these models are those measuring the likelihood of interracial and interethnic marriage. I model these parameters using a set of dummy variables where the reference category is a racially and ethnically endogamous union. Because the number of ethnoracial categories is large, modeling every possible combination of these categories for exogamous unions is not feasible. Instead, I apply to limits on the parameterization. First, when analyzing intermarriage with Whites, Blacks, and American Indians/Alaska Natives, I group Asian and Latino ethnic groups into the big race groupings of Latino, South and Southeast Asian, and South Asian. For example, a union involving a black and Mexican partner and a union involving a black and Colombian partner would both be coded as a Black/Latino union. Second, for most of the models that follow, I model the likelihood of ethnic exogamy using a single dummy variable to indicate any form of ethnic exogamy within the three groups of Latino, South and Southeast Asian, and South Asian. This allows me to estimate the average likelihood of ethnic exogamy within these groups, but does not capture particular affinities of disaffinities among ethnic groups within the ethnoracial category. In some of the models that follow, I relax this assumption for the largest ethnic groups in order to estimate such affinities and disaffinities in the more recent ACS data.
+
+Because I separate South Asian from South and Southeast Asian groups and only one South Asian ethnic group was identifiable in the Census 1980 data, I cannot estimate pan-ethnic parameters over time for South Asians. Thus, most of the analysis that follows will focus on pan-ethnicity among South and Southeast Asians and Latinos. However, I do estimate and report these parameters for some models of ACS data.
+
+```{r deviance-bendog}
+sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
+  enframe(name="model",value="deviance") %>%
+  mutate(gen1.75=c("Birthplace","USA","Both","USA","USA","USA","USA", "USA", 
+                   "Both","Both"),
+         gen1.5 =c("Birthplace","USA","Both","Both","Birthplace","USA","Both",
+                   "USA", "Birthplace","Both"),
+         gen1.25=c("Birthplace","USA","Both","Birthplace","Birthplace",
+                   "Birthplace","Both","Both","Birthplace","Birthplace"),
+         deviance=format(deviance, big.mark=","),
+         model=sub("all_first","As first generation", model),
+         model=sub("all_second","As second generation", model),
+         model=sub("all_flex","Flexible, full", model),
+         model=sub("partial_flex1.5","Flexible, partial 1.5", model),
+         model=sub("partial_flex1.75","Flexible, partial 1.75", model),
+         model=sub("full_grade","Assimilation, full", model),
+         model=sub("steep_grade1.75","Assimilation, steep 1.75", model),
+         model=sub("steep_grade1.5","Assimilation, steep 1.5", model),
+         model=sub("slight_grade1.75","Assimilation, slight 1.75", model),
+         model=sub("slight_grade1.5","Assimilation, slight 1.5", model)
+         ) %>%
+  select(model, gen1.25, gen1.5, gen1.75, deviance) %>%
+  arrange(deviance) %>%
+  kbl(caption = "Model fit using different specifications of birthplace endogamy for 1.25, 1.5, and 1.75 generations, sorted by model deviance.", booktabs=T, longtable=F, 
+      col.names=c("Model","1.25","1.5","1.75","Deviance"),
+      align = c("l","l","l","l","r"),
+      linesep = NULL) %>%
+  kable_styling(full_width = TRUE) %>%
+  add_header_above(c(" " = 1, "Generation" = 3, " " = 1)) %>%
+  column_spec(1, width = "5cm") %>%
+# Goddmmit: apparently I need to use longtable to get wrapped footnotes, but then it won't float
+  footnote(general=c("Age of US arrival by generation is 0-5 (1.75), 6-12 (1.5), and 13-17 (1.25). All models include",
+                     "controls for educational differences, age differences, ethnoracial endogamy, and language",
+                     "endogamy."), 
+        threeparttable=F, footnote_as_chunk = F, 
+          general_title="Notes: ", title_format="italic")
+```
+
+
 # Results
 
+```{r diversity}
+temp <- alternates_census %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  mutate(group=case_when(
+    race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian") ~ "E&SE Asian",
+    race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan") ~ "South Asian",
+    race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
+    group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
+
+diversity_ethnic <- temp %>%
+  count(race, group, bpld) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980")
+
+diversity_ethnic <- temp %>%
+  count(race, group, lang) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  full_join(diversity_ethnic)
+
+diversity_pan <- temp %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980")
+
+diversity_pan <- temp %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="Census 1980") %>%
+  full_join(diversity_pan)
+
+temp <- alternates_acs %>%
+  filter(race!="AIAN" & race!="White" & race!="Black") %>%
+  mutate(group=case_when(
+    race %in% c("Chinese","Korean","Japanese","Vietnamese",
+                     "Filipino","Cambodian","Hmong","Laotian",
+                     "Thai","Burmese","Indonesian","Malaysian") ~ "E&SE Asian",
+    race %in% c("Asian Indian","Bangladeshi",
+                     "Pakistani","Sri Lankan") ~ "South Asian",
+    race %in% c("Mexican","Puerto Rican","Cuban","Costa Rican",
+                "Guatemalan","Honduran","Nicaraguan","Panamanian",
+                "Salvadorian","Argentinian","Bolivian","Chilean",
+                "Colombian","Ecuadorian","Paraguayan","Peruvian",
+                "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
+    group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
+
+temp2 <- temp %>%
+  count(race, group, bpld) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18")
+
+diversity_ethnic <- temp %>%
+  count(race, group, lang) %>%
+  group_by(race, group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_ethnic) %>%
+  select(race, group, data, diversity_bpl, diversity_lang)
+
+temp2 <- temp %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\nall ethnic groups")
+
+diversity_pan <- temp %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\nall ethnic groups") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_pan)
+
+races1980 <- as.character(subset(diversity_ethnic, data=="Census 1980")$race)
+
+temp2 <- temp %>%
+  filter(race %in% races1980) %>%
+  count(group, bpld) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_bpl=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups")
+
+diversity_pan <- temp %>%
+  filter(race %in% races1980) %>%
+  count(group, lang) %>%
+  group_by(group) %>%
+  mutate(p=prop.table(n)) %>%
+  summarize(diversity_lang=1-sum(p^2)) %>% 
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  full_join(temp2) %>%
+  bind_rows(diversity_pan)  %>%
+  mutate(type="pan-ethnic group diversity")
+
+temp2 <- diversity_ethnic %>%
+  group_by(group, data) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(data=ifelse(data=="ACS 2014-18", "ACS 2014-18\nall ethnic groups",
+                     data))
+
+diversity_pan <- diversity_ethnic %>%
+  filter(race %in% races1980 & data=="ACS 2014-18") %>%
+  group_by(group, data) %>%
+  summarize(diversity_bpl=mean(diversity_bpl),
+            diversity_lang=mean(diversity_lang)) %>%
+  ungroup() %>%
+  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  bind_rows(temp2)  %>%
+  mutate(type="mean of within ethnic group diversity") %>%
+  bind_rows(diversity_pan) %>%
+  pivot_longer(cols=starts_with("diversity_"), names_to="variable",
+               values_to="diversity") %>%
+  mutate(variable=ifelse(variable=="diversity_bpl",
+                     "Birthplace",
+                     "Language"),
+         diversity=ifelse(group=="South Asian" & 
+                            data!="ACS 2014-18\nall ethnic groups",
+                          NA, diversity),
+         data=factor(data,
+                     levels=c("Census 1980", 
+                              "ACS 2014-18\n1980 ethnic groups",
+                              "ACS 2014-18\nall ethnic groups")),
+         group=factor(group, 
+                      levels=c("E&SE Asian", "Latino","South Asian")))
+```
+
+```{r diversity-pan-bar, fig.cap="A Caption"}
+ggplot(diversity_pan, aes(x=group, y=diversity, fill=type))+
+  geom_col(position="dodge")+
+  facet_grid(variable~data)+
+  scale_y_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75))+
+  scale_fill_manual(values = my_palette[1:2])+
+  labs(x=NULL, y="Probability two members do not share the same birthplace/language",
+       fill="type of diversity")+
+  theme_bw()+
+  coord_flip()+
+  theme(legend.position = "bottom",
+       # strip.text.y = element_text(size=6),
+        panel.grid.major.y = element_blank())
+```
+
+```{r exog-lolly, fig.cap="The odds of ethnic exogamy for Latinos, East/Southeast Asians, and South Asians over time and model specification. Results are based on counterfactual marriage models. The baseline model controls for educational assortative mating and age differences."}
+coefs_pent %>% 
+  filter(variable=="E&SE Asian ethnic exogamy" | 
+           variable=="Latino ethnic exogamy" |
+           variable=="South Asian ethnic exogamy") %>%
+  ggplot(aes(y=model, x=exp(coef), color=data))+
+  geom_vline(xintercept = 0, color="grey20", linetype=1)+
+  geom_vline(xintercept = 1, color="grey20", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)), size=0.4,
+                   position=position_dodgev(height=0.6))+
+  scale_color_manual(values=my_palette)+
+  scale_x_continuous(limits = c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
+       color="Data source")+
+  facet_wrap(~variable)+
+  guides(color = guide_legend(ncol=1))+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        panel.grid.major.y = element_blank(),
+        panel.spacing = unit(0.6, "lines"))
+```
+
 # Conclusions
+
