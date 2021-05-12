@@ -456,15 +456,17 @@ diversity_pan <- diversity_ethnic %>%
 ```
 
 ```{r diversity-pan-bar, fig.cap="A Caption"}
-ggplot(diversity_pan, aes(x=group, y=diversity, fill=type))+
-  geom_col(position="dodge")+
+ggplot(diversity_pan, aes(y=group, x=diversity, color=type))+
+  #geom_col(position="dodge")+
+  geom_pointrangeh(aes(xmin=0, xmax=diversity), size=0.4,
+                   position=position_dodgev(height=0.6))+
   facet_grid(variable~data)+
-  scale_y_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75))+
-  scale_fill_manual(values = my_palette[1:2])+
-  labs(x=NULL, y="Probability two members do not share the same birthplace/language",
+  scale_x_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75))+
+  scale_color_manual(values = my_palette[1:2])+
+  labs(y=NULL, x="Probability two members do not share the same birthplace/language",
        fill="type of diversity")+
   theme_bw()+
-  coord_flip()+
+  #coord_flip()+
   theme(legend.position = "bottom",
        # strip.text.y = element_text(size=6),
         panel.grid.major.y = element_blank())
