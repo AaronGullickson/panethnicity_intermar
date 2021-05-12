@@ -1,10 +1,8 @@
 ---
-title: "The Title"
+title: "Changes in Pan-Ethnicity and Racial Boundaries in the United States based on Interracial Marriage Patterns, 1980-2018"
 author:
 - affiliation: University of Oregon, Sociology
   name: Aaron Gullickson
-- affiliation: Some Research University
-  name: My co-author
 keywords: keywords
 #FYI: the thanks and abstract are easier to view and edit in Atom which does proper linewrapping
 thanks: Thanks to people and stuff
@@ -20,7 +18,7 @@ fontfamily: mathpazo
 fontsize: 11pt
 anonymous: false #anonymize, double-space, and ragged right
 endnotes: false #make footnotes endnotes
-endfloat: true #move table and figures to the end
+endfloat: false #move table and figures to the end
 bibliography: ../project.bib
 biblio-style: ./resources/ajs.bst
 ---
@@ -135,11 +133,13 @@ arrows_extended <- coefs_extended %>%
 
 The data for this analysis come from the microdata sample of the 1980 US Census and American Community Survey (ACS). The ACS is an annual 1-in-100 survey of the United States population, conducted by the United States Census Bureau. To increase sample size for smaller ethnoracial categories, I pool five years of ACS data from 2014-2018. Both data sources were extracted from the Integrated Public Use Microdata Series (IPUMS) [@ruggles_ipums_2020].
 
-The modeling approach that I use here is a counterfactual marriage model [@qian_marriage_2018; @gullickson_counterfactual_2021]. Using information on marriage duration, I identify all marriages in the data that were formed in the previous year. For each marriage, I then construct a choice set of one real union and twenty fictional unions. Fictional unions are created by sampling alternate partners for one randomly determined spouse from a pool of potential partners. I then use a conditional logit model to predict how partner characteristics the likelihood of observing the true union, as follows:
+The modeling approach that I use here is a counterfactual marriage model [@qian_marriage_2018; @gullickson_counterfactual_2021]. Using information on marriage duration, I identify all marriages in the data that were formed in the previous year. For each marriage, I then construct a choice set of one real union and twenty fictional unions. Fictional unions are created by sampling alternate partners for one randomly determined spouse from a pool of potential partners. I then use a conditional logit model to predict how partner characteristics relate to the likelihood of observing the true union, as follows:
 $$P_{ij}=\frac{e^{\mathbf{x}_{ij}\beta}}{\sum_{k=1}^J e^{\mathbf{x}_{ik}\beta}}$$
 where $P_{ij}$ is the probability that union $j$ within choice set $i$ is the actual union. $J$ is the total number of unions in the choice set (in this case, twenty-one). The vector $\mathbf{x}_{ij}$ defines the characteristics of the union and $\beta$ estimate log-odds ratios that indicate how the odds of an actual change with $\mathbf{x}_{ij}$. The model can be estimated as a fixed-effects logistic regression model with fixed effects for each choice set. 
 
 The set of alternate partners is made up of all unmarried adults as well as those who were married in the previous year. To better capture the supply of potential partners in local marriage markets, alternate partners are sampled from among individuals residing in the same state. Because of uncertainty regarding timing of migration and marriage, individuals who migrated to the US or across state lines in the previous year are excluded from analysis as both actual and alternate marriage partners.
+
+DISCUSS VARIABILITY ISSUE
 
 PARAGRAPH JUSTIFYING THIS APPROACH RELATIVE TO OTHER APPROACHES
 
@@ -240,12 +240,19 @@ tab_samp %>%
   column_spec(1, width = "6cm")
 ```
 
+All models used here include controls for age and educational differences between potential partners. Age differences are modeled by taking the numerical age difference between partners and its square. Educational differences are modeled using educational crossing parameters (CITATION). All respondents are categorized as having less than a high school diploma, a high school diploma, some college education, or at least a four-year college degree. Three dummy variables indicate whether a particular union involves crossing the pairwise boundaries between these four categories. Results are cumulative such that a marriage involving one partner with less than a high school education and one partner with a four-year college degree would require passing all three boundaries.
 
-All models used here include controls for age and educational differences between potential partners. Age differences are modeled by taking the numerical age difference between partners and its square. Educational differences are modeled using educational crossing parameters (CITATION). All respondents are categorized as having less than a high school education, a high school diploma, some college education, or at least a four-year college degree. Three dummy variables indicate whether a particular union involves crossing the pairwise boundaries between these four categories. Results are cumulative such that a marriage involving one partner with less than a high school education and one partner with a four-year college degree would require passing all three boundaries.
+EXPLAIN HOW RACE IS MEASURED
 
 The key parameters in these models are those measuring the likelihood of interracial and interethnic marriage. I model these parameters using a set of dummy variables where the reference category is a racially and ethnically endogamous union. Because the number of ethnoracial categories is large, modeling every possible combination of these categories for exogamous unions is not feasible. Instead, I apply to limits on the parameterization. First, when analyzing intermarriage with Whites, Blacks, and American Indians/Alaska Natives, I group Asian and Latino ethnic groups into the big race groupings of Latino, South and Southeast Asian, and South Asian. For example, a union involving a black and Mexican partner and a union involving a black and Colombian partner would both be coded as a Black/Latino union. Second, for most of the models that follow, I model the likelihood of ethnic exogamy using a single dummy variable to indicate any form of ethnic exogamy within the three groups of Latino, South and Southeast Asian, and South Asian. This allows me to estimate the average likelihood of ethnic exogamy within these groups, but does not capture particular affinities of disaffinities among ethnic groups within the ethnoracial category. In some of the models that follow, I relax this assumption for the largest ethnic groups in order to estimate such affinities and disaffinities in the more recent ACS data.
 
 Because I separate South Asian from South and Southeast Asian groups and only one South Asian ethnic group was identifiable in the Census 1980 data, I cannot estimate pan-ethnic parameters over time for South Asians. Thus, most of the analysis that follows will focus on pan-ethnicity among South and Southeast Asians and Latinos. However, I do estimate and report these parameters for some models of ACS data.
+
+I include language and birthplace endogamy with simple dummy variables indicating whether the two potential partners share the same primary language or birthplace, respectively. Primary language is determined by what language the respondent reported speaking at home.^[I use the detailed language responses reported in the IPUMS data.] Because this variable is measured after a marriage has occurred, it may somewhat overestimate language endogamy among respondents. Some partners who spoke different languages when they met may have shifted the language spoken at home after marriage. 
+
+Birthplace endogamy is also complicated by the "1.5" generation -- individuals who were born outside of the United States but migrated as children and thus whose formative experiences are at least partially defined by acculturation within the US. Within the coding scheme used here, I can consider three possibilities for such individuals that are ordered by the expected degree of acculturation and assimilation. First such individuals would be considered birthplace endogamous only with individuals from the same actual birthplace. Second, such individuals would be considered birthplace endogamous with either an individual from their actual birthplace or the a person born in the USA. Third, such individuals would be considered only birthplace endogamous with other individuals born in the USA. 
+
+To test the accuracy of these three scenarios, I fit models using each coding scheme to the data. Following @rumbaut_ages_2004a, I also divide the "1.5" generation into a "1.75" generation (those who arrived in the US before the age of 6), a "1.5" generation (those who arrived in the US between the ages of 6-12), and a "1.25" generation (those who arrived in the US between the ages of 13-17). For these three groups, I consider every possible combination of coding, with the only restriction being that later generations cannot be acculturated to the US (e.g. the 1.25 generation could not be "both" when the 1.5 generation is "birthplace only"). In total, this gave me ten possible combinations. Table 2 below shows the model fit of these ten combinations, sorted from best to worst model fit.
 
 ```{r deviance-bendog}
 sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
@@ -285,6 +292,7 @@ sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
           general_title="Notes: ", title_format="italic")
 ```
 
+The best-fitting models from Table 2 strongly prefer a birthplace only coding for those respondents who entered the US after age 12. the top five models all used this coding. The USA only option representing full acculturation was not preferred for any group and led to the least preferred options for both the 1.5 and 1.75 generations. The clear preference for the 1.25 generation is a flexible coding scheme that treats a partner from the birthplace or the USA both as endogamous unions. For the 1.5 generation, models that used a both or birthplace only coding fit well, but the most preferred model also uses the more flexible approach. Therefore, for all the models that follow, I code birthplace endogamy for these groups using the most preferred model fit here. The 1.75 generation is considered birthplace endogamous only with individuals of the same actual birthplace while the 1.5 and 1.25 generation are considered birthplace endogamous with individuals from the same actual birthplace or with individuals born in the US. 
 
 # Results
 
