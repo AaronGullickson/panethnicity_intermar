@@ -133,13 +133,14 @@ arrows_extended <- coefs_extended %>%
 
 The data for this analysis come from the microdata sample of the 1980 US Census and American Community Survey (ACS). The ACS is an annual 1-in-100 survey of the United States population, conducted by the United States Census Bureau. To increase sample size for smaller ethnoracial categories, I pool five years of ACS data from 2014-2018. Both data sources were extracted from the Integrated Public Use Microdata Series (IPUMS) [@ruggles_ipums_2020].
 
-The modeling approach that I use here is a counterfactual marriage model [@qian_marriage_2018; @gullickson_counterfactual_2021]. Using information on marriage duration, I identify all marriages in the data that were formed in the previous year. For each marriage, I then construct a choice set of one real union and twenty fictional unions. Fictional unions are created by sampling alternate partners for one randomly determined spouse from a pool of potential partners. I then use a conditional logit model to predict how partner characteristics relate to the likelihood of observing the true union, as follows:
+The modeling approach that I use here is a counterfactual marriage model [@qian_marriage_2018; @gullickson_counterfactual_2021]. Using information on marriage duration, I identify all opposite-sex marriages in the data that were formed in the previous year. For each marriage, I then construct a choice set of one real union and twenty fictional unions. Fictional unions are created by sampling alternate partners for one randomly determined spouse from a pool of potential partners. I then use a conditional logit model to predict how partner characteristics relate to the likelihood of observing the true union, as follows:
 $$P_{ij}=\frac{e^{\mathbf{x}_{ij}\beta}}{\sum_{k=1}^J e^{\mathbf{x}_{ik}\beta}}$$
-where $P_{ij}$ is the probability that union $j$ within choice set $i$ is the actual union. $J$ is the total number of unions in the choice set (in this case, twenty-one). The vector $\mathbf{x}_{ij}$ defines the characteristics of the union and $\beta$ estimate log-odds ratios that indicate how the odds of an actual change with $\mathbf{x}_{ij}$. The model can be estimated as a fixed-effects logistic regression model with fixed effects for each choice set. 
+where $P_{ij}$ is the probability that union $j$ within choice set $i$ is the actual union. $J$ is the total number of unions in the choice set (in this case, twenty-one). The vector $\mathbf{x}_{ij}$ defines the characteristics of the union and the $\beta$ vector provides estimated log-odds ratios indicating how the odds of an actual union change with $\mathbf{x}_{ij}$. The model is estimated as a fixed-effects logistic regression model with fixed effects for each choice set. 
 
 The set of alternate partners is made up of all unmarried adults as well as those who were married in the previous year. To better capture the supply of potential partners in local marriage markets, alternate partners are sampled from among individuals residing in the same state. Because of uncertainty regarding timing of migration and marriage, individuals who migrated to the US or across state lines in the previous year are excluded from analysis as both actual and alternate marriage partners.
 
-DISCUSS VARIABILITY ISSUE
+Because this approach relies upon randomly sampling a set of alternate partners, results will vary each time this sampling procedure is performed. To account for this added uncertainty in estimates, I run the sampling procedure separately five times to produce five separate datasets for analysis. I then run the models on all five datasets and pool $\beta$ estimates and their standard errors using the same methods as those employed for multiple imputation (CITATION). the pooled $\beta$ parameters are the mean of parameters across all five models while the standard errors incorporate both the variance within and between models. 
+
 
 PARAGRAPH JUSTIFYING THIS APPROACH RELATIVE TO OTHER APPROACHES
 
@@ -295,6 +296,8 @@ sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
 The best-fitting models from Table 2 strongly prefer a birthplace only coding for those respondents who entered the US after age 12. the top five models all used this coding. The USA only option representing full acculturation was not preferred for any group and led to the least preferred options for both the 1.5 and 1.75 generations. The clear preference for the 1.25 generation is a flexible coding scheme that treats a partner from the birthplace or the USA both as endogamous unions. For the 1.5 generation, models that used a both or birthplace only coding fit well, but the most preferred model also uses the more flexible approach. Therefore, for all the models that follow, I code birthplace endogamy for these groups using the most preferred model fit here. The 1.75 generation is considered birthplace endogamous only with individuals of the same actual birthplace while the 1.5 and 1.25 generation are considered birthplace endogamous with individuals from the same actual birthplace or with individuals born in the US. 
 
 # Results
+
+## Birhplace and Language Diversity
 
 ```{r diversity}
 temp <- alternates_census %>%
@@ -494,6 +497,8 @@ coefs_pent %>%
         panel.grid.major.y = element_blank(),
         panel.spacing = unit(0.6, "lines"))
 ```
+
+## Modeling Pan-Ethnicity
 
 # Conclusions
 
