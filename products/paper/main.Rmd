@@ -474,7 +474,7 @@ All models used here include controls for age and educational differences betwee
 ## Birthplace and Language Diversity
 
 
-```{r diversity-pan-bar, fig.cap="A Caption"}
+```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups compared to birthplace and language diversity within pan-ethnic groups. Diversity is measured by the Gini-Simpson index which gives the probability that two randomly selected members of the group do not share the same birthplace/language."}
 ggplot(diversity_pan, aes(y=group, x=diversity, color=type))+
   #geom_col(position="dodge")+
   geom_pointrangeh(aes(xmin=0, xmax=diversity), size=0.4,
@@ -539,6 +539,9 @@ coefs_pent %>%
   theme_mine()+
   theme(axis.text.y=element_markdown())
 ```
+
+What other figures
+* 
 
 # Conclusions
 
