@@ -541,7 +541,9 @@ coefs_pent %>%
 ```
 
 What other figures
-* 
+* A two panel figure showing tiles/trees for specific ethnicity models
+  * or alternatively two split panel figures, one showing change over time in these characteristics and the other showing tile, and then separate figs for E&SE Asians and Latinos
+* Black/Latino exogamy? One panel showing change over time and the other showing odds ratios in ACS data
 
 # Conclusions
 
