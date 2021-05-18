@@ -35,6 +35,7 @@ load(here("analysis","output","alternates.RData"))
 load(here("analysis","output","models_bendog.RData"))
 #you need to load kableExtra in the doc
 options(kableExtra.latex.load_packages = FALSE)
+options(knitr.table.format = "latex")
 library(kableExtra)
 library(ggtext)
 library(stringr)
@@ -428,35 +429,38 @@ Birthplace endogamy is complicated by the "1.5" generation -- individuals who we
 To test the accuracy of these three scenarios, I fit models using each coding scheme to the full ACS data. Following @rumbaut_ages_2004a, I also divide the 1.5 generation into a "1.75" generation (those who arrived in the US before the age of 6), a "1.5" generation (those who arrived in the US between the ages of 6-12), and a "1.25" generation (those who arrived in the US between the ages of 13-17). For these three groups, I consider every possible combination of coding such that earlier generations are not more acculturated than later generations (e.g. the 1.25 generation could not be "both" in cases where the 1.5 generation is "birthplace only"). Table 2 below shows the model fit of all ten possible combinations, sorted from best to worst model fit.
 
 ```{r deviance-bendog}
-sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
-  enframe(name="model",value="deviance") %>%
+dev_acs <- sapply(models_bendog_acs, function(x) {mean(x$deviance)}) %>%
+  enframe(name="model", value="deviance_acs")
+
+sapply(models_bendog_census, function(x) {mean(x$deviance)}) %>%
+  enframe(name="model", value="deviance_census") %>%
+  left_join(dev_acs) %>%
   mutate(gen1.75=c("Birthplace","USA","Both","USA","USA","USA","USA", "USA", 
                    "Both","Both"),
          gen1.5 =c("Birthplace","USA","Both","Both","Birthplace","USA","Both",
                    "USA", "Birthplace","Both"),
          gen1.25=c("Birthplace","USA","Both","Birthplace","Birthplace",
                    "Birthplace","Both","Both","Birthplace","Birthplace"),
-         deviance=format(deviance, big.mark=","),
-         model=sub("all_first","As first generation", model),
-         model=sub("all_second","As second generation", model),
-         model=sub("all_flex","Flexible, full", model),
-         model=sub("partial_flex1.5","Flexible, partial 1.5", model),
-         model=sub("partial_flex1.75","Flexible, partial 1.75", model),
-         model=sub("full_grade","Assimilation, full", model),
-         model=sub("steep_grade1.75","Assimilation, steep 1.75", model),
-         model=sub("steep_grade1.5","Assimilation, steep 1.5", model),
-         model=sub("slight_grade1.75","Assimilation, slight 1.75", model),
-         model=sub("slight_grade1.5","Assimilation, slight 1.5", model)
+         deviance_census=format(deviance_census, big.mark=","),
+         deviance_acs=format(deviance_acs, big.mark=","),
+         deviance_census=cell_spec(deviance_census,
+                                   bold = ifelse(deviance_census=="1,105,757",
+                                                       TRUE, FALSE)),
+         deviance_acs=cell_spec(deviance_acs,
+                                   bold = ifelse(deviance_acs=="1,803,663",
+                                                       TRUE, FALSE)),
          ) %>%
-  select(model, gen1.25, gen1.5, gen1.75, deviance) %>%
-  arrange(deviance) %>%
-  kbl(caption = "Model fit to ACS data using different specifications of birthplace endogamy for 1.25, 1.5, and 1.75 generations, sorted by model deviance.", booktabs=T, longtable=F, 
-      col.names=c("Model","1.25","1.5","1.75","Deviance"),
-      align = c("l","l","l","l","r"),
-      linesep = NULL) %>%
+  select(gen1.25, gen1.5, gen1.75, deviance_census, deviance_acs) %>%
+  relocate(gen1.75, gen1.5, gen1.25, deviance_census, deviance_acs) %>%
+  arrange(gen1.25, gen1.5, gen1.75) %>%
+  kbl(caption = "Model fit to Census 1980 and ACS data using different specifications of birthplace endogamy for 1.25, 1.5, and 1.75 generations. Minimum deviance is shown in bold.", booktabs=T, longtable=F, 
+      col.names=c("1.75","1.5","1.25","Census 1980","ACS 2014-18"),
+      align = c("l","l","l","r","r"),
+      linesep = NULL, escape = FALSE) %>%
   kable_styling(full_width = TRUE) %>%
-  add_header_above(c(" " = 1, "Generation" = 3, " " = 1)) %>%
-  column_spec(1, width = "5cm") %>%
+  add_header_above(c("Generation" = 3, "Model Deviance" = 2)) %>%
+  #column_spec(4, background = "red") %>%
+  #column_spec(1, width = "5cm") %>%
 # Goddmmit: apparently I need to use longtable to get wrapped footnotes, but then it won't float
   footnote(general=c("Age of US arrival by generation is 0-5 (1.75), 6-12 (1.5), and 13-17 (1.25). All models include",
                      "controls for educational differences, age differences, ethnoracial endogamy, and language",

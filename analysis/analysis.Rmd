@@ -12,6 +12,7 @@ output:
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
 library(here)
 source(here("analysis","check_packages.R"))
+library(kableExtra)
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","models.RData"))
 load(here("analysis","output","alternates.RData"))
@@ -1219,22 +1220,27 @@ For each of these groups, I considered three possibilities for coding birthplace
 
 With three groups and three options, there are 27 possible options for how to code this variable. However, I only accepted combinations where order of the generations matched the order of assimilation. So you could not have a case where the 1.75 generation is given "Birthplace" coding and the other two groups are given the more assimilative options of "USA" or "Both." This left me with 10 possible options.
 
-I created dummy variables for birthplace endogamy based on these 10 options and then ran a model on the ACS data with each dummy variable. I used the ACS data with the fullest set of ethnic groups, racial pentagon coding, and controls for age, educational assortative mating, and language endogamy. The results below show the deviance for each of the ten models, ranked from lowest deviance to highest deviance.
+I created dummy variables for birthplace endogamy based on these 10 options and then ran a model on the ACS  and Census 1980 data with each dummy variable. I used the ACS data with the fullest set of ethnic groups, racial pentagon coding, and controls for age, educational assortative mating, and language endogamy. The results below show the deviance for each of the ten models, ranked from lowest deviance to highest deviance for the ACS data.
 
 ```{r deviance-bendog}
-sapply(models_bendog, function(x) {mean(x$deviance)}) %>%
-  enframe(name="model",value="deviance") %>%
+dev_acs <- sapply(models_bendog_acs, function(x) {mean(x$deviance)}) %>%
+  enframe(name="model", value="deviance_acs")
+
+sapply(models_bendog_census, function(x) {mean(x$deviance)}) %>%
+  enframe(name="model", value="deviance_census") %>%
+  left_join(dev_acs) %>%
   mutate(gen1.75=c("Birthplace","USA","Both","USA",       "USA",       "USA",       "USA", "USA", "Both",      "Both"),
          gen1.5 =c("Birthplace","USA","Both","Both",      "Birthplace","USA",       "Both","USA", "Birthplace","Both"),
          gen1.25=c("Birthplace","USA","Both","Birthplace","Birthplace","Birthplace","Both","Both","Birthplace","Birthplace")) %>%
-  relocate(model, gen1.75, gen1.5, gen1.25, deviance) %>%
-  arrange(deviance) %>%
+  relocate(model, gen1.75, gen1.5, gen1.25, deviance_census, deviance_acs) %>%
+  arrange(gen1.25, gen1.5, gen1.75) %>%
   kbl(caption = "Deviance from models using different specifications of birthplace for 1.25, 1.5, and 1.75 generation") %>%
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 ```
 
-The least preferred options were cases that coded "USA" for most groups. The models clearly preferred "Birthplace" coding for the 1.25 generation, either "Both" or "Birthplace" coding for the 1.5 generation, and "Both" or "USA" coding for the 1.75 generation. The most preferred option is the "flex2" coding which codes "Both" for the 1.75 and 1.5 generation and "Birthplace" for the 1.75 generation. This is the coding that I use in all of the models reported in the analysis. 
+For both time periods, the least preferred option were those coded as USA for most cases. In both time periods, both models preferred "Birthplace" for the 1.25 generation. The best fitting model for the ACS data uses the "Both" coding for both the 1.75 and the 1.5 generation, while the best fitting model for the Census data uses the "Birthplace" coding for all three groups. 
 
+The differences in deviance in the Census data are much smaller than in the ACS data, indicating that the preferences by model are not as strong. The strongest fitting model in the ACS data is the third strongest model in the Census data. Nonetheless, I should probably use the best-fitting model for each year in the actual analysis.
 
 ## Full Model Output
 

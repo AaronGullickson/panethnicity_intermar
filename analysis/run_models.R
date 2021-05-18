@@ -44,6 +44,69 @@ source(here("analysis","useful_functions.R"))
 
 # Create formulas --------------------------------------------------------
 
+
+# Run models --------------------------------------------------------------
+
+#saving the model summary output should be fine
+
+## Census 1980                                                 ##
+#===============================================================#
+load(here("analysis","output","markets_census.RData"))
+
+#create formulas and put them into a list for faster processing of models
+
+#Race pentagon formulas
+formula_base <- formula(choice~agediff+I(agediff^2)+
+                          hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
+                          race_exog_pent+
+                          strata(group))
+formula_bendog <- update(formula_base, .~.+bendog_all_first)
+formula_lendog <- update(formula_base, .~.+language_endog)
+formula_both <- update(formula_bendog, .~.+language_endog)
+
+formulas_pentagon <- list(base=formula_base,
+                          bendog=formula_bendog,
+                          lendog=formula_lendog,
+                          both=formula_both)
+
+#Race extended formulas
+formula_base <- formula(choice~agediff+I(agediff^2)+
+                          hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
+                          race_exog_extended+race_filipino_latino+
+                          strata(group))
+formula_bendog <- update(formula_base, .~.+bendog_all_first)
+formula_lendog <- update(formula_base, .~.+language_endog)
+formula_both <- update(formula_bendog, .~.+language_endog)
+
+formulas_extended <- list(base=formula_base,
+                          bendog=formula_bendog,
+                          lendog=formula_lendog,
+                          both=formula_both)
+
+
+markets_census <- lapply(markets_census, add_vars)
+
+models_census_pentagon <- lapply(formulas_pentagon,
+                                 function(formula) {
+                                   poolChoiceModel(formula,
+                                                   data=markets_census,
+                                                   method="efron")
+                                 })
+
+models_census_extended <- lapply(formulas_extended,
+                                 function(formula) {
+                                   poolChoiceModel(formula, 
+                                                   data=markets_census,
+                                                   method="efron")
+                                 })
+rm(markets_census)
+
+
+## ACS, 1980 Basis                                             ##
+#===============================================================#
+load(here("analysis","output","markets_acs_1980basis.RData"))
+markets_acs_1980basis <- lapply(markets_acs_1980basis, add_vars)
+
 #create formulas and put them into a list for faster processing of models
 
 #Race pentagon formulas
@@ -74,35 +137,6 @@ formulas_extended <- list(base=formula_base,
                           lendog=formula_lendog,
                           both=formula_both)
 
-# Run models --------------------------------------------------------------
-
-#saving the model summary output should be fine
-
-## Census 1980                                                 ##
-#===============================================================#
-load(here("analysis","output","markets_census.RData"))
-markets_census <- lapply(markets_census, add_vars)
-
-models_census_pentagon <- lapply(formulas_pentagon,
-                                 function(formula) {
-                                   poolChoiceModel(formula,
-                                                   data=markets_census,
-                                                   method="efron")
-                                 })
-
-models_census_extended <- lapply(formulas_extended,
-                                 function(formula) {
-                                   poolChoiceModel(formula, 
-                                                   data=markets_census,
-                                                   method="efron")
-                                 })
-rm(markets_census)
-
-
-## ACS, 1980 Basis                                             ##
-#===============================================================#
-load(here("analysis","output","markets_acs_1980basis.RData"))
-markets_acs_1980basis <- lapply(markets_acs_1980basis, add_vars)
 
 models_acs1980_pentagon <- lapply(formulas_pentagon,
                                   function(formula) {
