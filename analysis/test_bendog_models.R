@@ -29,9 +29,11 @@ library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","markets_acs_full.RData"))
+load(here("analysis","output","markets_census.RData"))
 
 #add variables to the market datasets
 markets_acs_full <- lapply(markets_acs_full, add_vars)
+markets_census <- lapply(markets_census, add_vars)
 
 
 # Some sanity checks ------------------------------------------------------
@@ -123,11 +125,20 @@ model_formulae <- list(all_first=update(formula_base, .~.+bendog_all_first),
                        partial_flex1.75=update(formula_base, .~.+bendog_partial_flex1.75),
                        partial_flex1.5=update(formula_base, .~.+bendog_partial_flex1.5))
 
-models_bendog <- lapply(model_formulae,
-                        function(formula) {
-                          poolChoiceModel(formula, 
-                                          data=markets_acs_full,
-                                          method="efron")
-                        })
+models_bendog_acs <- lapply(model_formulae,
+                            function(formula) {
+                              poolChoiceModel(formula, 
+                                              data=markets_acs_full,
+                                              method="efron")
+                            })
 
-save(models_bendog, file=here("analysis","output","models_bendog.RData"))
+models_bendog_census <- lapply(model_formulae,
+                               function(formula) {
+                                 poolChoiceModel(formula, 
+                                                 data=markets_census,
+                                                 method="efron")
+                               })
+
+save(models_bendog_acs, models_bendog_census, 
+     file=here("analysis","output","models_bendog.RData"))
+
