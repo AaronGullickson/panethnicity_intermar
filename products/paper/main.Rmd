@@ -552,7 +552,77 @@ coefs_pent %>%
   theme(axis.text.y=element_markdown())
 ```
 
+## Specific Affinities
+
+```{r asian-heat-map, fig.cap="A Caption"}
+groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
+or <- coefs_extended %>%
+  filter(data=="ACS 2014-18, expanded ethnic groups" &
+           model=="+ both" &
+           grepl(paste(groups,collapse="|"), variable) &
+           !grepl("Black", variable)) %>% #ugly hack, FIXME
+  calc_or_matrix()
+hc <- hclust(as.dist(or))
+or <- or[hc$order, rev(hc$order)]
+
+gg.heat <- ggplot(melt(or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
+  geom_tile(color = NA)+
+  scale_fill_gradient2(low = "#008837", high = "#7b3294", mid = "#f7f7f7", 
+                       midpoint = 1, limit = c(0, max(or)),
+                       name="odds ratio")+
+  geom_text(aes(label=paste(round(or,2))))+
+  labs(x=NULL, y=NULL)+
+  theme_minimal()+
+  theme(legend.position = "left", 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 30, hjust = 1))
+
+dendro <- as.dendrogram(hc)
+gg.dendro <- ggdendrogram(data = dendro, rotate = TRUE, labels = FALSE)+theme_void()
+
+grid.newpage()
+print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
+print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.68))
+```
+
+```{r latino-heat-map, fig.cap="A Caption"}
+groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
+            "Salvadorian","Colombian","Ecuadorian","Peruvian",
+            "Dominican")
+or <- coefs_extended %>%
+  filter(data=="ACS 2014-18, expanded ethnic groups" &
+           model=="+ both" &
+           grepl(paste(groups,collapse="|"), variable) &
+           !grepl("Black", variable)) %>% #ugly hack, FIXME
+  calc_or_matrix()
+hc <- hclust(as.dist(or))
+or <- or[hc$order, rev(hc$order)]
+
+gg.heat <- ggplot(melt(or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
+  geom_tile(color = NA)+
+  scale_fill_gradient2(low = "#008837", high = "#7b3294", mid = "#f7f7f7", 
+                       midpoint = 1, limit = c(0, max(or)),
+                       name="odds ratio")+
+  geom_text(aes(label=paste(round(or,2))), size=2.5)+
+  labs(x=NULL, y=NULL)+
+  theme_minimal()+
+  theme(legend.position = "left", 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 30, hjust = 1))
+
+dendro <- as.dendrogram(hc)
+gg.dendro <- ggdendrogram(data = dendro, rotate = TRUE, labels = FALSE)+theme_void()
+
+grid.newpage()
+print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
+print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.78))
+```
+
+
 What other figures
+
 * A two panel figure showing tiles/trees for specific ethnicity models
   * or alternatively two split panel figures, one showing change over time in these characteristics and the other showing tile, and then separate figs for E&SE Asians and Latinos
 * Black/Latino exogamy? One panel showing change over time and the other showing odds ratios in ACS data
