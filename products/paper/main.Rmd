@@ -8,10 +8,11 @@ keywords: keywords
 thanks: Thanks to people and stuff
 abstract: This is a test abstract
 output:
-  pdf_document:
+  pdf_document: 
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
+    keep_tex: no
   word_document:
     reference_docx: ./resources/aog_word_style.docx
 fontfamily: mathpazo
@@ -311,7 +312,14 @@ I use a counterfactual marriage model [@qian_marriage_2018; @gullickson_counterf
 $$P_{ij}=\frac{e^{\mathbf{x}_{ij}\beta}}{\sum_{k=1}^J e^{\mathbf{x}_{ik}\beta}}$$
 where $P_{ij}$ is the probability that union $j$ within choice set $i$ is the actual union. $J$ is the total number of unions in the choice set (in this case, twenty-one). The vector $\mathbf{x}_{ij}$ defines the characteristics of the union and the $\beta$ vector provides estimated log-odds ratios indicating how the odds of an actual union change with $\mathbf{x}_{ij}$. The model is estimated as a fixed-effects logistic regression model with fixed effects for each choice set. 
 
-The set of potential alternate partners from which fictional spouses are sampled is made up of all unmarried adults as well as those who were married in the previous five years. To better capture the supply of potential partners in local marriage markets, alternate partners are sampled from among individuals residing in the same marriage market. I define marriage markets by a combination of metropolitan area and state of residence. Metropolitan area is not directly identifiable in the data used here due to confidentiality concerns, but can be deduced for many metropolitan areas based on the smallest geographic identifier of the respondent (county group in Census 1980 and Public Use Microdata Area in the ACS). IPUMS provides metro area identification for respondents in cases where the county group or PUMA was mostly contained within the metropolitan area. I use the identified metro area as the marriage market for all cases in which it is identifiable. For respondents outside of a metropolitan area or without an identifiable metro area, I use the state of residence as the marriage market. Because of uncertainty regarding timing of migration and marriage, individuals who migrated to the US or across state lines in the last five years are excluded from analysis as both actual and alternate marriage partners.
+The set of potential alternate partners from which fictional spouses are sampled is made up of all unmarried adults as well as those who were married in the previous five years. Because of uncertainty regarding timing of migration and marriage, individuals who migrated to the US or across state lines in the last five years are excluded from analysis as both actual and alternate marriage partners. To better capture the supply of potential partners in local marriage markets, alternate partners are sampled from among individuals residing in the same marriage market. I define marriage markets by the metropolitan area of residence when this can be identified for a respondent, and otherwise by the state of residence. Metropolitan area is not directly identifiable in the data used here due to confidentiality concerns, but can be deduced for many metropolitan areas based on the finest geographic identifier of the respondent (county group in Census 1980 and Public Use Microdata Area in the ACS). IPUMS provides metro area identification for respondents in cases where the county group or PUMA was mostly contained within the metropolitan area. Figure 1 shows the identifiable metropolitan areas used in the analysis for both time periods. Although not all metropolitan areas are identified in the data, most major metropolitan areas are included in both time periods. Coverage differs somewhat by period, with more extensive coverage in the later time period. 
+
+```{r, fig.cap="Metropolitan statistical areas identifiable in the data by data source. Fill colors are drawn with partial transparency so that darker areas indicate overlapping areas in the two data sources."}
+knitr::include_graphics(here("analysis","output","msa_map.pdf"), 
+                        auto_pdf = TRUE)
+```
+
+
 
 Because this approach relies upon a random sample of alternate partners, results will vary each time this sampling procedure is performed. To account for the added uncertainty due to sampling, I preform the sampling procedure separately five times to produce five separate analytical datasets. I then run parallel models on all five datasets and pool $\beta$ estimates and standard errors using the same methods as those employed for multiple imputation [@rubin_multiple_1987]. 
 
