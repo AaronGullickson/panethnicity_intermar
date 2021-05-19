@@ -489,6 +489,7 @@ All models used here include controls for age and educational differences betwee
 ```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups compared to birthplace and language diversity within pan-ethnic groups. Diversity is measured by the Gini-Simpson index which gives the probability that two randomly selected members of the group do not share the same birthplace/language."}
 ggplot(diversity_pan, aes(y=group, x=diversity, color=type))+
   #geom_col(position="dodge")+
+  geom_vline(xintercept = 0, color="grey20", linetype=1)+
   geom_pointrangeh(aes(xmin=0, xmax=diversity), size=0.4,
                    position=position_dodgev(height=0.6))+
   facet_grid(variable~data)+
@@ -541,7 +542,7 @@ coefs_pent %>%
                color="grey30",
                arrow = arrow(length = unit(0.03, "npc")))+
   coord_flip()+
-  scale_y_continuous(limits=c(0,1.1), expand=c(0,0))+
+  scale_y_continuous(limits=c(0,1.1), expand=c(0.01,0))+
   scale_color_manual(values = my_palette)+
   scale_shape_manual(values = c(16,16,17))+
   labs(x=NULL, 
@@ -631,8 +632,8 @@ gg.blacklatino <- coefs_extended %>%
            model=="+ both" & 
            data=="ACS 2014-18, expanded ethnic groups") %>%
   ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
-  geom_vline(xintercept = 0, color="grey70", linetype=1)+
-  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_vline(xintercept = 0, color="grey20", linetype=1)+
+  geom_vline(xintercept = 1, color="grey20", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
                    position=position_dodgev(height=0.5))+
   scale_x_continuous(limits=c(0,1))+
@@ -647,8 +648,8 @@ gg.blackchange <- coefs_extended %>%
            grepl("Black", variable) & 
            model=="+ both" & 
            data!="ACS 2014-18, expanded ethnic groups") %>%
-  ggplot(aes(x=variable, y=exp(coef)))+
-  geom_hline(yintercept = 1, linetype=2)+
+  ggplot(aes(x=variable, y=exp(coef)))+  
+  geom_hline(yintercept = 1, color="grey20", linetype=3)+
   geom_point(aes(color=data), size=2)+
   geom_segment(data=subset(arrows_extended, 
                            grepl(paste(groups,collapse="|"), variable) &
@@ -659,6 +660,7 @@ gg.blackchange <- coefs_extended %>%
                arrow = arrow(length = unit(0.03, "npc")),
                color="grey60")+
   coord_flip()+
+  scale_y_continuous(limits=c(0,1.1), expand=c(0.01,0))+
   scale_color_manual(values=my_palette)+
   labs(x=NULL, 
        y="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy",
@@ -671,12 +673,6 @@ grid.newpage()
 print(gg.blackchange, vp = viewport(x = 0.25, y = 0.5, width = 0.5, height = 1.0))
 print(gg.blacklatino, vp = viewport(x = 0.75, y = 0.5, width = 0.5, height = 1.0))
 ```
-
-What other figures
-
-* A two panel figure showing tiles/trees for specific ethnicity models
-  * or alternatively two split panel figures, one showing change over time in these characteristics and the other showing tile, and then separate figs for E&SE Asians and Latinos
-* Black/Latino exogamy? One panel showing change over time and the other showing odds ratios in ACS data
 
 # Conclusions
 
