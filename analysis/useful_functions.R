@@ -69,6 +69,12 @@ code_census_variables <- function(census) {
     stop("Duplicted spousal ids in data")
   }
   
+  #combined state and metro area id to get marriage market. Replace state id
+  #with metro id for cases where it is not zero. Multiply by 100 to avoid id
+  #collision
+  census$mar_market <- ifelse(census$metarea==0, census$statefip, 
+                              census$metarea*100)
+  
   return(census)
 }
 
@@ -234,7 +240,7 @@ create_unions <- function(census, years_mar, n_fakes, n_samples=3) {
   census <- subset(census, (is.na(yr_usa) | yr_usa>years_mar) & 
                      (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                      (is_single(marst) | dur_mar<=years_mar),
-                   select=c("statefip","metarea","sex","hhwt","perwt","dur_mar","marst",
+                   select=c("mar_market","sex","hhwt","perwt","dur_mar","marst",
                             "id","age","race","educ","bpld","lang","marrno","age_usa",
                             "id_sp","age_sp","race_sp","educ_sp","bpld_sp","lang_sp",
                             "marrno_sp","age_usa_sp"))
@@ -245,41 +251,38 @@ create_unions <- function(census, years_mar, n_fakes, n_samples=3) {
   unions <- subset(census, sex=="Male" & 
                      !is.na(id_sp) & 
                      (marrno<2 & marrno_sp<2),
-                   select=c("statefip","metarea","hhwt",
+                   select=c("mar_market","hhwt",
                             "id","age","race","educ","bpld","lang","age_usa",
                             "id_sp","age_sp","race_sp","educ_sp","bpld_sp",
                             "lang_sp","age_usa_sp"))
-  colnames(unions) <- c("statefip","metarea","hhwt",
+  colnames(unions) <- c("mar_market","hhwt",
                         "idh","ageh","raceh","educh","bplh","languageh","age_usah",
                         "idw","agew","racew","educw","bplw","languagew","age_usaw")
   unions <- na.omit(as.data.frame(unions))
-  unions$metarea <- factor(as.character(unions$metarea))
-  unions$statefip <- factor(as.character(unions$statefip))
-  
+  unions$mar_market <- factor(as.character(unions$mar_market))
+
   # Alternate Male Partners
   male_alternates <- subset(census, sex=="Male",
-                            select=c("statefip","metarea","id","perwt",
+                            select=c("mar_market","id","perwt",
                                      "age","race","educ","bpld","lang","age_usa"))
-  colnames(male_alternates) <- c("statefip","metarea","idh","perwt",
+  colnames(male_alternates) <- c("mar_market","idh","perwt",
                                  "ageh","raceh","educh","bplh","languageh","age_usah")
   male_alternates <- na.omit(as.data.frame(male_alternates))
-  male_alternates$metarea <- factor(as.character(male_alternates$metarea))
-  male_alternates$statefip <- factor(as.character(male_alternates$statefip))
-  
+  male_alternates$mar_market <- factor(as.character(male_alternates$mar_market))
+
   # Alternate Female Partners
   female_alternates <- subset(census, sex=="Female",
-                              select=c("statefip","metarea","id","perwt",
+                              select=c("mar_market","id","perwt",
                                        "age","race","educ","bpld","lang","age_usa"))
-  colnames(female_alternates) <- c("statefip","metarea","idw", "perwt",
+  colnames(female_alternates) <- c("mar_market","idw", "perwt",
                                    "agew","racew","educw","bplw","languagew","age_usaw")
   female_alternates <- na.omit(as.data.frame(female_alternates))
-  female_alternates$metarea <- factor(as.character(female_alternates$metarea))
-  female_alternates$statefip <- factor(as.character(female_alternates$statefip))
-  
+  female_alternates$mar_market <- factor(as.character(female_alternates$mar_market))
+
   # Sample Counterfactual Spouses 
   markets <- replicate(n_samples,
                        generateCouples(n_fakes, unions, male_alternates, 
-                                       female_alternates, geo="statefip", 
+                                       female_alternates, geo="mar_market", 
                                        weight="perwt", verbose=FALSE),
                        simplify=FALSE)
   

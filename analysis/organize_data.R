@@ -165,16 +165,16 @@ years_mar <- 5
 alternates_census <- subset(census1980, (is.na(yr_usa) | yr_usa>years_mar) & 
                               (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                               (is_single(marst) | dur_mar<=years_mar),
-                            select=c("statefip","metarea","sex","hhwt","perwt",
-                                     "marst","age","race","educ","bpld","yr_usa",
-                                     "lang","raced","hispand"))
+                            select=c("statefip","metarea","mar_market","sex",
+                                     "hhwt","perwt","marst","age","race","educ",
+                                     "bpld","yr_usa","lang","raced","hispand"))
 
 alternates_acs <- subset(acs, (is.na(yr_usa) | yr_usa>years_mar) & 
                            (is.na(yr_usa_sp) | yr_usa_sp>years_mar) &
                            (is_single(marst) | dur_mar<=years_mar),
-                         select=c("statefip","metarea","sex","hhwt","perwt",
-                                  "marst","age","race","educ","bpld","yr_usa",
-                                  "lang","raced","hispand"))
+                         select=c("statefip","metarea","mar_market","sex","hhwt",
+                                  "perwt","marst","age","race","educ","bpld",
+                                  "yr_usa","lang","raced","hispand"))
 
 save(alternates_census, alternates_acs, 
      file=here("analysis","output","alternates.RData"))
