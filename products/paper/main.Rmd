@@ -565,12 +565,12 @@ or <- coefs_extended %>%
 hc <- hclust(as.dist(or))
 or <- or[hc$order, rev(hc$order)]
 
-gg.heat <- ggplot(melt(or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
+gg.heat <- ggplot(melt(1/or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
   geom_tile(color = NA)+
-  scale_fill_gradient2(low = "#008837", high = "#7b3294", mid = "#f7f7f7", 
-                       midpoint = 1, limit = c(0, max(or)),
+  scale_fill_gradient2(low = "#7b3294", high = "#008837", mid = "#f7f7f7", 
+                       midpoint = 1, limit = c(0, 1.25),
                        name="odds ratio")+
-  geom_text(aes(label=paste(round(or,2))))+
+  geom_text(aes(label=paste(round(1/or,2))))+
   labs(x=NULL, y=NULL)+
   theme_minimal()+
   theme(legend.position = "left", 
@@ -599,12 +599,12 @@ or <- coefs_extended %>%
 hc <- hclust(as.dist(or))
 or <- or[hc$order, rev(hc$order)]
 
-gg.heat <- ggplot(melt(or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
+gg.heat <- ggplot(melt(1/or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
   geom_tile(color = NA)+
-  scale_fill_gradient2(low = "#008837", high = "#7b3294", mid = "#f7f7f7", 
-                       midpoint = 1, limit = c(0, max(or)),
+  scale_fill_gradient2(low = "#7b3294", high = "#008837", mid = "#f7f7f7", 
+                       midpoint = 1, limit = c(0, 1.25),
                        name="odds ratio")+
-  geom_text(aes(label=paste(round(or,2))), size=2.5)+
+  geom_text(aes(label=paste(round(1/or,2))), size=2.5)+
   labs(x=NULL, y=NULL)+
   theme_minimal()+
   theme(legend.position = "left", 
