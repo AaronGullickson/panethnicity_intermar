@@ -42,9 +42,6 @@ source(here("analysis","useful_functions.R"))
 
 #going to load and unload the data as I use it to save memory
 
-# Create formulas --------------------------------------------------------
-
-
 # Run models --------------------------------------------------------------
 
 #saving the model summary output should be fine
