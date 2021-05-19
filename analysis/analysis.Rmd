@@ -762,9 +762,9 @@ coefs_pent %>%
   theme(legend.position = "right")
 ```
 
-For Latino ethnic exogamy we see a very different story. Using the three Latino groups available in Census 1980, there have not been significant increases in Latino ethnic exogamy over time. In fact, Latino ethnic exogamy has decreased slightly. Controlling for birthplace and language endogamy has relatively little effect on these patterns. Controlling for birthplace endogamy increases exogamy somewhat, as expected. Controlling for language endogamy by itself has very little effect on the model.
+For Latino ethnic exogamy we see a very different story. Using the three Latino groups available in Census 1980, there have not been significant increases in Latino ethnic exogamy over time. In fact, Latino ethnic exogamy has decreased slightly in the baseline models. Controlling for birthplace and language endogamy has relatively little effect on these patterns. Controlling for birthplace endogamy increases exogamy somewhat, as expected. Controlling for language endogamy by itself has very little effect on the model, except for the slightest of increases in the ACS data. In models that control for both forms of endogamy, we do see a very slight increase in ethnic exogamy over time, but the change is very small. 
 
-If we expand to the full 19 Latino groups in the ACS data, the patterns are generally the same, but there is greater Latino ethnic exogamy overall. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
+If we expand to the full 19 Latino groups in the ACS data, the patterns are somewhat similar, except that controlling for language endogamy actually decreases ethnic exogamy slightly. There is also greater Latino ethnic exogamy overall when we expand. We cannot really say if this is an increase because we don't have a comparison for 1980, but it does suggest that the particular groups of Mexicans, PRs and Cubans are somewhat less exogamous with each other than Latinos overall. 
 
 ```{r latino-exog-compare-dot}
 coefs_pent %>%
@@ -791,7 +791,7 @@ coefs_pent %>%
 
 The figure above shows where Latino ethnic exogamy stands in relation to racial outmarriage among Latinos. The results here are somewhat different than the Asian case. Notably:
 
-* There has been a large increase in the odds of intermarriage between Latinos and Whites and relatively little change in Latino ethnic exogamy. The consequence is that in the restricted group case, Latino/White intermarriage is slightly more likely than Latino ethnic exogamy in the current data. In the data with more ethnic groups, Latino ethnic exogamy is still slightly more common than Latino/White intermarriage, but just.
+* There has been a large increase in the odds of intermarriage between Latinos and Whites and relatively little change in Latino ethnic exogamy. The consequence is that in the restricted group case, Latino/White intermarriage is slightly more likely than Latino ethnic exogamy in the current data. In the data with more ethnic groups, Latino ethnic exogamy is still slightly more common than Latino/White intermarriage.
 * Latino/Black intermarriage remains very rare but has increased substantially over time. This suggests somewhat weaker boundaries at this "black/non-black" divide for Latinos than for Asians. Some of this may be due to racial heterogeneity among Latinos (i.e. Afro-Latinos).
 * The South Asian/Latino parameter has gone down significantly. This seems to be a general pattern for the South Asian term and may reflect measurement issues.
 
@@ -845,9 +845,9 @@ coefs_pent %>%
 
 The figure above looks at South Asian racial exogamy. I also include ethnic exogamy here for comparative purposes with the same dataset, but I cannot look at it over time due to the lack of comparable data across time.
 
-The results show little difference in the ACS data with using only Asian Indians and using all four groups. In all cases, South Asian racial intermarriage has become *less* likely over time. The smallest drops are for Asian/South Asian which may reflect some form of pan-ethnicity I guess and South Asian/Black, but the latter case was close to zero already. 
+The results show little difference in the ACS data with using only Asian Indians and using all four groups. In all cases, South Asian racial intermarriage has become *less* likely over time. 
 
-I do worry that these drops are driven by measurement issues. The Census lists "Asian Indian" as a category to help distinguish it from the case where people are looking for an American Indian category. My guess would be that people have gotten better over time at not mis-checking this box when they meant to select an American Indian category. Those mischeckers are probably more likely to intermarry with other groups given the historical legacy of the American Indian group. Thus, the later period may be witnessing a drop simply because it is more accurately capturing people who intended to check Asian Indian. In support of this hypothesis, the odds of intermarriage between American Indian and Asian Indian respondents is extremely high in 1980 (slightly over 1) and diminishes dramatically in the ACS data.
+I do worry that these drops are driven by measurement issues. The Census lists "Asian Indian" as a category to help distinguish it from the case where people are looking for an American Indian category. My guess would be that people have gotten better over time at not mis-checking this box when they meant to select an American Indian category. Those mischeckers are probably more likely to intermarry with other groups given the historical legacy of the American Indian group. Thus, the later period may be witnessing a drop simply because it is more accurately capturing people who intended to check Asian Indian. In support of this hypothesis, the odds of intermarriage between American Indian and Asian Indian respondents is extremely high in 1980 and diminishes dramatically in the ACS data.
 
 ## Ethnic-Group Specific Exogamy
 
@@ -936,9 +936,10 @@ heatmap_ethnic(asian_groups, "+ both")
 
 In general, here is my summary of what I see:
 
-* Language and birthplace endogamy both reduce these odds ratios quite a bit although language endogamy plays a bigger role. 
-* The biggest division is between Filipinos and all others. There remain significant boundaries with every other ethnic group included even after controlling for language and birth[place endogamy.
-* Many of the final estimated odds ratios are actually less than 1! There is little evidence of any barriers at all between intermarriage of Chinese, Korean, and Japanese respondents, net of language endogamy. There is still moderate barriers between Korean/Japanese and Vietnamese, but not Chinese and Vietnamese, which actually had the lowest estimated odds ratios overall.
+* Language and birthplace endogamy both reduce these odds ratios quite a bit although language endogamy plays a bigger role. They also shift the relationships among groups somewhat.
+* The biggest division is between Filipinos and all others. There remain significant boundaries with every other ethnic group included even after controlling for language and birthplace endogamy. This barrier seems to be a bit weaker for Vietnamese/Filipino unions than other cases.
+* For the remaining categories, the Chinese category operates like a bridging category -- there are no barriers to intermarriage with Chinese partners at all for the remaining groups. 
+* Little evidence of boundaries between Korean and Japanese intermarriage, but some boundaries between these two groups and Vietnamese. 
 
 
 #### Changes over time
@@ -988,9 +989,8 @@ heatmap_ethnic(latino_groups, "+ both", height=0.75)
 
 With more groups, the results here are more complicated to interpret, but here is what I see:
 
-* I see some evidence of regional divisions. The Central American/Mexican cases all group together. The South American and Caribbean cases also sort of group together, except for the case of Peruvian/Cuban. 
+* I see some evidence of regional divisions. The Central American/Mexican cases all group together. The South American and Caribbean cases also sort of group together, although Cubans don't quite fit here. They are about equally distant from South American and Caribbean groups. 
 * The odds between Puerto Rican and Dominican are the second lowest and both of these groups are the "blackest" so there may be something there.
-* In general the strongest boundaries overall are between Mexicans and other groups (thats eyeballing it, but I should check more thoroughly).
 
 #### Changes over time
 
@@ -1020,7 +1020,7 @@ coefs_extended %>%
   theme_bw()
 ```
 
-There have been virtually no changes over time in specific latino ethnic exogamy among the three groups where we can track change.
+There have been litte change over time in specific latino ethnic exogamy among the three groups where we can track change. Some evidence of slight increases for Cuban/Puerto Rican and Cuban/Mexican, but none for Mexican/Puerto Rican.
 
 ### Black/Latino Ethnic Exogamy
 
