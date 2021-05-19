@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE metadata SYSTEM "http://www.fgdc.gov/metadata/fgdc-std-001-1998.dtd">
+<metadata>
+	<idinfo>
+		<citation>
+			<citeinfo>
+				<origin>Minnesota Population Center</origin>
+				<pubdate>20070105</pubdate>
+				<title>1980 Standard Metropolitan Statistical Areas, Historic US Metropolitan Area Boundaries</title>
+				<geoform Sync="TRUE">vector digital data</geoform>
+				<pubinfo>
+					<pubplace>Minneapolis, Minnesota</pubplace>
+					<publish>Minnesota Population Center</publish>
+				</pubinfo>
+				<onlink>http://www.nhgis.org</onlink>
+				<lworkcit>
+				</lworkcit>
+				<ftname Sync="TRUE">US_smsa_1980</ftname></citeinfo>
+		</citation>
+		<descript>
+			<abstract>This is an updated shapefile of SMSA boundaries - updated from the 10/26/2006 shapefile.  NHGIS staff fixed some boundaries in New England. This boundary file contains standard metropolitan statistical areas (SMSA) for the 1980 Census of Population and Housing.  The Office of Management and Budget defined SMSAs in 1980 and the U.S. Census Bureau tabulated and published data for these units.  The electronic boundary file was produced by the Minnesota Population Center as part of the National Historical Geographic Information System (NHGIS) project. The NHGIS is an National Science Foundation-sponsored project (Grant No. BCS0094908) to create a digital spatial-temporal database of all available historical US aggregate census materials. The available shapefiles on the NHGIS site represent version 1.0 of historical US metropolitan statistical area boundary files for the 1950-2000 censuses.  These electronic census tract boundary files were created by referencing the list of SMSA component parts (available at http://www.census.gov/population/estimates/metro-city/80mfips.txt) and assigning SMSA FIPS codes to the NHGIS' historic 1980 county boundaries.  For the SMSAs in New England, we constructed towns using boundaries derived from the 2000 TIGER/Line files and assigned the correct SMSA fips codes to the towns.  We assumed that town boundaries did not change between 1950 and 2000.  The boundary files have been checked against currently available historical census aggregate data.</abstract>
+			<purpose>These data are based upon work supported by the National Science Foundation under Grant No. BCS0094908 - in infrastructure grant provided for the social sciences. Its purpose is twofold. First, the NHGIS created and freely distributes a database incorporating all available aggregate census information for the United States between 1790 and 2000. The database contains information for a wide variety of statistical (blocks, block groups, census tracts, metropolitan statistical areas) and administrative units (places, minor civil divisions, counties, states).  Second, the NHGIS produced and freely distributes boundary files for small areas (census tracts and counties) in the United States. Boundary files for tracts are available for the 1910-2000 censuses, boundary files for states/territories and counties are available for the 1790-2000 censuses, and boundary files for metropolitan statistical areas are available for the 1950-2000 censuses.</purpose>
+			<supplinf>The Bureau of the Budget first defined county-based metropolitan areas for the 1950 Census of Population and Housing.  Prior to 1950, minor civil division-based metropolitan districts were defined by the Census Bureau but were scrapped in favor of a county-based definition. Few agencies outside of the Census Bureau tabulated data at the minor civil division-level; therefore, they could not use the MCD-based districts for socioeconomic analyses. The definition of metropolitan areas has changed through time, with a major change occuring in 2002.  Between 1950 and 2000, the definition was fairly stable with a few minor modifications, including name changes, through time.  Essentially, a metropolitan area is "a core area containing a large population nucleus, together with adjacent communities that have a high degree of economic and social integration with that core" (U.S. Census Bureau 1994, 13-1).  In 1950, the Bureau of the Budget defined standard metropolitan areas (SMAs) as "one or more counties that contain a city of 50,000 or more inhabitants, or contain a Census Bureau-defined urbanized area (UA) and have a total population of at least 100,000 (75,000 in New England). Counties containing the principal concentration of population - the largest city and surrounding densely settled area - are components...Additional counties qualify to be included by meeting a specified level of commuting to the counties containing the population concentration and by meeting certain other requirements of metropolitan character, such as a minimum population density or percentage of the population that is urban" (U.S. Census Bureau 1994, 13-1 - 13-2).  In 1960, the Bureau of the Budget changed the name from standard metropolitan area (SMA) to a standard metropolitan statistical area (SMSA), which was the name until 1990, when the name was again changed to metropolitan statistical area (MSA).  In 1980, standard consolidated statistical areas (SCSA) were introduced. These SCSAs are conglomerates of standard metropolitan statistical areas whose population exceeds one million people.  In 1990, the Office of Management and Budget (the successor of the Bureau of the Budget) changed the names of metropolitan areas and introduced two new entities, the primary metropolitan statistical area (PMSA) and the New England County Metropolitan Area (NECMA).  Standard metropolitan statistical area and standard consolidated statistical areas were changed to metropolitan statistical area (MSA) and consolidated metropolitan statistical area (CMSA).  A PMSA is a "subarea...defined within an area that meets the requirements as an MSA and also has a population of one million or more" (U.S. Census Bureau 1994, 13-2).  When a PMSA is defined, "the entire area of which they are parts becomes a CMSA. All territory within a CMSA is also within some PMSA" (U.S. Census Bureau 1994, 13-2).  A New England County Metropolitan Area (NECMA) is a metropolitan area defined by whole counties, instead of towns or cities, in New England.  More detailed information about metropolitan areas can be found in the U.S. Census Bureau's Geographic Area Reference Manual (http://www.census.gov/geo/www/garm.html) and the Bureau's website on metropolitan areas (http://www.census.gov/population/www/estimates/metrodef.html).</supplinf>
+			<langdata Sync="TRUE">en</langdata></descript>
+		<timeperd>
+			<timeinfo>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+				<sngdate>
+					<caldate>1980</caldate></sngdate>
+			</timeinfo>
+			<current>publication date</current>
+		</timeperd>
+		<status>
+			<progress>In work</progress>
+			<update>As work is completed</update>
+		</status>
+		<spdom>
+			<bounding>
+				<westbc Sync="TRUE">-127.649716</westbc>
+				<eastbc Sync="TRUE">-66.859859</eastbc>
+				<northbc Sync="TRUE">51.604785</northbc>
+				<southbc Sync="TRUE">23.285329</southbc>
+			</bounding>
+			<lboundng><leftbc Sync="TRUE">-2337186.293564</leftbc><rightbc Sync="TRUE">2139181.209329</rightbc><bottombc Sync="TRUE">-1295866.660567</bottombc><topbc Sync="TRUE">1565781.659379</topbc></lboundng></spdom>
+		<keywords>
+			<theme>
+				<themekt>None</themekt>
+				<themekey>historical</themekey>
+				<themekey>census of population and housing</themekey>
+				<themekey>census boundaries</themekey>
+				<themekey>census geography</themekey>
+				<themekey>census data</themekey>
+				<themekey>population</themekey>
+				<themekey>housing</themekey>
+				<themekey>metropolitan area</themekey><themekey>standard metropolitan area</themekey><themekey>metropolitan statistical area</themekey><themekey>standard metropolitan statistical area</themekey><themekey>consolidated metropolitan statistical area</themekey><themekey>primary metropolitan statistical area</themekey></theme>
+			<place>
+				<placekt>None</placekt>
+			</place>
+			<temporal>
+				<tempkt>None</tempkt>
+			</temporal>
+		</keywords>
+		<accconst>All persons are granted a limited license to use and distribute this documentation and the available data, subject to the use constraints listed below.</accconst>
+		<useconst>This dataset was produced with an intended application at the city, county, metropolitan, or state/territory level. Appropriate uses include thematic mapping of census data and spatial analysis of census data.  These unaltered data may be redistributed by a third party.   If these data are altered or incorporated into another dataset, they are not to be redistributed without also: altering the name of the dataset, including a Content Standars for Digital Geospatial Metadata (FGDC-STD-001-1998) compliant metadata file that describes the dataset and reflects the alteration steps that makes the new dataset different from this one, and citing this dataset in the metadata as a source for the altered dataset using the source citation specified below.  If these digital data are used in the production of a report or in the compilation of a standalone printed map, then this dataset is to be cited in the report or on the map using the source citation specified below.  The following source citation should be used when citing this dataset: John S. Adams, William C. Block, Mark Lindberg, Robert McMaster, Steven Ruggles, and Wendy Thomas, National Historical Geographic Information System: Pre-release Version 0.1, Minneapolis: Minnesota Population Center, University of Minnesota, 2004.  No fee may be charged for use or distribution. Publications and research reports based on the database must cite it appropriately. Users are requested to send a copy of any publications, research reports, or educational material making use of the data or documentation. Printed matter should be sent to:  NHGIS  Minnesota Population Center University of Minnesota 50 Willey Hall 225 19th Avenue South Minneapolis, MN 55455</useconst>
+		<ptcontac>
+			<cntinfo>
+				<cntperp>
+					<cntper>Petra Noble</cntper>
+					<cntorg>Minnesota Population Center</cntorg>
+				</cntperp>
+				<cntpos>Research Fellow</cntpos>
+				<cntaddr>
+					<addrtype>physical address</addrtype>
+					<address>50 Willey Hall</address>
+					<address>225 19th Ave S</address>
+					<city>Minneapolis</city>
+					<state>Minnesota</state>
+					<postal>55455</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>612-625-7375</cntvoice>
+				<cntemail>nhgis@pop.umn.edu</cntemail>
+			</cntinfo>
+		</ptcontac>
+		<native Sync="TRUE">Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.2.0.1324</native>
+		<natvform Sync="TRUE">Shapefile</natvform></idinfo>
+	<dataqual>
+		<attracc>
+			<attraccr>All attributes in this boundary file were checked against attributes in the available aggregate data to ensure accuracy and consistency. The boundary file may contain more or fewer MAs than the aggregate data file. </attraccr>
+		</attracc>
+		<logic>All spatial data have been reviewed to assure topological consistency and completeness. All polygons close and do not overlap. No voids exist within polygons. ArcGIS topology features classes were used to identify and fix topological errors (e.g., overlaps, voids, missing polygons) in the tract boundary datasets. The ArcGIS topology rules used to ensure logical consistency were 'Must not overlap'  and 'Area Boundary must be Covered by Boundary of'.</logic>
+		<complete>Version 1.0 of the metropolitan area boundary files contains metropolitan areas (MA).  Most MAs, although not all, have a matching record in the aggregate data files. Version 1.0 boundary files have not been generalized, and tracts containing parts of the following bodies of water do not have historically accurate coastlines: the Great Lakes, Atlantic Ocean, Pacific Ocean, and the Gulf of Mexico.  No tracts overlap, no voids exist between tracts, and any polygon belongs to one and only one tract.  Every MA has a FIPS-like code (GISJOIN) that uniquely identifies it.  The aggregate data file contains a matching code (GISJOIN) so that the files can be easily joined together.</complete>
+		<posacc>
+			<horizpa>
+				<horizpar>The horizontal positional accuracy of the source data (U.S. Census Bureau TIGER/Line 2000 files) can be found at  http://www.census.gov/geo/www/tlmetadata/tl2kmeta.txt. To create historic county boundaries, we used existing TIGER lines whereever possible. When no TIGER line existed, we digitized new linework from scanned and rectified U.S. Census Bureau tract maps.</horizpar>
+			</horizpa>
+		</posacc>
+		<lineage>
+			<srcinfo>
+				<srccite>
+					<citeinfo>
+						<origin>U.S. Census Bureau</origin>
+						<pubdate>2000</pubdate>
+						<title>Census 2000 TIGER/Line files [machine-readable data files].</title>
+						<pubinfo>
+							<pubplace>Washington D.C.</pubplace>
+							<publish>U.S. Government Printing Office</publish>
+						</pubinfo>
+					</citeinfo>
+				</srccite>
+				<srcscale>various</srcscale>
+				<typesrc>online</typesrc>
+			</srcinfo>
+			<srcinfo><srccite><citeinfo><origin>U.S. Census Bureau</origin><pubdate>20050317</pubdate><title>Historical Metropolitan Area Definitions</title><pubinfo><pubplace>Washington, D.C.</pubplace><publish>U.S. Census Bureau, Population Division, Population Distribution Branch</publish></pubinfo><onlink>http://www.census.gov/population/www/estimates/pastmetro.html</onlink></citeinfo></srccite><typesrc>online</typesrc></srcinfo><srcinfo><srccite><citeinfo><origin>Office of Management and Budget</origin><pubdate>19810630</pubdate><title>STANDARD METROPOLITAN STATISTICAL AREAS AND COMPONENTS, 1981 WITH FIPS CODES</title><pubinfo><pubplace>Washington, D.C.</pubplace><publish>U.S. Census Bureau, Population Division, Population Distribution Branch</publish></pubinfo><onlink>http://www.census.gov/population/estimates/metro-city/80mfips.txt</onlink></citeinfo></srccite><typesrc>online</typesrc></srcinfo><procstep><procdesc>Downloaded the historical metropolitan area definition file for the 1980 standard metropolitan statistical areas and created a dBase file from it. The historical metropolitan area definition file can be found at: http://www.census.gov/population/estimates/metro-city/80mfips.txt</procdesc></procstep><procstep><procdesc>Constructed 1990 New England towns and cities boundaries from the 2000 TIGER/Line files. These towns will serve as the boundaries of the standard metropolitan areas in New England.</procdesc><procsv>TGR2SHP 6.231</procsv></procstep><procstep><procdesc>Imported the 1990 New England towns and cities boundaries into ArcSDE.</procdesc><procsv>ArcCatalog</procsv></procstep><procstep><procdesc>Using the 1980 SMSA definition file, we merged the New England towns and  cities to create New England metropolitan areas.</procdesc><procsv>ArcMap</procsv></procstep><procstep><procdesc>Converted the New England metropolitan area polygons to a line feature class. These lines were used to cut New England counties to create the metropolitan areas.</procdesc><procsv>ArcCatalog</procsv></procstep><procstep><procdesc>Copied the 1980 historical county feature class to a new feature class that will hold the 1980 standard metropolitan statistical areas.</procdesc><procsv>ArcCatalog</procsv></procstep><procstep><procdesc>Edited the New England counties to create the standard metropolitan statistical areas.</procdesc><procsv>ArcMap</procsv></procstep><procstep><procdesc>Imported the historical metropolitan area definition dBase file to an ArcSDE table.</procdesc><procsv>ArcCatalog</procsv></procstep><procstep><procdesc>Joined the historical metropolitan area definition table to the 1980 SMSA feature class. This step attached the SMSA codes to the appropriate counties.</procdesc><procsv>ArcMap</procsv></procstep><procstep><procdesc>Dissolve the feature class on the SMSA code to create the 1980 SMSA boundaries.</procdesc><procsv>ArcMap</procsv></procstep><procstep><procdesc>Created topology for the dissolved feature class with two rules ("Must not have  gaps" and "Must not overlap"). If there were any errors, we edited the original feature class and then re-dissolved on the SMSA code.</procdesc><procsv>ArcCatalog</procsv></procstep><procstep><procdesc>Added the GISJOIN item to the dissolved feature class and calculated it equal to the SMSA code.</procdesc><procsv>ArcMap</procsv></procstep><procstep><procdesc>Wrote FGDC-compliant metadata for the 1980 SMSA boundaries.</procdesc><procsv>ArcCatalog</procsv></procstep><procstep><procdesc>Exported the 1980 SMSA feature class to a shapefile for Internet dissemination.</procdesc><procsv>ArcMap</procsv></procstep><procstep><procdesc Sync="TRUE">Metadata imported.</procdesc><srcused Sync="TRUE">C:\WorkSpace\1980pmsa.xml</srcused><date Sync="TRUE">20061030</date><time Sync="TRUE">07074900</time></procstep><procstep><procdesc Sync="TRUE">Dataset copied.</procdesc><srcused Sync="TRUE">Server=sdenhgis.socsci.umn.edu; Service=5153; User=popgis; Version=SDE.DEFAULT</srcused><date Sync="TRUE">20061206</date><time Sync="TRUE">10075700</time></procstep></lineage>
+	</dataqual>
+	<spdoinfo>
+		<direct Sync="TRUE">Vector</direct>
+		<ptvctinf>
+			<sdtsterm Name="US_smsa_1980">
+				<sdtstype Sync="TRUE">G-polygon</sdtstype>
+				<ptvctcnt Sync="TRUE">314</ptvctcnt>
+			</sdtsterm>
+			<sdtsterm>
+				<sdtstype>GT-polygon composed of chains</sdtstype>
+				<ptvctcnt>1338</ptvctcnt>
+			</sdtsterm>
+			<esriterm Name="US_smsa_1980"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom Sync="TRUE">Polygon</efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">314</efeacnt><spindex Sync="TRUE">TRUE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf>
+	</spdoinfo>
+	<spref>
+		<horizsys>
+			<planar>
+				<planci><plance Sync="TRUE">coordinate pair</plance><plandu Sync="TRUE">meters</plandu><coordrep><absres Sync="TRUE">0.000000</absres><ordres Sync="TRUE">0.000000</ordres></coordrep></planci><mapproj><mapprojn Sync="TRUE">Albers Conical Equal Area</mapprojn><albers><stdparll Sync="TRUE">29.500000</stdparll><stdparll Sync="TRUE">45.500000</stdparll><longcm Sync="TRUE">-96.000000</longcm><latprjo Sync="TRUE">37.500000</latprjo><feast Sync="TRUE">0.000000</feast><fnorth Sync="TRUE">0.000000</fnorth></albers></mapproj></planar>
+			<geodetic>
+				<horizdn Sync="TRUE">North American Datum of 1983</horizdn>
+				<ellips Sync="TRUE">Geodetic Reference System 80</ellips>
+				<semiaxis Sync="TRUE">6378137.000000</semiaxis>
+				<denflat Sync="TRUE">298.257222</denflat>
+			</geodetic>
+			<cordsysn><geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn><projcsn Sync="TRUE">USA_Contiguous_Albers_Equal_Area_Conic</projcsn></cordsysn></horizsys>
+		<vertdef><altsys><altenc Sync="TRUE">Explicit elevation coordinate included with horizontal coordinates</altenc><altres Sync="TRUE">1.000000</altres></altsys></vertdef></spref>
+	<eainfo>
+		<detailed Name="US_smsa_1980">
+			<enttyp><enttypl Sync="TRUE">US_smsa_1980</enttypl><enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">314</enttypc></enttyp><attr><attrlabl Sync="TRUE">GISJOIN</attrlabl><attalias Sync="TRUE">GISJOIN</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Unique 5-digit code used to join aggregate data to shapefiles</attrdef><attrdefs>NHGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">SCSA</attrlabl><attalias Sync="TRUE">SCSA</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">2</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Unique 2-digit FIPS code identifying Standard Consolidated Statistical Areas</attrdef><attrdefs>U.S. Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">FID</attrlabl><attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">7</attwidth><attrdef Sync="TRUE">Internal feature number.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr><attr><attrlabl Sync="TRUE">SMSA</attrlabl><attalias Sync="TRUE">SMSA</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">2</attwidth><attrdef>Unique 4-digit FIPS code identifying Standard Metropolitan Statistical Areas</attrdef><attrdefs>U.S. Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">Shape</attrlabl><attalias Sync="TRUE">Shape</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">5</attwidth><attrdef Sync="TRUE">Feature geometry.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Coordinates defining the features.</udom></attrdomv></attr><attr><attrlabl Sync="TRUE">GISJOIN2</attrlabl><attalias Sync="TRUE">GISJOIN2</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">4</attwidth><attrdef>Alternate unique 4-digit code used to join aggregate data to shapefiles</attrdef><attrdefs>NHGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">SHAPE_AREA</attrlabl><attalias Sync="TRUE">SHAPE_AREA</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><attrdef Sync="TRUE">Area of feature in internal units squared.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Positive real numbers that are automatically generated.</udom></attrdomv><atnumdec Sync="TRUE">11</atnumdec></attr><attr><attrlabl Sync="TRUE">SHAPE_LEN</attrlabl><attalias Sync="TRUE">SHAPE_LEN</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr></detailed>
+		<overview>
+			<eaover>The most important attribute in this shapefile is GISJOIN because it provides the link between the shapefile and the aggregate data files. Any aggregate data file obtained through the NHGIS data acces system will contain a GISJOIN attribute.  Use this attribute to link the data with the shapefile for mapping purposes.  Please note that values in GISJOIN begin with "G" in order to retain leading zeros. This update took effect on May 7, 2008. 
+ 
+GISJOIN2 is an alternative linking attribute. GISJOIN2 is similar to GISJOIN except that its values do not begin with "G". GISJOIN2 may be used when linking to an aggregate data file extracted before May 7, 2008.
+
+Other attributes in the shapefile include area (in square meters), perimeter (in meters), FID (a ArcGIS-generated unique identifier for each record), and SMSA (unique FIPS code identifying the 1980 standard metropolitan statistical area).</eaover>
+			<dsoverv>This shapefile contains standard metropolitan areas for the Census of Population and Housing.</dsoverv></overview>
+	</eainfo>
+	<metainfo>
+		<metd Sync="TRUE">20080428</metd>
+		<metrd>20070105</metrd>
+		<metfrd>As necessary</metfrd>
+		<metc>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>Minnesota Population Center</cntorg>
+					<cntper>Petra Noble</cntper>
+				</cntorgp>
+				<cntaddr>
+					<address>50 Willey Hall</address>
+					<address>225 19th Avenue South</address>
+					<city>Minneapolis</city>
+					<state>Minnesota</state>
+					<postal>55455</postal>
+					<country>USA</country>
+					<addrtype>mailing address</addrtype></cntaddr>
+				<cntvoice>612-625-7375</cntvoice>
+				<cntemail>nhgis@pop.umn.edu</cntemail>
+			</cntinfo>
+		</metc>
+		<metstdn Sync="TRUE">FGDC Content Standards for Digital Geospatial Metadata</metstdn>
+		<metstdv Sync="TRUE">FGDC-STD-001-1998</metstdv>
+		<langmeta Sync="TRUE">en</langmeta><mettc Sync="TRUE">local time</mettc><metextns><onlink Sync="TRUE">http://www.esri.com/metadata/esriprof80.html</onlink><metprof Sync="TRUE">ESRI Metadata Profile</metprof></metextns></metainfo>
+	<Esri><ModDate>20080428</ModDate><ModTime>15213400</ModTime><CreaDate>20061206</CreaDate><CreaTime>10075700</CreaTime><SyncOnce>FALSE</SyncOnce><SyncDate>20080428</SyncDate><SyncTime>15213400</SyncTime><DataProperties><lineage><Process Name="Identity_9" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Analysis Tools.tbx\Identity" Date="20061206" Time="093151">Identity "Database Connections\Connection to sdenhgis.socsci.umn.edu(sdebase5153).sde\POPGIS.AppendedStates\POPGIS.smsa1980" "Database Connections\Connection to sdenhgis.socsci.umn.edu(sdebase5153).sde\POPGIS.AppendedStates\POPGIS.st1980" "Database Connections\Connection to sdenhgis.socsci.umn.edu(sdebase5153).sde\POPGIS.AppendedStates\POPGIS.smsa1980_state" ALL "0.100000 Meters" NO_RELATIONSHIPS</Process><Process Name="Add Field (30)" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\AddField" Date="20061208" Time="063037">AddField "Database Connections\Connection to sdenhgis.socsci.umn.edu(sdebase5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_state" PID DOUBLE 38 8 # # NULLABLE NON_REQUIRED # "Database Connections\Connection to sdenhgis.socsci.umn.edu(sdebase5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_state"</Process><Process Name="Dissolve_11" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\Dissolve" Date="20070102" Time="093140">Dissolve POPGIS.smsa1980_state "Database Connections\Connection to sdenhgis.socsci.umn.edu(sdebase5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980" SMSA # MULTI_PART</Process><Process Name="CopyFeatures_6" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20080410" Time="130619">CopyFeatures "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980" "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_CopyFeatures" # 0 0 0</Process><Process Name="Select Data" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\SelectData" Date="20080410" Time="154454">SelectData "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea" POPGIS.smsa1980_GIS_GIS2 "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Add GISJOINA" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\AddField" Date="20080410" Time="154506">AddField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOINA TEXT # # 4 # NULLABLE NON_REQUIRED # "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Calculate GISJOINA" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20080410" Time="154529">CalculateField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOINA [GISJOIN] VB # "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Delete GISJOIN" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\DeleteField" Date="20080410" Time="154548">DeleteField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOIN "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Add GISJOIN" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\AddField" Date="20080410" Time="154601">AddField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOIN TEXT # # 5 # NULLABLE NON_REQUIRED # "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Calculate GISJOIN" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20080410" Time="154623">CalculateField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOIN ""G" &amp; [GISJOINA]" VB # "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Add GISJOIN2" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\AddField" Date="20080410" Time="154641">AddField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOIN2 TEXT # # 4 # NULLABLE NON_REQUIRED # "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Calculate GISJOIN2" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20080410" Time="154703">CalculateField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOIN2 [GISJOINA] VB # "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process Name="Delete GISJOINA" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\DeleteField" Date="20080410" Time="154721">DeleteField "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" GISJOINA "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2"</Process><Process ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20080417" Time="134046">CopyFeatures "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980_GIS_GIS2" "Database Connections\sdenhgis.socsci.umn.edu (5153).sde\POPGIS.Contiguous_C_aea\POPGIS.smsa1980" # 0 0 0</Process><Process ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20080428" Time="152044">CopyFeatures _smsa_1980_layer G:\conflation\shapefiles\packing\gisjoin_gisjoin2_feature_class\smsa\us_smsa_1980\US_smsa_1980.shp # 0 0 0</Process><Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\Append" Date="20130506" Time="151440">Append G:\data_projects\istads\shape_processing\AK_smsa_1980.shp;G:\data_projects\istads\shape_processing\HI_smsa_1980.shp G:\data_projects\istads\shape_processing\US_smsa_1980.shp NO_TEST "SMSA "SMSA" true false false 7 Text 0 0 ,First,#,G:\data_projects\istads\shape_processing\AK_smsa_1980.shp,SMSA,-1,-1,G:\data_projects\istads\shape_processing\HI_smsa_1980.shp,SMSA,-1,-1;SCSA "SCSA" true false false 2 Text 0 0 ,First,#,G:\data_projects\istads\shape_processing\AK_smsa_1980.shp,SCSA,-1,-1,G:\data_projects\istads\shape_processing\HI_smsa_1980.shp,SCSA,-1,-1;GISJOIN "GISJOIN" true false false 5 Text 0 0 ,First,#,G:\data_projects\istads\shape_processing\AK_smsa_1980.shp,GISJOIN,-1,-1,G:\data_projects\istads\shape_processing\HI_smsa_1980.shp,GISJOIN,-1,-1;GISJOIN2 "GISJOIN2" true false false 4 Text 0 0 ,First,#,G:\data_projects\istads\shape_processing\AK_smsa_1980.shp,GISJOIN2,-1,-1,G:\data_projects\istads\shape_processing\HI_smsa_1980.shp,GISJOIN2,-1,-1;SHAPE_AREA "SHAPE_AREA" true false false 19 Double 0 0 ,First,#,G:\data_projects\istads\shape_processing\AK_smsa_1980.shp,SHAPE_AREA,-1,-1,G:\data_projects\istads\shape_processing\HI_smsa_1980.shp,SHAPE_AREA,-1,-1;SHAPE_LEN "SHAPE_LEN" true false false 19 Double 0 0 ,First,#,G:\data_projects\istads\shape_processing\AK_smsa_1980.shp,SHAPE_LEN,-1,-1,G:\data_projects\istads\shape_processing\HI_smsa_1980.shp,SHAPE_LEN,-1,-1" #</Process><Process ToolSource="c:\program files (x86)\arcgis\desktop10.2\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150210" Time="154855">CalculateField US_smsa_1980 SMSAA [SMSA] VB #</Process><Process ToolSource="c:\program files (x86)\arcgis\desktop10.2\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150210" Time="154902">CalculateField US_smsa_1980 SCSAA [SCSA] VB #</Process></lineage><itemProps><itemLocation><linkage Sync="TRUE">file://\\thalia.socsci.umn.edu\popgis\labpcs\data_projects\istads\shape_processing\smsa\US_smsa_1980</linkage><protocol Sync="TRUE">Local Area Network</protocol></itemLocation></itemProps><copyHistory><copy source="G:\data_projects\istads\shape_processing\US_smsa_1980" dest="\\thalia.socsci.umn.edu\popgis\labpcs\data_projects\istads\shape_processing\smsa\US_smsa_1980" date="20130514" time="10303700"></copy></copyHistory></DataProperties><MetaID>{49B3E2A3-AE54-49F5-B086-E6067B3C2A42}</MetaID></Esri><mdDateSt Sync="TRUE">20080428</mdDateSt><distinfo><distrib><cntinfo><cntaddr><address>50 Willey Hall</address><address>225 19th Ave S</address><city>Minneapolis</city><state>MN</state><postal>55455</postal></cntaddr><cntorgp><cntorg>Minnesota Population Center</cntorg></cntorgp><cntvoice>612-625-7375</cntvoice><cntemail>nhgis@pop.umn.edu</cntemail></cntinfo></distrib><resdesc Sync="TRUE">Downloadable Data</resdesc><stdorder><digform><digtinfo><transize Sync="TRUE">15.424</transize><dssize Sync="TRUE">15.424</dssize></digtinfo></digform></stdorder></distinfo><dataIdInfo><envirDesc Sync="TRUE">Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.2.0.1324</envirDesc><dataLang><languageCode Sync="TRUE" value="en"></languageCode></dataLang><idCitation><resTitle Sync="TRUE">US_smsa_1980</resTitle><presForm><PresFormCd Sync="TRUE" value="005"></PresFormCd></presForm></idCitation><spatRpType><SpatRepTypCd Sync="TRUE" value="001"></SpatRepTypCd></spatRpType><dataExt><geoEle><GeoBndBox esriExtentType="native"><westBL Sync="TRUE">-2337186.293564</westBL><eastBL Sync="TRUE">2139181.209329</eastBL><northBL Sync="TRUE">1565781.659379</northBL><southBL Sync="TRUE">-1295866.660567</southBL><exTypeCode Sync="TRUE">1</exTypeCode></GeoBndBox></geoEle></dataExt><geoBox esriExtentType="decdegrees"><westBL Sync="TRUE">-127.649716</westBL><eastBL Sync="TRUE">-66.859859</eastBL><northBL Sync="TRUE">51.604785</northBL><southBL Sync="TRUE">23.285329</southBL><exTypeCode Sync="TRUE">1</exTypeCode></geoBox></dataIdInfo><mdLang><languageCode Sync="TRUE" value="en"></languageCode></mdLang><mdStanName Sync="TRUE">ISO 19115 Geographic Information - Metadata</mdStanName><mdStanVer Sync="TRUE">DIS_ESRI1.0</mdStanVer><mdChar><CharSetCd Sync="TRUE" value="004"></CharSetCd></mdChar><mdHrLv><ScopeCd Sync="TRUE" value="005"></ScopeCd></mdHrLv><mdHrLvName Sync="TRUE">dataset</mdHrLvName><distInfo><distributor><distorTran><onLineSrc><orDesc Sync="TRUE">002</orDesc><linkage Sync="TRUE">file://\\thalia.socsci.umn.edu\popgis\labpcs\conflation\shapefiles\packing\gisjoin_gisjoin2_feature_class\smsa\us_smsa_1980\US_smsa_1980.shp</linkage><protocol Sync="TRUE">Local Area Network</protocol></onLineSrc><transSize Sync="TRUE">15.424</transSize></distorTran><distorFormat><formatName Sync="TRUE">Shapefile</formatName></distorFormat></distributor></distInfo><refSysInfo><RefSystem><refSysID><identCode Sync="TRUE">USA_Contiguous_Albers_Equal_Area_Conic</identCode></refSysID></RefSystem></refSysInfo><spatRepInfo><VectSpatRep><topLvl><TopoLevCd Sync="TRUE" value="001"></TopoLevCd></topLvl><geometObjs Name="US_smsa_1980"><geoObjTyp><GeoObjTypCd Sync="TRUE" value="001"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">314</geoObjCnt></geometObjs></VectSpatRep></spatRepInfo></metadata>
