@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2021-03-12" />
+<meta name="date" content="2021-05-18" />
 
 <title>run_models.R</title>
 
@@ -178,7 +178,7 @@ summary {
 
 
 <h1 class="title toc-ignore">run_models.R</h1>
-<h4 class="date">2021-03-12</h4>
+<h4 class="date">2021-05-18</h4>
 
 </div>
 
@@ -269,6 +269,69 @@ library(here)</code></pre>
 
 # Create formulas --------------------------------------------------------
 
+
+# Run models --------------------------------------------------------------
+
+#saving the model summary output should be fine
+
+## Census 1980                                                 ##
+#===============================================================#
+load(here(&quot;analysis&quot;,&quot;output&quot;,&quot;markets_census.RData&quot;))
+
+#create formulas and put them into a list for faster processing of models
+
+#Race pentagon formulas
+formula_base &lt;- formula(choice~agediff+I(agediff^2)+
+                          hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
+                          race_exog_pent+
+                          strata(group))
+formula_bendog &lt;- update(formula_base, .~.+bendog_all_first)
+formula_lendog &lt;- update(formula_base, .~.+language_endog)
+formula_both &lt;- update(formula_bendog, .~.+language_endog)
+
+formulas_pentagon &lt;- list(base=formula_base,
+                          bendog=formula_bendog,
+                          lendog=formula_lendog,
+                          both=formula_both)
+
+#Race extended formulas
+formula_base &lt;- formula(choice~agediff+I(agediff^2)+
+                          hypergamy+hypogamy+edcross_hs+edcross_sc+edcross_c+
+                          race_exog_extended+race_filipino_latino+
+                          strata(group))
+formula_bendog &lt;- update(formula_base, .~.+bendog_all_first)
+formula_lendog &lt;- update(formula_base, .~.+language_endog)
+formula_both &lt;- update(formula_bendog, .~.+language_endog)
+
+formulas_extended &lt;- list(base=formula_base,
+                          bendog=formula_bendog,
+                          lendog=formula_lendog,
+                          both=formula_both)
+
+
+markets_census &lt;- lapply(markets_census, add_vars)
+
+models_census_pentagon &lt;- lapply(formulas_pentagon,
+                                 function(formula) {
+                                   poolChoiceModel(formula,
+                                                   data=markets_census,
+                                                   method=&quot;efron&quot;)
+                                 })
+
+models_census_extended &lt;- lapply(formulas_extended,
+                                 function(formula) {
+                                   poolChoiceModel(formula, 
+                                                   data=markets_census,
+                                                   method=&quot;efron&quot;)
+                                 })
+rm(markets_census)
+
+
+## ACS, 1980 Basis                                             ##
+#===============================================================#
+load(here(&quot;analysis&quot;,&quot;output&quot;,&quot;markets_acs_1980basis.RData&quot;))
+markets_acs_1980basis &lt;- lapply(markets_acs_1980basis, add_vars)
+
 #create formulas and put them into a list for faster processing of models
 
 #Race pentagon formulas
@@ -299,35 +362,6 @@ formulas_extended &lt;- list(base=formula_base,
                           lendog=formula_lendog,
                           both=formula_both)
 
-# Run models --------------------------------------------------------------
-
-#saving the model summary output should be fine
-
-## Census 1980                                                 ##
-#===============================================================#
-load(here(&quot;analysis&quot;,&quot;output&quot;,&quot;markets_census.RData&quot;))
-markets_census &lt;- lapply(markets_census, add_vars)
-
-models_census_pentagon &lt;- lapply(formulas_pentagon,
-                                 function(formula) {
-                                   poolChoiceModel(formula,
-                                                   data=markets_census,
-                                                   method=&quot;efron&quot;)
-                                 })
-
-models_census_extended &lt;- lapply(formulas_extended,
-                                 function(formula) {
-                                   poolChoiceModel(formula, 
-                                                   data=markets_census,
-                                                   method=&quot;efron&quot;)
-                                 })
-rm(markets_census)
-
-
-## ACS, 1980 Basis                                             ##
-#===============================================================#
-load(here(&quot;analysis&quot;,&quot;output&quot;,&quot;markets_acs_1980basis.RData&quot;))
-markets_acs_1980basis &lt;- lapply(markets_acs_1980basis, add_vars)
 
 models_acs1980_pentagon &lt;- lapply(formulas_pentagon,
                                   function(formula) {
