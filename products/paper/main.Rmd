@@ -621,6 +621,57 @@ print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.78))
 ```
 
 
+```{r black-exogamy, fig.cap="A Caption"}
+groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
+            "Salvadorian","Colombian","Ecuadorian","Peruvian",
+            "Dominican")
+gg.blacklatino <- coefs_extended %>%
+  filter(grepl(paste(groups,collapse="|"), variable) & 
+           grepl("Black", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
+                   position=position_dodgev(height=0.5))+
+  scale_x_continuous(limits=c(0,1))+
+  labs(y=NULL, 
+       x="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy")+
+  theme_mine()+
+  theme(axis.title = element_text(size=8))
+
+groups <- c("Mexican","Puerto Rican","Cuban")
+gg.blackchange <- coefs_extended %>%
+  filter(grepl(paste(groups,collapse="|"), variable) & 
+           grepl("Black", variable) & 
+           model=="+ both" & 
+           data!="ACS 2014-18, expanded ethnic groups") %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(aes(color=data), size=2)+
+  geom_segment(data=subset(arrows_extended, 
+                           grepl(paste(groups,collapse="|"), variable) &
+                             grepl("Black", variable)), 
+               aes(x=variable, xend=variable, 
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               color = "grey30",
+               arrow = arrow(length = unit(0.03, "npc")),
+               color="grey60")+
+  coord_flip()+
+  scale_color_manual(values=my_palette)+
+  labs(x=NULL, 
+       y="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy",
+       color="Data source")+
+  theme_mine()+
+  guides(color=guide_legend(ncol=1))+
+  theme(axis.title = element_text(size=8))
+
+grid.newpage()
+print(gg.blackchange, vp = viewport(x = 0.25, y = 0.5, width = 0.5, height = 1.0))
+print(gg.blacklatino, vp = viewport(x = 0.75, y = 0.5, width = 0.5, height = 1.0))
+```
+
 What other figures
 
 * A two panel figure showing tiles/trees for specific ethnicity models
