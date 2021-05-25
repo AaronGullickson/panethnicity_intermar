@@ -485,8 +485,12 @@ All models used here include controls for age and educational differences betwee
 
 ## Birthplace and Language Diversity
 
+Before moving to the model results, I first show the complex ways in which birthplace and language endogamy affect the likelihood of ethnic and pan-ethnic endogamy. I use the Blau index [@blau_inequality_1977] to measure language/birthplace diversity within each Asian and Latino ethnic group and to measure diversity within each pan-ethnic group. The Blau index of diversity ($D$) is calculated as:
+$$D=1-\sum_{i=1}^R p_i^2$$
+where $p_i$ is the proportion of the total population belonging to group $i$ and $R$ is the total number of groups. The Blau index has an intuitively appealing interpretation as the probability that two randomly drawn members from the population belong to the same group. 
 
-```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups compared to birthplace and language diversity within pan-ethnic groups. Diversity is measured by the Gini-Simpson index which gives the probability that two randomly selected members of the group do not share the same birthplace/language."}
+
+```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups compared to birthplace and language diversity within pan-ethnic groups. Diversity is measured by the Blau index which gives the probability that two randomly selected members of the group do not share the same birthplace/language."}
 ggplot(diversity_pan, aes(y=group, x=diversity, color=type))+
   #geom_col(position="dodge")+
   geom_vline(xintercept = 0, color="grey20", linetype=1)+
@@ -501,8 +505,18 @@ ggplot(diversity_pan, aes(y=group, x=diversity, color=type))+
   theme(panel.grid.major.y = element_blank())
 ```
 
+Figure 2 shows the Blau index for language and birthplace across E/SE Asian, South Asian, Latino ethnic and pan-ethnic groups, using data on alternate partners in the two time periods. To simplify presentation, I take the mean diversity within each specific ethnic group and compare this directly to the diversity across the pan-ethnic group as a whole.
+
+It is notable that there is significant language and birthplace diversity within specific ethnic groups (e.g. Chinese, Mexican). For example, the average diversity in birthplace within specific Latino ethnic groups in the ACS data is nearly 60%, indicating that two randomly determined members of the same ethnic group would not share the same birthplace about 60% of the time. This diversity is mostly driven by within ethnic group differences between being born in the place of origin or being born in the US and speaking the common language of the origin group or speaking English. Pan-ethnic diversity on the other hand is driven by additional differences in non-US birthplace and non-English language across specific ethnic groups. The larger the difference between within ethnic group diversity and pan-ethnic diversity, the larger the barrier there is to pan-ethnic intermarriage. 
+
+Figure 2 shows that pan-ethnic diversity in language and birthplace is greater than within ethnic group diversity for all three pan-ethnic groups in both time periods. However, these differences are trivially small Latinos, while they are quite large for Asians. Because Latinos share a common non-English language, this result was expected for language, but we also see a similar pattern here for birthplace. What differences exist among Latino ethnic groups have also diminished over time, whereas they have grown for E/SE Asians. 
+
+The consequence of these patterns is that language and birthplace endogamy is an important barrier to pan-ethnic intermarriage among Asians, but plays little role in the pan-ethnic intermarriage among Latinos. With that in mind, I now turn to models that estimate the likelihood of pan-ethnic intermarriage with and without accounting for birthplace and language endogamy.
+
 
 ## Modeling Pan-Ethnicity
+
+Figure 3 shows the estimated odds of ethnic exogamy relative to ethnic endogamy for all three pan-ethnic groups in both time periods. As these odds ratios approach one, the odds of ethnic exogamy (e.g. Chinese person marrying a Japanese person) increase relative to ethnic endogamy (e.g. Japanese person marrying a Japanese person). Due to data limitations, results are only available for South Asians in the more recent ACS data. 
 
 ```{r exog-lolly, fig.cap="The odds of ethnic exogamy for Latinos, East/Southeast Asians, and South Asians over time and model specification. Results are based on counterfactual marriage models. The baseline model controls for educational assortative mating and age differences."}
 coefs_pent %>% 
@@ -523,6 +537,18 @@ coefs_pent %>%
   theme_mine()+
   theme(panel.spacing = unit(0.6, "lines"))
 ```
+
+The baseline model includes only controls for age and educational differences between potential partners. I then include birthplace and language endogamy separately and together to determine the effects of these variables individually and collectively on the odds of ethnic exogamy. 
+
+In the baseline model, the odds of ethnic exogamy are similar for all three groups. In all cases, ethnic exogamy is about one-quarter as likely as ethnic endogamy. The results also show a very slight decline from the 1980 time period to the 2014-2018 when restricting to ethnic groups that were available in the 1980 data.
+
+For Latinos, adjusting for birthplace and language endogamy has little effect on the odds ratio. Controlling for each variable individually increases the overall odds of ethnic exogamy only very slightly, with birthplac endogamy having a slightly larger effect. Overall, however, the odds are hardly changed at all. Furthermore, there is no evidence of change across the two time periods when limiting the analysis to comparable ethnic groups. In the later time period, ethnic exogamy is higher when including a larger range of ethnic groups, but still remains relatively low.
+
+For both Asian pan-ethnic groups, controlling for birthplace and language endogamy substantially increases the odds of ethnic exogamy, to the point that ethnic exogamy in the later time period is not unusual. For example, using the more expansive ethnic group coding, the odds of ethnic exogamy relative to ethnic endogamy are roughly 0.75 to 1 for both E/SE Asians and South Asians once I control for both language and birthplace endogamy. Controlling for language endogamy produces larger changes than controlling for birthplace endogamy, but both produce substantial changes, individually and collectively. 
+
+Controlling for birthplace and language endogamy also reveals significant increases in the odds of ethnic exogamy over time for E/SE Asians. Using comparable ethnic groups, the odds of ethnic exogamy for E/SE Asians were about half those of ethnic endogamy in 1980, but have grown to 0.75 to 1 by the more recent time period.
+
+Figure 3 shows the important role that birthplace and language endogamy play in pan-ethnic intermarriage. In actuality, we observe similar odds of ethnic exogamy among Asians and Latinos. However, the low odds of ethnic exogamy for Asians are largely a function of the high level of diversity in birthplace and language among Asians combined with a preference for marrying someone of the same birthplace and language. These barriers do not exist for Latinos. Controlling for these issues reveals very different affinities for pan-ethnicity among Latinos and Asians in the absence of birthplace and language barriers to pan-ethnic intermarriage. 
 
 ```{r changes-intermar, fig.cap="Odds of ethnoracial exogamy relative to endogamy across two time periods. Results are based on models that control for age differences, educational differences, and birthplace and language endogamy. Values are sorted by ethnoracial exogamy in 1980. Arrows show the change across the two time periods based on comparable sets of ethnic groups. Results for American Indian/Alaska Native intermarriage are excluded due to sampling variability."}
 coefs_pent %>%
@@ -552,6 +578,12 @@ coefs_pent %>%
   theme_mine()+
   theme(axis.text.y=element_markdown())
 ```
+
+Figure 4 shows the odds of E/SE Asian and Latino ethnic exogamy in comparison to the odds of interracial marriage more broadly. Figure 4 also shows how these odds have changed over time. All results in Figure 4 are from the model that accounts for birthplace and language endogamy. E/SE Asian ethnic exogamy stands out as far more likely than any form of interracial marriage. Latino ethnic exogamy, on the other hand, is comparable in likelihood to several forms of interracial marriage. White/Latino intermarriage was less like likely than Latino ethnic exogamy in 1980, but has increased in frequency substantially. The consequence of this shift is that White/Latino exogamy is roughly as likely as Latino ethnic exogamy in the later time period (NOT QUITE TRUE FOR EXPANDED ETHNIC GROUPS). 
+
+Figure 4 also shows the results for South Asian interracial marriage over time. The results show significant declines in South Asian interracial marriage with all other groups over the time period. These results, however, should probably be viewed with caution. In the earlier time period, the only South Asian group available was "Asian Indian" and research has shown that respondents sometimes confuse the categories of "Asian Indian" and "American Indian" in race responses (CITE CAROLYN). Given the novel character of the "Asian Indian" category in 1980 (CHECK), it is likely that such misreporting has gone down over time. This may contribute to the overall decline in interracial marriage over time, if American Indians are less endogamous, on average, than Asian Indians.^[Although not shown here, I also found that the odds of intermarriage between American Indian/Alaska Natives and South Asians was slightly greater than one (EXACT NUMBER) in 1980 but declined to XX in the later ACS data. This result suggests that such race reporting errors played a greater role in 1980 than the later data.] Nonetheless, the results here do not suggest any particular affinity between South Asians and E/SE Asians in either time period, suggesting that Asian pan-ethnicity occurs within two separate "melting pots."
+
+Figure 4 also documents that the lowest likelihood of intermarriage in both time periods is that between blacks and all other groups, despite some substantial increases in these odds. These results indicate the enduring strength of the black/non-black boundary in the US despite increasing diversity in the overall population. 
 
 ## Specific Affinities
 
