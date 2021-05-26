@@ -587,7 +587,17 @@ Figure 4 also documents that the lowest likelihood of intermarriage in both time
 
 ## Specific Affinities
 
-```{r asian-heat-map, fig.cap="A Caption"}
+The preceding models used a single ethnic exogamy term for each pan-ethnic group such that the odds of ethnic exogamy were assumed to be the same regardless of which specific groups were paired. For example, the odds of ethnic exogamy into a Japanese-Korean union would be the same as those for a Japanese-Filipino union. I now turn to models of the ACS data that relax this assumption and allow the estimation of specific affinities and disaffinities within the matrix of ethnic groups that make up the three pan-ethnic groups.
+
+Fitting such models is actually quite difficult. If I considered every possible combination of ethnicities within pan-Ethnic groups in the ACS data, I would need to replace my three ethnic exogamy terms with 243 group specific parameters. Given that some of these groups are quite small in the dataset, models could not be fit to this fully expanded set, due to issues with sparseness and model convergence. I experimented with the largest possible set of ethnic groups for which I could reliably fit data and found that to include the five E/SE Asian ethnic groups available in the Census 1980 data (Chinese, Filipino, Vietnamese, Korean, and Japanese) and the ten largest Latino groups, with the exception of Hondurans. Because of the small size of non-Asian Indian groups in the South Asian categories I could not fit ethnicity specific models for South Asians.
+
+Figure 5 shows the group-specific odds of ethnic exogamy for the five E/SE Asian ethnic groups, based on these models. I also provide a dendrogram that indicates the relative distance between each of these ethnic groups based on a tree diagram. The dendrogram is calculated by treating the inverse of the odds ratio as a measure of distance. 
+
+Figure 5 shows that there is no social distance between Chinese partners and the other five ethnic groups. In fact, the point estimates suggest that, holding constant language and birthplace endogamy, ethnic exogamy with Chinese partners is more likely than ethnic endogamy. However, none of these odds ratios are statistically distinguishable from zero. Even so, the results indicate that Chinese Americans serve as an important central node of pan-ethnicity in intermarriage, linking a variety of other groups.
+
+The results also suggest little barriers to ethnic exogamy between Japanese and Koreans, possibly reflecting some shared cultural heritage. Filipinos, on the other hand, stand out in terms of their lower rates of ethnic exogamy with the other E/SE Asian groups, although even these odd of intermarriage are relatively high in comparison to both the odds of interracial marriage and Latino ethnic exogamy. DISCUSS LATINO-FILIPINO TERM HERE?
+
+```{r asian-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between particular East and Southeast Asian ethnic groups in ACS 2014-2018 data. Dendrogram on the right is based on hierarchical clustering treating the inverse of these odds ratios as a distance measure and using unweighted average distances. All models control for age differences, education differences, and language and birthplace endogamy."}
 groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
 or <- coefs_extended %>%
   filter(data=="ACS 2014-18, expanded ethnic groups" &
@@ -595,7 +605,7 @@ or <- coefs_extended %>%
            grepl(paste(groups,collapse="|"), variable) &
            !grepl("Black", variable)) %>% #ugly hack, FIXME
   calc_or_matrix()
-hc <- hclust(as.dist(or))
+hc <- hclust(as.dist(or), method = "average")
 or <- or[hc$order, rev(hc$order)]
 
 gg.heat <- ggplot(melt(1/or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
@@ -619,7 +629,9 @@ print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
 print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.68))
 ```
 
-```{r latino-heat-map, fig.cap="A Caption"}
+Figure 6 shows comparable results for the nine largest Latino ethnic groups. Regional distinctions are very apparent in this figure. The nine groups are separated by the hierarchical clustering into South American, Caribbean, and Mexican/Central American groupings. However, there are significant lower odds ratios  between Cubans and Puerto Ricans/Dominicans than between Puerto Ricans and Dominicans themselves.
+
+```{r latino-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between particular Latino ethnic groups in ACS 2014-2018 data. Dendrogram on the right is based on hierarchical clustering treating the inverse of these odds ratios as a distance measure and using unweighted average distances. All models control for age differences, education differences, and language and birthplace endogamy."}
 groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
             "Salvadorian","Colombian","Ecuadorian","Peruvian",
             "Dominican")
@@ -629,7 +641,7 @@ or <- coefs_extended %>%
            grepl(paste(groups,collapse="|"), variable) &
            !grepl("Black", variable)) %>% #ugly hack, FIXME
   calc_or_matrix()
-hc <- hclust(as.dist(or))
+hc <- hclust(as.dist(or), method = "average")
 or <- or[hc$order, rev(hc$order)]
 
 gg.heat <- ggplot(melt(1/or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
@@ -653,8 +665,9 @@ print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
 print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.78))
 ```
 
+The apparent affinity between Dominicans and Puerto Ricans may in part reflect a shared afro-Latino heritage combined with stronger racialization as black within the US (SOME CITATIONS HERE). 
 
-```{r black-exogamy, fig.cap="A Caption"}
+```{r black-exogamy, fig.cap="Latino/Black exogamy patternsby specific Latino ethnic groups. The panel one the left shows change over time for ethnic groups available in Census 1980 data. The panel on the right shows the odds of intermarriage with blacks relative to ethnic endogamy for largest Latino ethnic groups. All models control for age differences, education differences, and language and birthplace endogamy."}
 groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
             "Salvadorian","Colombian","Ecuadorian","Peruvian",
             "Dominican")
@@ -708,3 +721,6 @@ print(gg.blacklatino, vp = viewport(x = 0.75, y = 0.5, width = 0.5, height = 1.0
 
 # Conclusions
 
+
+
+# References
