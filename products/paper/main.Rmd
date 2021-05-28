@@ -593,10 +593,6 @@ Fitting such models is actually quite difficult. If I considered every possible 
 
 Figure 5 shows the group-specific odds of ethnic exogamy for the five E/SE Asian ethnic groups, based on these models. I also provide a dendrogram that indicates the relative distance between each of these ethnic groups based on a tree diagram. The dendrogram is calculated by treating the inverse of the odds ratio as a measure of distance. 
 
-Figure 5 shows that there is no social distance between Chinese partners and the other five ethnic groups. In fact, the point estimates suggest that, holding constant language and birthplace endogamy, ethnic exogamy with Chinese partners is more likely than ethnic endogamy. However, none of these odds ratios are statistically distinguishable from zero. Even so, the results indicate that Chinese Americans serve as an important central node of pan-ethnicity in intermarriage, linking a variety of other groups.
-
-The results also suggest little barriers to ethnic exogamy between Japanese and Koreans, possibly reflecting some shared cultural heritage. Filipinos, on the other hand, stand out in terms of their lower rates of ethnic exogamy with the other E/SE Asian groups, although even these odd of intermarriage are relatively high in comparison to both the odds of interracial marriage and Latino ethnic exogamy. DISCUSS LATINO-FILIPINO TERM HERE?
-
 ```{r asian-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between particular East and Southeast Asian ethnic groups in ACS 2014-2018 data. Dendrogram on the right is based on hierarchical clustering treating the inverse of these odds ratios as a distance measure and using unweighted average distances. All models control for age differences, education differences, and language and birthplace endogamy."}
 groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
 or <- coefs_extended %>%
@@ -629,7 +625,9 @@ print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
 print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.68))
 ```
 
-Figure 6 shows comparable results for the nine largest Latino ethnic groups. Regional distinctions are very apparent in this figure. The nine groups are separated by the hierarchical clustering into South American, Caribbean, and Mexican/Central American groupings. However, there are significant lower odds ratios  between Cubans and Puerto Ricans/Dominicans than between Puerto Ricans and Dominicans themselves.
+Figure 5 shows that there is no social distance between Chinese partners and the other five ethnic groups. In fact, the point estimates suggest that, holding constant language and birthplace endogamy, ethnic exogamy with Chinese partners is more likely than ethnic endogamy. However, none of these odds ratios are statistically distinguishable from zero. Even so, the results indicate that Chinese Americans serve as an important central node of pan-ethnicity in intermarriage, linking a variety of other groups.
+
+The results also suggest little barriers to ethnic exogamy between Japanese and Koreans, possibly reflecting some shared cultural heritage. Filipinos, on the other hand, stand out in terms of their lower rates of ethnic exogamy with the other E/SE Asian groups, although even these odd of intermarriage are relatively high in comparison to both the odds of interracial marriage and Latino ethnic exogamy. DISCUSS LATINO-FILIPINO TERM HERE?
 
 ```{r latino-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between particular Latino ethnic groups in ACS 2014-2018 data. Dendrogram on the right is based on hierarchical clustering treating the inverse of these odds ratios as a distance measure and using unweighted average distances. All models control for age differences, education differences, and language and birthplace endogamy."}
 groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
@@ -665,7 +663,12 @@ print(gg.heat, vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
 print(gg.dendro, vp = viewport(x = 0.9, y = 0.57, width = 0.2, height = 0.78))
 ```
 
-The apparent affinity between Dominicans and Puerto Ricans may in part reflect a shared afro-Latino heritage combined with stronger racialization as black within the US (SOME CITATIONS HERE). 
+Figure 6 shows comparable results for the nine largest Latino ethnic groups. The most notable feature of this figure is that ethnic affinities tend to cluster by region, with higher odds of intermarriage within the three groups of South American, Caribbean, and Mexican/Central American ethnicities. However, within the Caribbean group, Cubans are somewhat of an outlier, with significantly lower odds of intermarriage with Puerto Ricans and Domincans than between Puerto Ricans and Dominicans themselves.
+
+Overall, the odds ratios in Figure 6 are much lower than those in Figure 5, reflecting the overall lower ethnic exogamy among Latino ethnic groups. The only case with no evidence of barriers to ethnic intermarriag was for Salvadorian and Guatemalans, where the estimated odds ratio is close to one. 
+
+
+The second highest odds ratio in Figure 6 is for Puerto Ricans and Domincans, suggesting a relatively high affinity between these groups among Latino ethnic groups. This apparent affinity may in part reflect a shared Afro-Latino heritage combined with stronger racialization as black within the US (SOME CITATIONS HERE). To understand the role of Afro-Latino identity more broadly in the data, I included in the models parameters for intermarriage between non-Latino Blacks and each of the nine Latino ethnic groups shown in Figure 6. I also estimated a similar model for the three Latino groups in the 1980 Census data. The results of these models are shown in Figure 7.
 
 ```{r black-exogamy, fig.cap="Latino/Black exogamy patternsby specific Latino ethnic groups. The panel one the left shows change over time for ethnic groups available in Census 1980 data. The panel on the right shows the odds of intermarriage with blacks relative to ethnic endogamy for largest Latino ethnic groups. All models control for age differences, education differences, and language and birthplace endogamy."}
 groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
@@ -708,7 +711,7 @@ gg.blackchange <- coefs_extended %>%
   scale_y_continuous(limits=c(0,1.1), expand=c(0.01,0))+
   scale_color_manual(values=my_palette)+
   labs(x=NULL, 
-       y="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy",
+       y="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy in ACS data",
        color="Data source")+
   theme_mine()+
   guides(color=guide_legend(ncol=1))+
@@ -718,6 +721,10 @@ grid.newpage()
 print(gg.blackchange, vp = viewport(x = 0.25, y = 0.5, width = 0.5, height = 1.0))
 print(gg.blacklatino, vp = viewport(x = 0.75, y = 0.5, width = 0.5, height = 1.0))
 ```
+
+The left panel of Figure 7 shows the change over time in the odds of Black/Latino intermarriage for thre three Latino ethnic groups present in the Census 1980 data. Although the odds increased for all three groups, the increase was modest for both Cubans and Mexicans, while substantial for Puerto Ricans. Puerto Ricans were already the most likely Latino group to intermarry blacks in 1980 and the relative odds increased to about 0.25 to 1 by 2014-2018. Those odds are somewhat lower than the odds of marrying other Latino groups which ranged from abourt 0.3 to 0.4, as shown in Figure 6. Nonetheless the odds of outmarriage to non-Latino Blacks are nearly as high for Puerto Ricans as outmarriage to some Latino ethnic groups. 
+
+The right panel of Figure 7, shows the odds ratio of intermarriage with non-Latino blacks for all nine Latino ethnic groups in the ACS data. The figure clearly shows two groupings. Puerto Ricans and Dominicans have odds of black intermarriage that are roughly double the odds for the other seven Latino groups. Although the relative size of the Afrodescendant population in Latin American countries is difficult to measure, these differences may reflect the much higher prevalence of Afrodescent in Puerto Rican and Dominican populations and the racialization of members of these populations as black within the US. In this regard, the relatively low rate of intermarriage among Cubans stands out.
 
 # Conclusions
 
