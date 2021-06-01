@@ -304,6 +304,38 @@ diversity_pan <- diversity_ethnic %>%
 
 # Background
 
+Studies that define and explain pan-ethnicity more broadly or in other areas
+
+* Lopez and Espiritu, 1990. (NEED TO READ) One of the canonical works along with the book by Espiritu. Unfortunately, I cannot seem to get a PDF of the ERS article! Might have to actually go into library for this one (and the book).
+* Okamoto and Mora, 2014. (NEED TO READ) An ARS article. Should be good.
+* Mora, 2014. A good article on the growth of pan-ethnicity among Latinos through cross-field effects. Not sure how directly relevant it will be.
+* Wimmer, 2008. Both his AJS and ERS articles as well as book will ge useful in framing pan-ethnicity as a "topographical" move of boundary expansion. 
+* Kim and White (2010). (NEED TO READ) Looks at pan-ethnicity through residential segregation. Finds more pan-ethnicity among Latinos than Asians, which contrasts with the findings here.
+* Lee 2019. (NEED TO READ) Focuses specifically on Asian Americans.
+
+Studies on South Asian Distinctiveness in the US:
+
+* Morning 2001. (NEED TO READ)
+* Schachter, 2014. (NEED TO READ)
+
+
+Studies that specifically look at pan-ethnic intermarriage: 
+
+* Qian, Blair, and Ruf (NEED TO READ). 1990 Census data. 
+* Rosenfeld 2001. (NEED TO READ) The most cited and a *Demography* paper. Need to re-read to get a better understanding of methods and results. 
+* Qian and Cobas, 2004. (NEED TO READ) Only looks at Latinos, uses 1990 Census data. Uses the race of Latinos as a variable, something he and others do in later papers - not a big fan of that approach.
+* Fu 2007. He is using long-form 1990 Census data and finds substantial pan-ethnicity among Asians, but less so for Latinos. Like my results, he finds Latino/White intermarriage more likely than Latino ethnic exogamy. He accounts for Census division to deal with regional issues. Only includes small set of ethnicities.
+* Okamoto, 2007. (NEED TO READ) Looks specifically at Asian pan-ethnic intermarriage. 
+* Qian, Glick, and Batson, 2012. (NEED TO READ) Uses Census 2000 data to look at four groups of Chinese, Filipinos, Mexicans, and Puerto Ricans.
+* Bohra-Mishra and Massey, 2014. (NEED TO READ) Can't make heads of tails of the tables, but I *think* this one looks specifically at pan-ethnic intermarriage, among other things.
+* Smith 2017. (NEED TO READ) This paper looks a little odd, but it does cover pan-ethnic intermarriage among other things. Its also making a broader theoretical argument about the meaning of pan-ethnicity.
+* Qian, Lichter, and Tumin, 2018. (NEED TO READ) Looks at intermarriage among Latinos, and includes measures on pan-ethnic vs co-ethnic intermarriage.
+
+Other Stuff
+
+* Kao and Joyner 2006. (NEED TO READ) Looks at pan-ethnicity in adolescent friendships.
+
+
 # Data and Methods
 
 The data for this analysis are derived from the microdata sample of the 1980 US Census and the American Community Survey (ACS) for 2014-2018. The ACS is an annual 1-in-100 survey of the United States population, conducted by the United States Census Bureau. The 1980 US Census is the last Census to include information about marriage timing. Information about marriage timing was added to the ACS in 2008. To increase sample size for smaller ethnoracial categories, I pool five years of ACS data from 2014-2018. Both data sources were extracted from the Integrated Public Use Microdata Series (IPUMS) system [@ruggles_ipums_2020].
