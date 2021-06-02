@@ -312,6 +312,7 @@ Studies that define and explain pan-ethnicity more broadly or in other areas
 * Wimmer, 2008. Both his AJS and ERS articles as well as book will ge useful in framing pan-ethnicity as a "topographical" move of boundary expansion. 
 * Kim and White (2010). (NEED TO READ) Looks at pan-ethnicity through residential segregation. Finds more pan-ethnicity among Latinos than Asians, which contrasts with the findings here.
 * Lee 2019. (NEED TO READ) Focuses specifically on Asian Americans.
+* Kibria, 1997. (NEED TO READ) Qualitative work on pan-ethnicity among Asian Americans centered around issues of intermarriage - I think some good arguments about how racialization affects pan-ethnicity. 
 
 Studies on South Asian Distinctiveness in the US:
 
@@ -321,9 +322,10 @@ Studies on South Asian Distinctiveness in the US:
 
 Studies that specifically look at pan-ethnic intermarriage: 
 
-* Qian, Blair, and Ruf (NEED TO READ). 1990 Census data. 
-* Rosenfeld 2001. (NEED TO READ) The most cited and a *Demography* paper. Need to re-read to get a better understanding of methods and results. 
-* Qian and Cobas, 2004. (NEED TO READ) Only looks at Latinos, uses 1990 Census data. Uses the race of Latinos as a variable, something he and others do in later papers - not a big fan of that approach.
+* Shinagawa and Pang, 1996. (NEED TO READ). Cannot get PDF!
+* Qian, Blair, and Ruf, 2001. 1990 Census data. They use a 20-34 age range to restrict marriages and also remove couples where one person migrated between 1985 and 1990 to reduce the effect of pre-immigration marriages. They use the groups of Chinese, Korean, Japanese, Filipino, Southeast Asian, and Asian Indian (include Pakistani, Sri Lankan, and Bangladeshi). The results generally show that interethnic marriage is more common than marriage with whites, but also varies significantly by ethnicity, as does intermarriage with whites. They find that ethnic exogamy with Japanese Americans is most common and since this group is the most "assimilated" they see this as evidence of pan-ethnic assimilation. They also split their results. They also interact their terms with nativity and find that nativity increases both interracial and interethnic marriage. Also some good references here to work on how racialization affects pan-ethnicity for Asian Americans (mostly Espiritu 1992).
+* Rosenfeld 2001. One of the most cited and a *Demography* paper. Rosenfeld's solution to the problem of uneven settlement patterns by ethnicity is to look at specific metropolitan areas. His main focus is Lost Angeles where he can jointly examine Asian and Latino pan-ethnicity, but he also does this for a few other cities and finds that the general results are similar. The comparison in LA is Mexican vs. Other Hispanic and Japanese vs. Other Asian, which I think is a bit crude. The log-linear models are also a bit tortured. However, the results are largely consistent with what I find in many ways. He finds that among the US born, Asian pan-ethnicity is stronger than Latino pan-ethnicity which he points out highlights the role racialization plays as opposed to cultural similarities among Latinos. Related to this, his other big finding is that pan-ethnic tendencies go *down* among native-born Latinos, which he attributes to the loss of Spanish as a pan-ethnic unifier. I don't see this so much in my data, because birthplace and language endogamy don't do much to shift over pan-ethnicity among Latinos.
+* Qian and Cobas, 2004. So this article is basically Qian, Blair, and Ruf's approach applied to Latinos rather than Asians. They use the Latino groups of Mexicans, Puerto Ricans, Cubans, and "Central Americans." However, it is complicated by the strange decision to categorize Latinos by their racial id, despite many concerns about the validity of this measure for Latinos. They generally tend to find that among US-born non-white Latinos, it is more likely to marry a Latino of a different national origin than a non-Latino white. This is less clear for "White" Latinos, whatever that means. Like the other article, the overall odds of ethnic exogamy here are much lower than what I am getting for 1980 data, and I also think much lower than Fu's estimates with the same data. This could reflect the lack of adjusting for geographic specificity. In 1990, this would have had an important effect because of big differences in the settlement patterns of Mexicans, Puerto Ricans, and Cubans. 
 * Fu 2007. He is using long-form 1990 Census data and finds substantial pan-ethnicity among Asians, but less so for Latinos. Like my results, he finds Latino/White intermarriage more likely than Latino ethnic exogamy. He accounts for Census division to deal with regional issues. Only includes small set of ethnicities.
 * Okamoto, 2007. (NEED TO READ) Looks specifically at Asian pan-ethnic intermarriage. 
 * Qian, Glick, and Batson, 2012. (NEED TO READ) Uses Census 2000 data to look at four groups of Chinese, Filipinos, Mexicans, and Puerto Ricans.
@@ -334,6 +336,7 @@ Studies that specifically look at pan-ethnic intermarriage:
 Other Stuff
 
 * Kao and Joyner 2006. (NEED TO READ) Looks at pan-ethnicity in adolescent friendships.
+* Hwang and Saenz, 1990. This article is seminal in its statement of the problem of including migrants in estimates of intermarriage without knowledge of where the union was formed. They show it upwardly biases rates of endogamy with examples of several Asian American groups.
 
 
 # Data and Methods
