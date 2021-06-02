@@ -345,7 +345,9 @@ add_vars <- function(markets) {
           race_exog_pent=="South Asian.South Asian" |
           race_exog_pent=="Latino.Latino" |
           race_exog_pent=="Black.Latino" |
-          race_exog_pent=="Black.E&SE Asian" ~ as.character(race_exog_full),
+          race_exog_pent=="Black.E&SE Asian" |
+          race_exog_pent=="White.Latino" |
+          race_exog_pent=="White.E&SE Asian"~ as.character(race_exog_full),
         TRUE ~ as.character(race_exog_pent)
       )
     )
