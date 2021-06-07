@@ -894,14 +894,14 @@ heatmap_ethnic <- function(groups, model_name, y=0.6, height=0.68) {
     filter(data=="ACS 2014-18, expanded ethnic groups" &
              model==model_name &
              grepl(paste(groups,collapse="|"), variable) &
-             !grepl("Black", variable)) %>% #ugly hack, FIXME
+             !grepl("Black|White", variable)) %>% #ugly hack, FIXME
     calc_or_matrix()
-  hc <- hclust(as.dist(or))
-  or <- or[hc$order, rev(hc$order)]
+  hc <- hclust(as.dist(or), method = "average")
+  or <- 1/or[hc$order, rev(hc$order)]
   
   gg.heat <- ggplot(melt(or, na.rm=TRUE), aes(Var2, Var1, fill = value))+
     geom_tile(color = NA)+
-    scale_fill_gradient2(low = "#276419", high = "#8e0152", mid = "#f7f7f7", 
+    scale_fill_gradient2(high = "#276419", low = "#8e0152", mid = "#f7f7f7", 
                          midpoint = 1, limit = c(0, max(or)),
                          name="odds ratio")+
     geom_text(aes(label=paste(round(or,2))))+
@@ -1158,6 +1158,17 @@ coefs_extended %>%
 ```
 
 Less variation in both forms of exogamy for Asian ethnic groups than for Latino groups. Odds of intermarriage with blacks is much lower than with whites. White exogamy is lower than for Latinos. 
+
+```{r}
+#create a temporary dataset of interethnic patterns
+
+
+coefs_extended %>%
+  filter(grepl(paste(asian_groups,collapse="|"), variable) & 
+           grepl("Black|White", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups")
+```
 
 ```{r black-asian-exog-change}
 coefs_extended %>%
