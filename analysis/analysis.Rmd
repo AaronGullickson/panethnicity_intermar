@@ -1056,6 +1056,53 @@ coefs_extended %>%
 
 Significant variation in intermarriage with whites by Latino ethnic group. Intermarriage with blacks however basically falls into two groups: Dominicans and Puerto Ricans vs. everyone else.
 
+```{r trying-something, eval=FALSE}
+panethnic <- coefs_extended %>%
+  filter(grepl(paste(c(latino_groups,asian_groups),collapse="|"), variable) & 
+           !grepl("Black|White", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  select(variable, coef)
+
+#convert this to simple dataframe of all the coefs for each ethnic group
+panethnic <- bind_rows(lapply(c(latino_groups,asian_groups), function(x) {
+  return(tibble(ethnicity=x, 
+                coef= panethnic$coef[str_detect(panethnic$variable, x)]))
+}))
+panethnic$group <- factor(panethnic$ethnicity %in% asian_groups,
+                          levels=c(FALSE,TRUE), labels=c("Latino","E&SE ASian"))
+
+intermar <- coefs_extended %>%
+  filter(grepl(paste(c(latino_groups,asian_groups), collapse="|"), variable) & 
+           grepl("Black|White", variable) & 
+           model=="+ both" & 
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  mutate(ethnicity=str_remove(variable, "Black\\/|\\/White"),
+         race=factor(str_detect(variable, "Black\\/"),
+                     level=c(FALSE,TRUE), labels=c("White","Black")),
+         group=factor(ethnicity %in% asian_groups,
+                      levels=c(FALSE,TRUE), labels=c("Latino","E&SE ASian"))) %>%
+  select(ethnicity, group, race, coef)
+
+ggplot(intermar, 
+       aes(y=reorder(ethnicity, coef, max), x=exp(coef)))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_point(aes(color=race), size=3)+
+  geom_point(data=panethnic, alpha=0.5)+
+  scale_color_manual(values=my_palette)+
+  scale_x_continuous(limits=c(0,1.2))+
+  facet_wrap(~group, scales = "free_y")+
+  labs(y=NULL, 
+       x="Odds ratio of interracial marriage relative to ethnic endogamy",
+       color="Interracial partner",
+       title="Odds ratio of interracial marriage",
+       subtitle="ethnic exogamy terms shown in grey",
+       caption="ACS Data, 2014-2018")+
+  theme_bw()+
+  theme(legend.position = "bottom")
+```
+
 How do these odds compare to the odds of Latino ethnic exogamy for Puerto Ricans and Dominicans?
 
 ```{r puerto-rican-exog-lolly}
@@ -1158,17 +1205,6 @@ coefs_extended %>%
 ```
 
 Less variation in both forms of exogamy for Asian ethnic groups than for Latino groups. Odds of intermarriage with blacks is much lower than with whites. White exogamy is lower than for Latinos. 
-
-```{r}
-#create a temporary dataset of interethnic patterns
-
-
-coefs_extended %>%
-  filter(grepl(paste(asian_groups,collapse="|"), variable) & 
-           grepl("Black|White", variable) & 
-           model=="+ both" & 
-           data=="ACS 2014-18, expanded ethnic groups")
-```
 
 ```{r black-asian-exog-change}
 coefs_extended %>%

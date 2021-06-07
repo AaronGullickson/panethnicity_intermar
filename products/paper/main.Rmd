@@ -630,12 +630,12 @@ Fitting such models is actually quite difficult. If I considered every possible 
 Figure 5 shows the group-specific odds of ethnic exogamy for the five E/SE Asian ethnic groups, based on these models. I also provide a dendrogram that indicates the relative distance between each of these ethnic groups based on a tree diagram. The dendrogram is calculated by treating the inverse of the odds ratio as a measure of distance. 
 
 ```{r asian-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between particular East and Southeast Asian ethnic groups in ACS 2014-2018 data. Dendrogram on the right is based on hierarchical clustering treating the inverse of these odds ratios as a distance measure and using unweighted average distances. All models control for age differences, education differences, and language and birthplace endogamy."}
-groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
+asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
 or <- coefs_extended %>%
   filter(data=="ACS 2014-18, expanded ethnic groups" &
            model=="+ both" &
-           grepl(paste(groups,collapse="|"), variable) &
-           !grepl("Black", variable)) %>% #ugly hack, FIXME
+           grepl(paste(asian_groups,collapse="|"), variable) &
+           !grepl("Black|White", variable)) %>% #ugly hack, FIXME
   calc_or_matrix()
 hc <- hclust(as.dist(or), method = "average")
 or <- or[hc$order, rev(hc$order)]
@@ -666,14 +666,14 @@ Figure 5 shows that there is no social distance between Chinese partners and the
 The results also suggest little barriers to ethnic exogamy between Japanese and Koreans, possibly reflecting some shared cultural heritage. Filipinos, on the other hand, stand out in terms of their lower rates of ethnic exogamy with the other E/SE Asian groups, although even these odd of intermarriage are relatively high in comparison to both the odds of interracial marriage and Latino ethnic exogamy. DISCUSS LATINO-FILIPINO TERM HERE?
 
 ```{r latino-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between particular Latino ethnic groups in ACS 2014-2018 data. Dendrogram on the right is based on hierarchical clustering treating the inverse of these odds ratios as a distance measure and using unweighted average distances. All models control for age differences, education differences, and language and birthplace endogamy."}
-groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
+latino_groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
             "Salvadorian","Colombian","Ecuadorian","Peruvian",
             "Dominican")
 or <- coefs_extended %>%
   filter(data=="ACS 2014-18, expanded ethnic groups" &
            model=="+ both" &
-           grepl(paste(groups,collapse="|"), variable) &
-           !grepl("Black", variable)) %>% #ugly hack, FIXME
+           grepl(paste(latino_groups,collapse="|"), variable) &
+           !grepl("Black|White", variable)) %>% #ugly hack, FIXME
   calc_or_matrix()
 hc <- hclust(as.dist(or), method = "average")
 or <- or[hc$order, rev(hc$order)]
@@ -704,58 +704,50 @@ Figure 6 shows comparable results for the nine largest Latino ethnic groups. The
 Overall, the odds ratios in Figure 6 are much lower than those in Figure 5, reflecting the overall lower ethnic exogamy among Latino ethnic groups. The only case with no evidence of barriers to ethnic intermarriag was for Salvadorian and Guatemalans, where the estimated odds ratio is close to one. 
 
 
-The second highest odds ratio in Figure 6 is for Puerto Ricans and Domincans, suggesting a relatively high affinity between these groups among Latino ethnic groups. This apparent affinity may in part reflect a shared Afro-Latino heritage combined with stronger racialization as black within the US (SOME CITATIONS HERE). To understand the role of Afro-Latino identity more broadly in the data, I included in the models parameters for intermarriage between non-Latino Blacks and each of the nine Latino ethnic groups shown in Figure 6. I also estimated a similar model for the three Latino groups in the 1980 Census data. The results of these models are shown in Figure 7.
+The second highest odds ratio in Figure 6 is for Puerto Ricans and Domincans, suggesting a relatively high affinity between these groups among Latino ethnic groups. This apparent affinity may in part reflect a shared Afro-Latino heritage combined with stronger racialization as black within the US (SOME CITATIONS HERE). To understand the role of Afro-Latino identity more broadly in the data, I included in the models parameters for intermarriage between non-Latino Blacks and each of the nine Latino ethnic groups shown in Figure 6. I also estimated a similar model for the three Latino groups in the 1980 Census data. The results of these models are shown in Figure 7. (NEW LANGUAGE NEEDED FOR NEW FIGURE 7)
 
-```{r black-exogamy, fig.cap="Latino/Black exogamy patternsby specific Latino ethnic groups. The panel one the left shows change over time for ethnic groups available in Census 1980 data. The panel on the right shows the odds of intermarriage with blacks relative to ethnic endogamy for largest Latino ethnic groups. All models control for age differences, education differences, and language and birthplace endogamy."}
-groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
-            "Salvadorian","Colombian","Ecuadorian","Peruvian",
-            "Dominican")
-gg.blacklatino <- coefs_extended %>%
-  filter(grepl(paste(groups,collapse="|"), variable) & 
-           grepl("Black", variable) & 
+```{r racial-exogamy, fig.cap="Odds of interracial marriage with Whites and Blacks for major Latino and E&SE Asian ethnic groups. For reference, odds of ethnic exogamy to other major ethnic groups are shown by small grey dots. All models control for age differences, education differences, and language and birthplace endogamy."}
+panethnic <- coefs_extended %>%
+  filter(grepl(paste(c(latino_groups,asian_groups),collapse="|"), variable) & 
+           !grepl("Black|White", variable) & 
            model=="+ both" & 
            data=="ACS 2014-18, expanded ethnic groups") %>%
-  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
-  geom_vline(xintercept = 0, color="grey20", linetype=1)+
-  geom_vline(xintercept = 1, color="grey20", linetype=3)+
-  geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
-                   position=position_dodgev(height=0.5))+
-  scale_x_continuous(limits=c(0,1))+
-  labs(y=NULL, 
-       x="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy")+
-  theme_mine()+
-  theme(axis.title = element_text(size=8))
+  select(variable, coef)
 
-groups <- c("Mexican","Puerto Rican","Cuban")
-gg.blackchange <- coefs_extended %>%
-  filter(grepl(paste(groups,collapse="|"), variable) & 
-           grepl("Black", variable) & 
+#convert this to simple dataframe of all the coefs for each ethnic group
+panethnic <- bind_rows(lapply(c(latino_groups,asian_groups), function(x) {
+  return(tibble(ethnicity=x, 
+                coef= panethnic$coef[str_detect(panethnic$variable, x)]))
+}))
+panethnic$group <- factor(panethnic$ethnicity %in% asian_groups,
+                          levels=c(FALSE,TRUE), labels=c("Latino","E&SE ASian"))
+
+intermar <- coefs_extended %>%
+  filter(grepl(paste(c(latino_groups,asian_groups), collapse="|"), variable) & 
+           grepl("Black|White", variable) & 
            model=="+ both" & 
-           data!="ACS 2014-18, expanded ethnic groups") %>%
-  ggplot(aes(x=variable, y=exp(coef)))+  
-  geom_hline(yintercept = 1, color="grey20", linetype=3)+
-  geom_point(aes(color=data), size=2)+
-  geom_segment(data=subset(arrows_extended, 
-                           grepl(paste(groups,collapse="|"), variable) &
-                             grepl("Black", variable)), 
-               aes(x=variable, xend=variable, 
-                   y=exp(coef.census), yend=exp(coef.acs)),
-               color = "grey30",
-               arrow = arrow(length = unit(0.03, "npc")),
-               color="grey60")+
-  coord_flip()+
-  scale_y_continuous(limits=c(0,1.1), expand=c(0.01,0))+
-  scale_color_manual(values=my_palette)+
-  labs(x=NULL, 
-       y="Odds ratio of black/Latino intermarriage\nrelative to ethnoracial endogamy in ACS data",
-       color="Data source")+
-  theme_mine()+
-  guides(color=guide_legend(ncol=1))+
-  theme(axis.title = element_text(size=8))
+           data=="ACS 2014-18, expanded ethnic groups") %>%
+  mutate(ethnicity=str_remove(variable, "Black\\/|\\/White"),
+         race=factor(str_detect(variable, "Black\\/"),
+                     level=c(FALSE,TRUE), labels=c("White","Black")),
+         group=factor(ethnicity %in% asian_groups,
+                      levels=c(FALSE,TRUE), labels=c("Latino","E&SE ASian"))) %>%
+  select(ethnicity, group, race, coef)
 
-grid.newpage()
-print(gg.blackchange, vp = viewport(x = 0.25, y = 0.5, width = 0.5, height = 1.0))
-print(gg.blacklatino, vp = viewport(x = 0.75, y = 0.5, width = 0.5, height = 1.0))
+ggplot(intermar, 
+       aes(y=reorder(ethnicity, coef, max), x=exp(coef)))+
+  geom_vline(xintercept = 0, color="grey70", linetype=1)+
+  geom_vline(xintercept = 1, color="grey70", linetype=3)+
+  geom_point(aes(color=race), size=3)+
+  geom_point(data=panethnic, alpha=0.5)+
+  scale_color_manual(values=my_palette)+
+  scale_x_continuous(limits=c(0,1.2))+
+  facet_wrap(~group, scales = "free_y")+
+  labs(y=NULL, 
+       x="Odds ratio of interracial marriage relative to ethnic endogamy",
+       color="Interracial partner")+
+  theme_mine()+
+  theme(legend.position = "bottom")
 ```
 
 The left panel of Figure 7 shows the change over time in the odds of Black/Latino intermarriage for thre three Latino ethnic groups present in the Census 1980 data. Although the odds increased for all three groups, the increase was modest for both Cubans and Mexicans, while substantial for Puerto Ricans. Puerto Ricans were already the most likely Latino group to intermarry blacks in 1980 and the relative odds increased to about 0.25 to 1 by 2014-2018. Those odds are somewhat lower than the odds of marrying other Latino groups which ranged from about 0.3 to 0.4, as shown in Figure 6. Nonetheless the odds of outmarriage to non-Latino Blacks are nearly as high for Puerto Ricans as outmarriage to some Latino ethnic groups. 
