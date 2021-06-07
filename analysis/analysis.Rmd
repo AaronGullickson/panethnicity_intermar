@@ -1022,28 +1022,39 @@ coefs_extended %>%
 
 There have been litte change over time in specific latino ethnic exogamy among the three groups where we can track change. Some evidence of slight increases for Cuban/Puerto Rican and Cuban/Mexican, but none for Mexican/Puerto Rican.
 
-### Black/Latino Ethnic Exogamy
+## Interracial Marriage by Ethnicity
 
-```{r black-latino-exog}
+I look specifically here at the odds of Asian and Latino intermarriage with whites and blacks by ethnic group.
+
+### Latino Interracial Marriage
+
+```{r wb-latino-exog}
 coefs_extended %>%
   filter(grepl(paste(latino_groups,collapse="|"), variable) & 
-           grepl("Black", variable) & 
+           grepl("Black|White", variable) & 
            model=="+ both" & 
            data=="ACS 2014-18, expanded ethnic groups") %>%
-  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
+  mutate(ethnicity=str_remove(variable, "Black\\/|\\/White"),
+         race=factor(str_detect(variable, "Black\\/"),
+                     level=c(FALSE,TRUE), labels=c("White","Black"))) %>%
+  select(ethnicity, race, coef) %>%
+  ggplot(aes(y=reorder(ethnicity, coef, max), x=exp(coef), color=race))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
                    position=position_dodgev(height=0.5))+
+  scale_color_manual(values=my_palette)+
   scale_x_continuous(limits=c(0,1))+
   labs(y=NULL, 
-       x="Odds ratio of union formation for black and Latino partner relative to endogamy",
-       title="Odds ratio of Black/Latino exogamy by Latino ethnic group")+
+       x="Odds ratio of union formation for Latino interracial marriage relative to ethnic endogamy",
+       color="Interracial partner",
+       title="Odds ratio of Latino interracial marriage to whites and blacks",
+       subtitle="ACS Data")+
   theme_bw()+
   theme(legend.position = "right")
 ```
 
-The results here are pretty telling. There are basically two groups, Puerto Ricans and Dominicans and everyone else. Puerto Ricans and Dominicans are significantly more likely to intermarry with Blacks than all of the other groups. So some evidence of different patterns for groups that are more Afro-Latino in make-up.
+Significant variation in intermarriage with whites by Latino ethnic group. Intermarriage with blacks however basically falls into two groups: Dominicans and Puerto Ricans vs. everyone else.
 
 How do these odds compare to the odds of Latino ethnic exogamy for Puerto Ricans and Dominicans?
 
@@ -1091,8 +1102,6 @@ coefs_extended %>%
 
 The odds of outmarrying to a Black partner are still lower than exogamy to most other Latino ethnic groups although they are relatively comparable for many cases.
 
-#### Changes over time
-
 ```{r black-latino-exog-change}
 coefs_extended %>%
   filter(grepl(paste(latino_groups1980,collapse="|"), variable) & 
@@ -1120,30 +1129,35 @@ coefs_extended %>%
 
 In 1980, the odds for all three groups were very similar. Black/Puerto Rican intermarriage has increased substantially over time, in contrast to the other cases. Evidence of increasing racialization of Puerto Ricans (and probably Dominicans) as black over time.
 
-### Black/Asian Ethnic Exogamy
+### Asian Interracial Marriage
 
-```{r black-asian-exog}
+```{r wb-asian-exog}
 coefs_extended %>%
   filter(grepl(paste(asian_groups,collapse="|"), variable) & 
-           grepl("Black", variable) & 
+           grepl("Black|White", variable) & 
            model=="+ both" & 
            data=="ACS 2014-18, expanded ethnic groups") %>%
-  ggplot(aes(y=reorder(variable, coef, max), x=exp(coef)))+
+  mutate(ethnicity=str_remove(variable, "Black\\/|\\/White"),
+         race=factor(str_detect(variable, "Black\\/"),
+                     level=c(FALSE,TRUE), labels=c("White","Black"))) %>%
+  select(ethnicity, race, coef) %>%
+  ggplot(aes(y=reorder(ethnicity, coef, max), x=exp(coef), color=race))+
   geom_vline(xintercept = 0, color="grey70", linetype=1)+
   geom_vline(xintercept = 1, color="grey70", linetype=3)+
   geom_pointrangeh(aes(xmin=0, xmax=exp(coef)),
                    position=position_dodgev(height=0.5))+
+  scale_color_manual(values=my_palette)+
   scale_x_continuous(limits=c(0,1))+
   labs(y=NULL, 
-       x="Odds ratio of union formation for black and Latino partner relative to endogamy",
-       title="Odds ratio of Black/Latino exogamy by Latino ethnic group")+
+       x="Odds ratio of union formation for Asian interracial marriage relative to ethnic endogamy",
+       color="Interracial partner",
+       title="Odds ratio of Asian interracial marriage to whites and blacks",
+       subtitle="ACS Data")+
   theme_bw()+
   theme(legend.position = "right")
 ```
 
-Not a lot going on here. Its very low for all groups and no particular groups standout.
-
-#### Changes over time
+Less variation in both forms of exogamy for Asian ethnic groups than for Latino groups. Odds of intermarriage with blacks is much lower than with whites. White exogamy is lower than for Latinos. 
 
 ```{r black-asian-exog-change}
 coefs_extended %>%
@@ -1173,7 +1187,6 @@ coefs_extended %>%
 Not a lot of change over time. The story is one of consistently low odds suggesting a very strong and persistent boundary between Asian ethnicities and Blackness.
 
 ### Filipino/Latino Exogamy
-
 
 ```{r flipino-latino-exog}
 #I need to grab this parameter from the original model summaries because it is not part of coefs_extended. Also, remember that this parameter is in addition to a general E&SE Asian/Latino parameter, so need to add them up to get the full effect.
