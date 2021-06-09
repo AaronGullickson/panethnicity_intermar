@@ -302,7 +302,20 @@ diversity_pan <- diversity_ethnic %>%
 
 # Introduction
 
+1. Scholars use patterns of intermarriage to understand the salience of boundaries that define groups. One area of research that has developed in the period since resurgent migration to the US has been panethnic intermarriage among Latino and Asian ethnic/nationality groups.
+2. Why is pan-ethnicity important? Racial and ethnic categories are not necessarily stable, fixed, or primordial. The categories of white, black, and American Indian have all developed through the consolidation of smaller units of identification. Understanding how such processes are playing out for contemporary Asian and Latino ethnic groups informs us about how political and social boundaries might shift in the future.
+3. Prior work has been hampered by two difficulties, one data-based and the other conceptual.
+    1. Lack of information on the timing of marriage makes it difficult to capture information on recent marriages and makes it difficult to identify immigrants married abroad. 
+    2. Conceptually, much of the literature has framed Asian and Latino intermarriage around issues of assimilation and the distinction between the native-born and immigrant population within each ethnic group has been important but addressed in multiple ways. Pan-ethnicity has sometimes been characterized as a form of "selective acculturation." I argue instead that pan-ethnicity should be considered as a distinct process of boundary expansion (Wimmer). Processes of assimilation and acculturation affect our observed estimates of pan-ethnicity due to birthplace and language endogamy, but birthplace and language endogamy are not intrinsic to pan-ethnicity itself. 
+4. In this paper, I address these difficulties. I address the data issue by comparing data from recent ACS to Census 1980 data both of which provide marriage duration and thus are able to more cleanly capture recent marriages within the US to analyze the question. I address the conceptual problem by use of a counterfactual marriage model that allows me to estimate pan-ethnic tendencies among Asiand and Latino ethnic groups, while accounting for birthplace and language endogamy.
+5. Tease results.
+
+
 # Background
+
+## What is Pan-Ethnicity
+
+## Pan-Ethnicity in Marriage
 
 # Data and Methods
 
