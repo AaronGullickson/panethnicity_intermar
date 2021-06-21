@@ -9,7 +9,8 @@
 packages = c("here","readr","ggplot2","texreg","devtools","dplyr","tibble",
              "reshape2", "survival","knitr","ggstance", "parallel",
              "ggdendro","grid","tidyr","tibble","RColorBrewer","forcats",
-             "knitr","stringr")
+             "knitr","stringr","tigris","USAboundaries","tmap","tmaptools",
+             "grid","sf")
 
 package.check <- lapply(packages, FUN = function(x) {
   if (!require(x, character.only = TRUE)) {

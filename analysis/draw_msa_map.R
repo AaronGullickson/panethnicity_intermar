@@ -1,12 +1,7 @@
 #compare PUMA and metro area boundaries
-library(sf)
-library(tigris)
-library(tmap)
-library(tmaptools)
-library(here)
-library(USAboundaries)
-library(grid)
+
 load(here("analysis","output","alternates.RData"))
+source(here("analysis","check_packages.R"))
 
 #going to use the tigris library to get shapefiles because they are 
 #much less memory intensive there
