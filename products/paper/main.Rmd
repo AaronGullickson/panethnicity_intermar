@@ -1,5 +1,5 @@
 ---
-title: "Patterns of Panthnic Intermarriage in the United States, 1980-2018"
+title: "Patterns of Panethnic Intermarriage in the United States, 1980-2018"
 author:
 - affiliation: University of Oregon, Sociology
   name: Aaron Gullickson
@@ -439,7 +439,7 @@ temp <- tibble(ethnorace="Marriages in the previous five years",
 tab_samp <- tab_samp %>% 
   bind_rows(temp)
                     
-ord <- c("Marriages in the previous year",
+ord <- c("Marriages in the previous five years",
          "White","Black","AIAN","Latino",
          "Mexican","Puerto Rican","Cuban","Salvadorian","Dominican","Guatemalan",
          "Colombian","Honduran","Peruvian","Ecuadorian","Nicaraguan","Argentinian",
@@ -470,7 +470,7 @@ tab_samp %>%
   add_indent(c(6:24,26:37,39:42)) %>%
   pack_rows("Marriages", 1, 1) %>%
   pack_rows("Alternate Partners", 2, 42) %>%
-  column_spec(1, width = "6cm")
+  column_spec(1, width = "6.5cm")
 ```
 
 I model interracial and panethnic marriage using a set of dummy variables where the reference category is a racially and ethnically endogamous union (e.g. a White/White or Chinese/Chinese marriage). Because the number of ethnoracial categories is large, modeling every possible combination of these categories for exogamous unions is not feasible. In my most restrictive models, I apply two limits on the parameterization that make model estimation possible. First, when analyzing intermarriage with Whites, Blacks, and American Indians/Alaska Natives, I group Asian and Latino ethnic groups into the larger panethnic categories of Latino, East/Southeast Asian, and South Asian. For example, a union involving a Black and Mexican partner and a union involving a Black and Colombian partner would both be coded as a Black/Latino union. Second, I model the likelihood of panethnic intermarriage using a single dummy variable to indicate any form of ethnic exogamy within the three panethnic categories of Latino, East/Southeast Asian, and South Asian. For example, a union involving a Chinese and Japanese partner and a union involving a Korean and Filipino partner would both be coded as East/Southeast Asian ethnic exogamy. This approach allows me to estimate the average likelihood of ethnic exogamy across all possible combinations, but does not capture particular affinities of disaffinities among ethnic groups within the panethnic category. I partially relax both of these these assumptions in later models of the ACS data on a sample restricted to the largest Asian and Latino ethnic groups in order to estimate affinities specific to ethnic groups.
