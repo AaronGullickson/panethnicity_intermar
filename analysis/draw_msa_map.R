@@ -96,7 +96,7 @@ map_cn <- tm_shape(continental_states, projection = 2163)+
             legend.position = c("right", "bottom"))+
   tm_add_legend(type="fill", 
                 col = c("#7b3294","#008837"),
-                alpha=0.5,
+                alpha=0.75,
                 labels = c("Census 1980",
                            "ACS 2014-2018"))
 
@@ -132,7 +132,7 @@ tmap_mode("plot")
 tmap_save(map_cn, 
           filename=here("analysis","output","msa_map.pdf"), 
           scale = 0.7, 
-          width = 6.5, height=3.5, 
+          width = 6.5, height = 3.5, 
           outer.margins = 0,
           insets_tm = list(map_ak, map_hi), 
           insets_vp = list(vp_ak, vp_hi))
