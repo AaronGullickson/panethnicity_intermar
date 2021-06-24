@@ -538,7 +538,11 @@ In the results below, I use graphical visualizations to present important result
 Before moving to the model results, I first show the complex ways in which birthplace and language endogamy affect the likelihood of panethnic intermarriage. I use the Blau index [@blau_inequality_1977] to measure language/birthplace diversity within each Asian and Latino ethnic group and to measure diversity within each panethnic group. The Blau index of diversity ($D$) is calculated as: $$D=1-\sum_{i=1}^R p_i^2$$ where $p_i$ is the proportion of the total population belonging to group $i$ and $R$ is the total number of groups. The Blau index has an intuitively appealing interpretation as the probability that two randomly drawn members from the population belong to the same group.
 
 ```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups compared to birthplace and language diversity within panethnic groups. Diversity is measured by the Blau index which gives the probability that two randomly selected members of the group do not share the same birthplace/language."}
-ggplot(diversity_pan, aes(y=group, x=diversity, color=type))+
+diversity_pan %>%
+  mutate(group=factor(ifelse(group=="E&SE Asian", "East/Southeast Asian", 
+                             as.character(group)),
+                      levels=c("Latino","East/Southeast Asian","South Asian"))) %>%
+  ggplot(aes(y=group, x=diversity, color=type))+
   #geom_col(position="dodge")+
   geom_vline(xintercept = 0, color="grey20", linetype=1)+
   geom_pointrangeh(aes(xmin=0, xmax=diversity), size=0.4,
@@ -569,6 +573,10 @@ coefs_pent %>%
   filter(variable=="E&SE Asian ethnic exogamy" | 
            variable=="Latino ethnic exogamy" |
            variable=="South Asian ethnic exogamy") %>%
+  mutate(variable=factor(ifelse(variable=="E&SE Asian ethnic exogamy",
+                                "East/Southeast Asian", 
+                                str_remove(as.character(variable), " ethnic exogamy")),
+                         levels=c("Latino","East/Southeast Asian","South Asian"))) %>%
   ggplot(aes(y=model, x=exp(coef), color=data))+
   geom_vline(xintercept = 0, color="grey20", linetype=1)+
   geom_vline(xintercept = 1, color="grey20", linetype=3)+
@@ -604,7 +612,9 @@ coefs_pent %>%
            !grepl("South Asian ethnic exogamy", variable) & 
            !grepl("AIAN", variable)) %>%
   left_join(arrows_pent) %>%
-  mutate(variable=str_replace(variable, "E&SE Asian ethnic exogamy", "**E&SE Asian ethnic exogamy**"),
+  mutate(variable=str_replace(variable, "/", "-"),
+         variable=str_replace(variable, "&","/"),
+         variable=str_replace(variable, "E/SE Asian ethnic exogamy", "**E/SE Asian ethnic exogamy**"),
          variable=str_replace(variable, "Latino ethnic exogamy", "**Latino ethnic exogamy**"),
          coef=ifelse(data=="ACS 2014-18, all ethnic groups" & variable=="White/Black", NA, coef)) %>%
   order_variables("Census 1980", "+ birthplace and\nlanguage endogamy") %>%
@@ -732,7 +742,7 @@ panethnic <- bind_rows(lapply(c(latino_groups,asian_groups), function(x) {
                 coef= panethnic$coef[str_detect(panethnic$variable, x)]))
 }))
 panethnic$group <- factor(panethnic$ethnicity %in% asian_groups,
-                          levels=c(FALSE,TRUE), labels=c("Latino","E&SE ASian"))
+                          levels=c(FALSE,TRUE), labels=c("Latino","East/Southeast Asian"))
 
 intermar <- coefs_extended %>%
   filter(grepl(paste(c(latino_groups,asian_groups), collapse="|"), variable) & 
@@ -743,7 +753,7 @@ intermar <- coefs_extended %>%
          race=factor(str_detect(variable, "Black\\/"),
                      level=c(FALSE,TRUE), labels=c("White","Black")),
          group=factor(ethnicity %in% asian_groups,
-                      levels=c(FALSE,TRUE), labels=c("Latino","E&SE ASian"))) %>%
+                      levels=c(FALSE,TRUE), labels=c("Latino","East/Southeast Asian"))) %>%
   select(ethnicity, group, race, coef)
 
 ggplot(intermar, 
