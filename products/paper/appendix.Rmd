@@ -6,7 +6,83 @@ output:
 fontfamily: mathpazo
 fontsize: 11pt
 appendix: true
-appendixletter: A
+appendixletter: S
 ---
 
-# Technical Appendix
+# Supplementary Appendix
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
+library(here)
+source(here("analysis","check_packages.R"))
+source(here("analysis","useful_functions.R"))
+load(here("analysis","output","models.RData"))
+```
+
+
+```{r create-coef-map}
+coef_map <- list("agediff"="age difference",
+                 "I(agediff^2)"="age difference, squared",
+                 "hypergamyTRUE"="female educational hypergamy",
+                 "hypogamyTRUE"="female educational hypogamy",
+                 "edcross_hsTRUE"="Ed. crossing, high school",
+                 "edcross_scTRUE"="Ed. crossing, some college",
+                 "edcross_cTRUE"="Ed. crossing, college",
+                 "race_exog_pentBlack.AIAN"="AIAN-Black exogamy",
+                 "race_exog_pentAIAN.E&SE Asian"="AIAN-E/SE Asian exogamy",
+                 "race_exog_pentAIAN.Latino"="AIAN-Latino exogamy",
+                 "race_exog_pentAIAN.South Asian"="AIAN-S Asian exogamy",
+                 "race_exog_pentWhite.AIAN"="AIAN-White exogamy",
+                 "race_exog_pentBlack.E&SE Asian"="Black-E/SE Asian exogamy",
+                 "race_exog_pentBlack.Latino"="Black-Latino exogamy",
+                 "race_exog_pentBlack.South Asian"="Black-S Asian exogamy",
+                 "race_exog_pentWhite.Black"="Black-White exogamy",
+                 "race_exog_pentE&SE Asian.South Asian"="E/SE Asian-S Asian exogamy",
+                 "race_exog_pentLatino.E&SE Asian"="E/SE Asian-Latino exogamy",
+                 "race_exog_pentWhite.E&SE Asian"="E/SE Asian/White exogamy",
+                 "race_exog_pentLatino.South Asian"="Latino-S Asian exogamy",
+                 "race_exog_pentWhite.Latino"="Latino-White exogamy",
+                 "race_exog_pentWhite.South Asian"="S Asian-White exogamy",
+                 "race_exog_pentLatino.Latino"="Latino ethnic exogamy",
+                 "race_exog_pentE&SE Asian.E&SE Asian"="E/SE Asian ethnic exogamy",
+                 "bendog_all_firstTRUE"="Birthplace endogamy",
+                 "bendog_partial_flex1.5TRUE"="Birthplace endogamy",
+                 "language_endogTRUE"="Language endogamy")
+```
+
+```{r model-census-pentagon, results="asis"}
+knitreg(lapply(models_census_pentagon, convertModel),
+        digits=2,
+        caption="Log-odds ratios from counterfactual marriage model predicting union formation on Census 1980 data using single ethnic exogamy term",
+        caption.above=TRUE,
+        custom.model.names=c("baseline","+birthplace","+language","+both"), 
+        custom.coef.map=coef_map,
+        dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
+```
+
+```{r model-acs1980-pentagon, results="asis"}
+knitreg(lapply(models_acs1980_pentagon, convertModel),
+        digits=2,
+        caption="Log-odds ratios from counterfactual marriage model predicting union formation on ACS 2014-18 data using single ethnic exogamy term and limited to Asian and Latino ethnic groups available in 1980",
+        caption.above=TRUE,
+        custom.model.names=c("baseline","+birthplace","+language","+both"), 
+        custom.coef.map=coef_map,
+        dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
+```
+
+```{r model-acsfull-pentagon, results="asis"}
+knitreg(lapply(models_acsfull_pentagon, convertModel),
+        digits=2,
+        caption="Log-odds ratios from counterfactual marriage model predicting union formation on ACS 2014-18 data using single ethnic exogamy term and all available Asian and Latino ethnic groups",
+        caption.above=TRUE,
+        custom.model.names=c("baseline","+birthplace","+language","+both"), 
+        custom.coef.map=coef_map,
+        dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
+```
+
+```{r model-acsres-extended, results="asis", eval=FALSE}
+knitreg(lapply(models_acsres_extended, convertModel),
+        digits=3,
+        caption="Log-odds ratios from counterfactual marriage model predicting union formation on ACS 2014-18 data using ethnic-group specific terms and largest available Asian and Latino ethnic groups",
+        caption.above=TRUE)
+```

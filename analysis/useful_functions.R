@@ -559,9 +559,9 @@ convertModel <- function(model) {
     coef = model$coef[,"b.pool"], 
     se = model$coef[,"se.pool"], 
     pvalues = model$coef[,"pvalue.pool"],
-    gof.names = c("deviance"), 
-    gof = mean(model$deviance), 
-    gof.decimal = c(TRUE)
+    gof.names = c("Deviance","BIC (relative to null)"), 
+    gof = c(mean(model$deviance), mean(model$bic)), 
+    gof.decimal = c(FALSE, FALSE)
   )
 }
 
