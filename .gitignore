@@ -3,5 +3,8 @@
 **/.DS_Store
 **/*.bbl
 **/*.ent
+**/*.log
+**/*.fff
+**/*.ttt
 .Rproj.user
 analysis/output/*
