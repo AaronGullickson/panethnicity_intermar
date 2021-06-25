@@ -3,10 +3,9 @@ title: "Patterns of Panethnic Intermarriage in the United States, 1980-2018"
 author:
 - affiliation: University of Oregon, Sociology
   name: Aaron Gullickson
-keywords: keywords
-#FYI: the thanks and abstract are easier to view and edit in Atom which does proper linewrapping
+#keywords: keywords
 thanks: Thanks to people and stuff
-abstract: This is a test abstract
+abstract: Intermarriage among ethnic groups belonging to the same panethnic group is thought to be an important indicator of the strength of panethnicity. Yet, most of the work on panethnic intermarriage uses older samples with significant data limitations. In this article, I use data on recently married couples from Census 1980 and the American Community Survey 2014-18 to analyze the likelihood of ethnic exogamy within the panethnic groups of Latinos, East/Southeast Asians, and South Asians. I utilize a counterfactual marriage model that addresses group composition within local marriage markets and eliminates immigrants married abroad from analysis. The results show that birthplace and language diversity are signficant barriers to ethnic exogamy among Asians but not Latinos. Once birthplace and language endogamy are accounted for, panethnic intermarriage is far more likely than among Asians than among Latinos. East/Southeast Asian ethnic exogamy has increased over time, while Latino ethnic exogamy has not. Furthermore, East/Southeast Asian and South Asian intermarriage remains rare, suggesting that panethnic intermarriage among Asians occurs within two separate melting pots. 
 output:
   bookdown::pdf_document2: 
     citation_package: natbib
@@ -339,9 +338,9 @@ Related to this issue, most prior work has not addressed the issue of South Asia
 
 Research on intermarriage is often framed around issues of assimilation and acculturation. Historically, intermarriage was seen as a key benchmark for assimilation into the "mainstream" culture [@gordon_assimilation_1964]. More recent work has problematized the assumption of one-way assimilation into the mainstream, most notably the work on segmented assimilation which suggests multiple pathways to assimilation for contemporary migrants [@portes_new_1993]. 
 
-Panethnicity has sometimes been framed as a pathway within the segmented assimilation approach, specifically as a form of "selective acculturation" [@bohra-mishra_intermarriage_2015]. However, this framing seems somewhat forced as the original idea of selective acculturation was that an ethnic group would engage in social closure to facilitate resource sharing and the intergenerational transfer of cultural meaning and identity. Panethnic intermarriage would work against such social closure. 
+Panethnicity has sometimes been framed as a pathway within the segmented assimilation approach, specifically as a form of "selective acculturation" [@bohra-mishra_intermarriage_2015]. However, this framing seems to deviate somewhat from the original idea of selective acculturation, in which an ethnic group engages in social closure to facilitate resource sharing and the intergenerational transfer of cultural meaning and identity. Panethnic intermarriage would work against such social closure. 
 
-==EXPAND/REWORK== The boundary approach to panethnicity utilized more broadly by many scholars would suggest that panethnicity is not simply a type of assimilation pattern, but rather a specific process of ethnoracial boundary expansion. This boundary expansion is not simply a function of assimilation and acculturation but can be deeply affected by these cross-cutting issues. 
+Rather than treat panethnicity as a form of assimilation/acculturation, I treat it as a form of ethnoracial boundary expansion. Specifically, panethnicity is a form of ethnogenesis in which smaller minority groups are "lumped" together into larger minority categories [@kibria_construction_1997; @wimmer_elementary_2008]. Such ethnogenesis can result from state efforts at consolidation, but can also arise from an increasing sense of solidarity and sense of linked fate among individuals [@okamoto_panethnicity_2014a; @wimmer_elementary_2008]. Such ethnogenesis is not simply a function of assimilation and acculturation but can be deeply affected by cross-cutting trends related to these issues. 
 
 Most notably, birthplace and language endogamy will present challenges to the likelihood of panethnic intermarriage in complex ways. Individuals will often prefer partners from the same birthplace due to the shared cultural understandings that arise from being born and raised in a particular place. In general, we would expect birthplace endogamy to lower the likelihood of panethnicity for both Asians and Latinos, because both of these groups have a substantial foreign-born population.
 
