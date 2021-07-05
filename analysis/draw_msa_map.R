@@ -86,11 +86,11 @@ map_cn <- tm_shape(continental_states, projection = 2163)+
   tm_borders("grey20", lwd=2)+
   tm_fill("grey70")+
   tm_shape(met_census)+
-  tm_borders("#7b3294", alpha=0.75)+
-  tm_fill("#7b3294", alpha=0.4)+
+  tm_borders("black", lwd=0.3, lty=2)+
+  tm_fill("#7b3294", alpha=0.6)+
   tm_shape(met_acs)+
-  tm_borders("#008837", alpha=0.75)+
-  tm_fill("#008837", alpha=0.4)+
+  tm_borders("black", lwd=0.3)+
+  tm_fill("#008837", alpha=0.6)+
   tm_layout(frame = FALSE, 
             inner.margins = c(0.1, 0.1, 0.05, 0.05),
             legend.position = c("right", "bottom"))+
@@ -105,27 +105,29 @@ map_ak <- tm_shape(alaska, projection = 3338)+
   #tm_borders("grey20", lwd=1)+
   tm_fill("grey70")+
   tm_shape(met_census)+
-  tm_borders("#7b3294", alpha=0.75, lwd=0.5)+
-  tm_fill("#7b3294", alpha=0.4)+
+  tm_borders("black", lwd=0.15)+
+  tm_fill("#7b3294", alpha=0.6)+
   tm_shape(met_acs)+
-  tm_borders("#008837", alpha=0.75, lwd=0.5)+
-  tm_fill("#008837", alpha=0.4)+
+  tm_borders("black", lwd=0.15)+
+  tm_fill("#008837", alpha=0.6)+
   tm_layout("Alaska", frame=FALSE, title.size = 0.8)
 
 map_hi <- tm_shape(hawaii, projection = 3759)+
   #tm_borders("grey20", lwd=1)+
   tm_fill("grey70")+
   tm_shape(met_census)+
-  tm_borders("#7b3294", alpha=0.75, lwd=0.5)+
-  tm_fill("#7b3294", alpha=0.4)+
+  tm_borders("grey30", lwd=0.15)+
+  tm_fill("#7b3294", alpha=0.6)+
   tm_shape(met_acs)+
-  tm_borders("#008837", alpha=0.75, lwd=0.5)+
-  tm_fill("#008837", alpha=0.4)+
+  tm_borders("grey30", lwd=0.15)+
+  tm_fill("#008837", alpha=0.6)+
   tm_layout("Hawaii", frame=FALSE, title.position = c("LEFT", "BOTTOM"),
             title.size = 0.8)
 
 vp_ak <- viewport(x = 0.14, y = 0.14, width = 0.28, height = 0.28)
 vp_hi <- viewport(x = 0.38, y = 0.1, width = 0.2, height = 0.1)
+
+#the slow rendering issue is due to the MSA borders
 
 X11(type = "cairo")
 tmap_mode("plot")
