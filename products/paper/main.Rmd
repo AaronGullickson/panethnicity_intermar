@@ -4,22 +4,22 @@ author:
 - affiliation: University of Oregon, Sociology
   name: Aaron Gullickson
 keywords: panethnicity; intermarriage; assortative mating, ethnic exogamy; immigration
-thanks: Thanks to people and stuff
+#thanks: Thanks to people and stuff
 abstract: Intermarriage among ethnic groups belonging to the same panethnic category (e.g. Asian, Latino) is thought to be an important indicator of the strength of panethnicity. Yet, most of the work on panethnic intermarriage uses older samples with significant data limitations. In this article, I use data on recently married couples from Census 1980 and the American Community Survey 2014-18 to analyze the likelihood of ethnic exogamy within the panethnic categories of Latino, East/Southeast Asian, and South Asian. I utilize a counterfactual marriage model that accounts for group size within local marriage markets, eliminates immigrants married abroad from analysis, and controls for birthplace and language endogamy. The results show that birthplace and language diversity are significant barriers to ethnic exogamy among Asians but not Latinos. Once birthplace and language endogamy are held constant, panethnic intermarriage is far more likely among Asians than among Latinos. East/Southeast Asian ethnic exogamy has increased over time, while Latino ethnic exogamy has not. Furthermore, East/Southeast Asian and South Asian intermarriage remains rare, suggesting that panethnic intermarriage among Asians occurs within two separate melting pots. 
 output:
   bookdown::pdf_document2: 
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: no
+    keep_tex: yes
     toc: false
   word_document:
     reference_docx: ./resources/aog_word_style.docx
 fontfamily: mathpazo
 fontsize: 11pt
-anonymous: false #anonymize, double-space, and ragged right
+anonymous: true #anonymize, double-space, and ragged right
 endnotes: false #make footnotes endnotes
-endfloat: false #move table and figures to the end
+endfloat: true #move table and figures to the end
 bibliography: ../project.bib
 biblio-style: ./resources/ajs.bst
 ---
@@ -346,7 +346,7 @@ Ethnogenesis is not simply a function of assimilation and acculturation but can 
 
 However, the actual effect of birthplace and language endogamy on panethnic intermarriage is considerably more complex than the simple expectations outlined above, because ethnic groups themselves are diverse in terms of birthplace and language. For example, among adults recently married or single in the 2014-18 American Community Survey data detailed below, 66% of Japanese respondents spoke English as a primary language, while 41% of Filipino respondents spoke English as a primary language. For those Japanese and Filipino individuals who both speak English, language endogamy will actually encourage panethnic intermarriage relative to ethnic endogamy with members of their own group who speak Japanese and Tagalog, respectively. Similarly, 31% of Mexicans in the same sample spoke English as primary language, but only 13% of Dominicans. In this case, however, the Mexicans and Dominicans who do not speak English typically both speak Spanish which will also encourage panethnic intermarriage when such potential partners are paired.
 
-More broadly, in order for language and birthplace endogamy to serve as a barrier to panethnic intermarriage, the diversity in language and birthplace must be greater within the panethnic category than within the corresponding ethnic group. The strength of the barrier will depend on how much more diverse the panethnic category is than the ethnic group. thix complex relationship has not been fully appreciated by prior work on the subject, which often addresses these issues simply by dividing the sample between the immigrant and native-born population. 
+More broadly, in order for language and birthplace endogamy to serve as a barrier to panethnic intermarriage, the diversity in language and birthplace must be greater within the panethnic category than within the corresponding ethnic group. The strength of the barrier will depend on how much more diverse the panethnic category is than the ethnic group. This complex relationship has not been fully appreciated by prior work on the subject, which often addresses these issues simply by dividing the sample between the immigrant and native-born population. 
 
 Ideally, to estimate the underlying affinity for panethnic intermarriage, we want a model that can separate out those barriers to intermarriage resulting from language and birthplace endogamy. Such a model gives us a sense of how much panethnic intermarriage we would expect in a situation in which all Asians and Latinos are fully assimilated/acculturated to the US (i.e. born in the US and speak English as their primary language).
 
