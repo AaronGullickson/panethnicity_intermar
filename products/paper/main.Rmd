@@ -343,15 +343,42 @@ Related to this issue, most prior work has not addressed the issue of South Asia
 
 ==REWORK THIS SECTION==
 
-Birthplace and language endogamy present challenges to the likelihood of panethnic intermarriage in complex ways. Individuals will often prefer partners from the same birthplace due to the shared cultural understandings that arise from being born and raised in a particular place. Similarly, people are more likely to marry individuals who speak the same primary language because of ease of communication. We might expect birthplace endogamy to lower the likelihood of panethnicity for both Asians and Latinos, because all Asian and Latino ethnic groups have a substantial foreign-born sub-population and these members would prefer to marry someone from the same place of birth. On the other hand, language endogamy might affect Asian and Latino panethnic intermarriage differently, because Latino ethnic groups share a common language while Asian ethnic groups do not.
+Birthplace and language endogamy affect the likelihood of panethnic intermarriage in complex ways. Individuals will often prefer partners from the same birthplace due to the shared cultural understandings that arise from being born and raised in a particular place. Similarly, people are more likely to marry individuals who speak the same primary language because of ease of communication. We might expect birthplace endogamy to lower the likelihood of panethnicity for both Asians and Latinos, because all Asian and Latino ethnic groups have a substantial foreign-born sub-population and these members would prefer to marry someone from the same place of birth. On the other hand, language endogamy might affect Asian and Latino panethnic intermarriage differently, because Latino ethnic groups share a common language while Asian ethnic groups do not.
 
 However, the actual effect of birthplace and language endogamy on panethnic intermarriage is considerably more complex than the simple expectations outlined above, because ethnic groups themselves are diverse in terms of birthplace and language. For example, among adults recently married or single in the 2014-18 American Community Survey data detailed below, 66% of Japanese respondents spoke English as a primary language, while 41% of Filipino respondents spoke English as a primary language. For those Japanese and Filipino individuals who both speak English, language endogamy will actually encourage panethnic intermarriage relative to ethnic endogamy with members of their own group who speak Japanese and Tagalog, respectively. Similarly, 31% of Mexicans in the same sample spoke English as primary language, but only 13% of Dominicans. In this case, however, the Mexicans and Dominicans who do not speak English typically both speak Spanish which will also encourage panethnic intermarriage when such potential partners are paired.
 
-More broadly, in order for language and birthplace endogamy to serve as a barrier to panethnic intermarriage, the diversity in language and birthplace must be greater within the panethnic category than within the corresponding ethnic group. The strength of the barrier will depend on how much more diverse the panethnic category is than the ethnic group. This complex relationship has not been fully appreciated by prior work on the subject, which often addresses these issues simply by dividing the sample between the immigrant and native-born population. 
+In general, in order for language and birthplace endogamy to serve as a barrier to panethnic intermarriage, the diversity in language and birthplace must be greater within the panethnic category than within the corresponding ethnic group. The strength of the barrier will depend on how much more diverse the panethnic category is than the ethnic group. To demonstrate this issue more broadly than the examples above, I calculate a measure of language/birthplace diversity for unmarried and recently married members of each Asian and Latino ethnic group in the Census 1980 and American Community Survey detailed below. Specifically, I use the Blau index [@blau_inequality_1977] to measure language/birthplace diversity within each Asian and Latino ethnic group and to measure diversity within each panethnic category. The Blau index of diversity ($D$) is calculated as: $$D=1-\sum_{i=1}^R p_i^2$$ where $p_i$ is the proportion of the total population belonging to group $i$ and $R$ is the total number of groups. The Blau index has an intuitively appealing interpretation as the probability that two randomly drawn members from the population belong to the same group.
+
+```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups and panethnic categories. Diversity is measured by the Blau index which gives the probability that two randomly selected members of the group do not share the same birthplace/language. Results are based upon alternate partners from each data source."}
+diversity_pan %>%
+  mutate(group=factor(ifelse(group=="E&SE Asian", "East/Southeast Asian", 
+                             as.character(group)),
+                      levels=c("Latino","East/Southeast Asian","South Asian"))) %>%
+  ggplot(aes(y=group, x=diversity, color=type))+
+  #geom_col(position="dodge")+
+  geom_vline(xintercept = 0, color="grey20", linetype=1)+
+  geom_pointrangeh(aes(xmin=0, xmax=diversity), size=0.4,
+                   position=position_dodgev(height=0.6))+
+  facet_grid(variable~data)+
+  scale_x_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75))+
+  scale_color_manual(values = my_palette[1:2])+
+  labs(y=NULL, x="Probability two members do not share the same birthplace/language",
+       fill="type of diversity")+
+  theme_mine()+
+  theme(panel.grid.major.y = element_blank())
+```
+
+Figure \@ref(fig:diversity-pan-bar) shows the Blau index for language and birthplace across East/Southeast Asian, South Asian, and Latino ethnic and panethnic categories, using data on alternate partners in the two time periods. To simplify presentation, I take the mean diversity within each specific ethnic group and compare this directly to the diversity across the panethnic category as a whole. The likelihood of panethnic intermarriage will be reduced in cases where panethnic diversity is greater than average diversity within ethnic groups.
+
+Significant language and birthplace diversity is observable within specific ethnic groups. For example, the average diversity in birthplace within specific Latino ethnic groups in the ACS data is nearly 60%, indicating that two randomly determined members of the same ethnic group would not share the same birthplace about 60% of the time.
+
+Although this within ethnic group diversity is substantial, panethnic diversity in language and birthplace is greater than within ethnic group diversity for all three panethnic categories in both time periods. However, these differences are small for Latinos, while they are quite large for Asians. Because Latinos share a common language, this result was expected for language, but I also observe a similar pattern for birthplace. What differences exist among Latino ethnic groups have also diminished over time, whereas they have grown for East/Southeast Asians.
+
+Overall, Figure \@ref(fig:diversity-pan-bar) shows that language and birthplace endogamy are important barriers to panethnic intermarriage among Asians, but play less of a role in panethnic intermarriage among Latinos. 
 
 Ideally, to estimate the underlying affinity for panethnic intermarriage, we want a model that can separate out those barriers to intermarriage resulting from language and birthplace endogamy. Such a model gives us a sense of how much panethnic intermarriage we would expect in a situation in which all Asians and Latinos are fully assimilated/acculturated to the US (i.e. born in the US and speak English as their primary language).
 
-In the analysis that follows, I address many of the weaknesses with prior data and models using a counterfactual marriage model to estimate the likelihood of panethnic intermarriage. The data from Census 1980 and the American Community Survey 2014-18 provide information on marriage timing which allows me to limit analysis to recent marriages while removing immigrants married abroad. The model framework allows me to account for differences in group size in local marriage markets while easily incorporating controls for birthplace and language endogamy. I use this model to compare trends in panethnic intermarriage for Latinos, East/Southeast Asians, and South Asians.
+In the analysis that follows, I address many of the weaknesses with prior data and models using a counterfactual marriage model to estimate the likelihood of panethnic intermarriage. The data from Census 1980 and the American Community Survey 2014-18 provide information on marriage timing which allows me to limit analysis to recent marriages while removing immigrants married abroad. The model framework allows me to account for differences in group size in local marriage markets while easily incorporating controls for birthplace and language endogamy. I use this model to measure the strength of panethnic intermarriage for Latinos, East/Southeast Asians, and South Asians.
 
 # Data and Methods
 
@@ -533,36 +560,7 @@ In the results below, I use graphical visualizations to present important result
 
 # Results
 
-## Birthplace and Language Diversity
-
-Before moving to the model results, I first show the complex ways in which birthplace and language endogamy affect the likelihood of panethnic intermarriage. I use the Blau index [@blau_inequality_1977] to measure language/birthplace diversity within each Asian and Latino ethnic group and to measure diversity within each panethnic category. The Blau index of diversity ($D$) is calculated as: $$D=1-\sum_{i=1}^R p_i^2$$ where $p_i$ is the proportion of the total population belonging to group $i$ and $R$ is the total number of groups. The Blau index has an intuitively appealing interpretation as the probability that two randomly drawn members from the population belong to the same group.
-
-```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups and panethnic categories. Diversity is measured by the Blau index which gives the probability that two randomly selected members of the group do not share the same birthplace/language. Results are based upon alternate partners from each data source."}
-diversity_pan %>%
-  mutate(group=factor(ifelse(group=="E&SE Asian", "East/Southeast Asian", 
-                             as.character(group)),
-                      levels=c("Latino","East/Southeast Asian","South Asian"))) %>%
-  ggplot(aes(y=group, x=diversity, color=type))+
-  #geom_col(position="dodge")+
-  geom_vline(xintercept = 0, color="grey20", linetype=1)+
-  geom_pointrangeh(aes(xmin=0, xmax=diversity), size=0.4,
-                   position=position_dodgev(height=0.6))+
-  facet_grid(variable~data)+
-  scale_x_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75))+
-  scale_color_manual(values = my_palette[1:2])+
-  labs(y=NULL, x="Probability two members do not share the same birthplace/language",
-       fill="type of diversity")+
-  theme_mine()+
-  theme(panel.grid.major.y = element_blank())
-```
-
-Figure \@ref(fig:diversity-pan-bar) shows the Blau index for language and birthplace across East/Southeast Asian, South Asian, and Latino ethnic and panethnic categories, using data on alternate partners in the two time periods. To simplify presentation, I take the mean diversity within each specific ethnic group and compare this directly to the diversity across the panethnic category as a whole. The likelihood of panethnic intermarriage will be reduced in cases where panethnic diversity is greater than average diversity within ethnic groups.
-
-Significant language and birthplace diversity is observable within specific ethnic groups. For example, the average diversity in birthplace within specific Latino ethnic groups in the ACS data is nearly 60%, indicating that two randomly determined members of the same ethnic group would not share the same birthplace about 60% of the time.
-
-Although this within ethnic group diversity is substantial, panethnic diversity in language and birthplace is greater than within ethnic group diversity for all three panethnic categories in both time periods. However, these differences are small for Latinos, while they are quite large for Asians. Because Latinos share a common language, this result was expected for language, but I also observe a similar pattern for birthplace. What differences exist among Latino ethnic groups have also diminished over time, whereas they have grown for East/Southeast Asians.
-
-Overall, Figure \@ref(fig:diversity-pan-bar) shows that language and birthplace endogamy are important barriers to panethnic intermarriage among Asians, but play little role in panethnic intermarriage among Latinos. With that in mind, I now turn to models that estimate the likelihood of panethnic intermarriage with and without accounting for birthplace and language endogamy.
+==OUTLINE OF WHAT I WILL DO==
 
 ## Modeling Panethnicity
 
