@@ -392,11 +392,9 @@ Arguably, the most important advantage of this modeling approach is that the res
 
 Because this approach relies upon a random sample of alternate partners, results will vary each time this sampling procedure is performed. To account for the added uncertainty due to sampling, I perform the sampling procedure separately three times to produce three separate analytical datasets. I then run parallel models on all three datasets and pool $\beta$ estimates and standard errors using the same methods as those employed for multiple imputation [@rubin_multiple_1987; @gullickson_counterfactual_2021].
 
-## Variable Construction
+## Measuring Ethnoracial Exogamy
 
-One advantage of the counterfactual marriage model is that it allows for the easy incorporation of a variety of quantitative and categorical variables. I utilize that feature to account for age differences, educational differences, birthplace endogamy, and language endogamy when estimating the likelihood of panethnic intermarriage. 
-
-I measure ethnoracial categories by a combination of the race and Hispanicity questions in both data sources. Table \@ref(tab:sample-size-table) shows the sample size for all ethnoracial groups included in the analysis. I classify non-Asian and non-Latino respondents as White, Black, or American Indian/Alaska Native (AIAN). Due to small sample size, I exclude Pacific Islanders, multiracial respondents, and non-Latino others from the analysis. The race question includes several Asian nationalities (e.g. Chinese, Korean, Filipino) as well as a write-in response for ethnic/national identities not captured by the existing categories. Similarly, the Hispanicity question includes major Latino ethnic groups (e.g. Mexican, Puerto Rican, Cuban) as well as a write-in option. Importantly, the Census 1980 data includes a far more limited set of identifiable ethnic groups for both Asians and Latinos than the ACS data. In Census 1980, I can only identify Mexicans, Puerto Ricans, and Cubans among Latinos and Chinese, Japanese, Korean, Filipino, Vietnamese, and Asian Indian respondents among Asians. To address this restriction, I estimate two different kinds of models for the ACS data. In the first model, I restrict the data only to those ethnic groups that were available in the Census 1980 data to allow more direct comparison over time. I also estimate models using the full ACS data to explore how using a broader set of ethnic groups changes our understanding of panethnicity, but these models are not directly comparable to the Census 1980 models.
+I measure ethnoracial categories by a combination of the race and Hispanicity questions in both data sources. Table \@ref(tab:sample-size-table) shows the sample size for all ethnoracial groups included in the analysis. I classify non-Asian and non-Latino respondents as White, Black, or American Indian/Alaska Native (AIAN). Due to small sample size, I exclude Pacific Islanders, multiracial respondents, and non-Latino others from the analysis. The race question includes several Asian nationalities (e.g. Chinese, Korean, Filipino) as well as a write-in response for ethnic/national identities not captured by the existing categories. Similarly, the Hispanicity question includes major Latino ethnic groups (e.g. Mexican, Puerto Rican, Cuban) as well as a write-in option. Importantly, the Census 1980 data includes a far more limited set of identifiable ethnic groups for both Asians and Latinos than the ACS data. In Census 1980, I can only identify Mexicans, Puerto Ricans, and Cubans among Latinos and Chinese, Japanese, Korean, Filipino, Vietnamese, and Asian Indian respondents among Asians. To address this restriction, I estimate two different kinds of models for the ACS data. In the first model, I restrict the data only to those ethnic groups that were available in the Census 1980 data to allow for direct comparison over time. I also estimate models using the full ACS data to explore how using a broader set of ethnic groups changes our understanding of panethnicity, but these models are not directly comparable to the Census 1980 models.
 
 ```{r sample-size-table}
 
@@ -496,9 +494,55 @@ tab_samp %>%
   column_spec(1, width = "6.5cm")
 ```
 
-I model panethnic and racial intermarriage using a set of gender-symmetric dummy variables where the reference category is an ethnoracially endogamous union (e.g. a White-White or Chinese-Chinese marriage). Because the number of ethnoracial categories is large, modeling every possible combination of these categories for exogamous unions is not feasible. In my most restrictive models, I apply two limits on the parameterization that make model estimation possible. First, when analyzing intermarriage with Whites, Blacks, and American Indians/Alaska Natives, I group Asian and Latino ethnic groups into the larger panethnic categories of Latino, East/Southeast Asian, and South Asian. For example, a union involving a Black and Mexican partner and a union involving a Black and Colombian partner would both be coded as a Black-Latino union. Second, I model the likelihood of panethnic intermarriage using three dummy variables to indicate any form of ethnic exogamy within the three panethnic categories of Latino, East/Southeast Asian, and South Asian. For example, a union involving a Chinese and Japanese partner and a union involving a Korean and Filipino partner would both be coded as East/Southeast Asian ethnic exogamy. This approach allows me to estimate the average likelihood of ethnic exogamy across all possible combinations, but does not capture particular affinities of disaffinities among ethnic groups within the panethnic category. I partially relax both of these assumptions in later models of the ACS data.
+In all models, patterns of ethnoracial exogamy, including panethnic intermarriage, are measured by a set of gender-symmetric dummy variables (==DEFEND USE OF GENDER SYMMETRIC TERMS==) where the reference category is an ethnoracially endogamous union (e.g. a White-White or Chinese-Chinese marriage). The least parsimonious model would simply model every possible combination of categories, which would lead to 703 separate dummy variables. The sheer number of variables required and the fact that some of these combinations may contain empty cells in the sample data makes such a model unfeasible. Instead, I use two different approaches to more parsimoniously capture the likelihood of panethnic intermarriage and ethnoracial exogamy. The coding scheme for the first approach is illustrated in Table \@ref(tab:block-diagram). Two simplifications are made within this scheme. First, I model all non-endogamous unions within the same panethnic category using a single dummy variable that identifies the union as a panethnic intermarriage. For example, a Japanese and Korean union and a Chinese and Korean union would both be classified as a panethnic intermarriage within the East/Southeast Asian panethnic category. This approach allows me to estimate the average likelihood of panethnic exogamy within a panethnic category, at the cost of neglecting potential heterogeneity in this likelihood between certain ethnic combinations. Second, when analyzing ethnoracial exogamy outside of panethnic groups, I use the larger panethnic categories of Latino, East/Southeast Asian, and South Asian. So, a union between a White and Mexican person and between a White and a Guatemalan person would both be classified as Latino/White exogamy. These two simplifications reduce the number of required parameters from 703 to 17. 
+
+```{r block-diagram}
+x <- rbind(c("(ref.)",rep("",7)),
+           c("B/W","(ref.)",rep("",6)),
+           c("A/W","A/B","(ref.)",rep("",5)),
+           c("A/W","A/B","PE-A","(ref.)",rep("",4)),
+           c("A/W","A/B","PE-A","PE-A","(ref.)",rep("",3)),
+           c("L/W","L/B","L/A","L/A","L/A","(ref.)",rep("",2)),
+           c("L/W","L/B","L/A","L/A","L/A","PE-L","(ref.)",rep("",1)),
+           c("L/W","L/B","L/A","L/A","L/A","PE-L","PE-L","(ref.)"))
+colnames(x) <- rownames(x) <- c("White","Black",
+                                "Chinese","Japanese","Korean",
+                                "Mexican","Cuban","Puerto Rican")
+
+x %>%
+  kbl(booktabs=TRUE, longtable=FALSE, caption="A schematic representation of the coding of ethnoracial exogamy for simplified models, using three example ethnicities for Asian and Latino populations. The table shows a crosstabulation of each respondent's race. All parameters are gender-symmetric, so I only show the parameters below the diagonal. The reference category is an ethnoracially endogamous union. Each cell indicates the particular dummy variable that is applied to a given case. The terms measuring panethnicity are shown in bold.",
+      align="c") %>%
+  kable_styling(latex_options="scale_down") %>%
+  pack_rows("Asian",3,5) %>%
+  pack_rows("Latino",6,8) %>%
+  add_header_above(c(" " = 3, "Asian" = 3, "Latino" = 3)) %>%
+  footnote(general=c("B/W=Black/White, A/W=Asian/White, A/B=Asian/Black, L/W=Latino/White, L/B=Latino/Black,",
+                     "L/A=Latino/Asian, PE-A=Panethnic Asian, PE-L=Panethnic Latino"), 
+           threeparttable=F, footnote_as_chunk = F, 
+           general_title="Notes: ", title_format="italic") %>%
+  column_spec(2, italic=c(TRUE, rep(FALSE,7))) %>%
+  column_spec(3, italic=c(FALSE, TRUE, rep(FALSE,6))) %>%
+  column_spec(4, italic=c(rep(FALSE, 2), TRUE, rep(FALSE,5)),
+              bold=c(rep(FALSE, 3), TRUE, TRUE, rep(FALSE, 3))) %>%
+  column_spec(5, italic=c(rep(FALSE, 3), TRUE, rep(FALSE,4)),
+              bold=c(rep(FALSE, 4), TRUE, rep(FALSE, 3))) %>%
+  column_spec(6, italic=c(rep(FALSE, 4), TRUE, rep(FALSE,3))) %>%
+  column_spec(7, italic=c(rep(FALSE, 5), TRUE, rep(FALSE,2)),
+              bold=c(rep(FALSE, 6), TRUE, TRUE)) %>%
+  column_spec(8, italic=c(rep(FALSE, 6), TRUE, rep(FALSE,1)),
+              bold=c(rep(FALSE, 7), TRUE)) %>%
+  column_spec(9, italic=c(rep(FALSE, 7), TRUE))
+```
+
+To address the potential for this method to miss important heterogeneity in the likelihood of ethnoracial exogamy, I consider an additional less parsimonious model using the ACS data. In this model, I code each specific combination of ethnic categories within the same panethnic category using a separate dummy variable. Additionally, I treat each combination of an ethnic category among the White and Black categories as separate variable which allows me to also determine whether the tendency to outmarry with Whites or Blacks varies among ethnic groups within the same panethnic category. I restrict the ethnic categories in this model, to those for which I can fit a model without problems of sparseness and model non-convergence. I determine the most expansive model that can be fit by experimentation. This model includes the five East/Southeast Asian ethnic groups available in the Census 1980 data (Chinese, Filipino, Vietnamese, Korean, and Japanese) and the ten largest Latino groups, with the exception of Hondurans. I could not fit ethnicity specific models for South Asians because of the small size of non-Asian Indian groups in the South Asian category. These models allow me to explore in greater detail heterogeneity between specific ethnic groups within a given panethnic category at a significant loss to parsimony. The model estimates 85 separate exogamy terms (==CHECK==). 
+
+==DISCUSS HOW TO INTERPRET TERMS==
 
 Because I separate South Asian from East/Southeast Asian groups and only Asian Indians are identifiable in the Census 1980 data, I cannot estimate panethnic parameters over time for South Asians. Thus, when analyzing change over time, I focus exclusively on East/Southeast Asians and Latinos.
+
+## Additional Variables
+
+One advantage of the counterfactual marriage model is that it allows for the easy incorporation of a variety of quantitative and categorical variables. I utilize that feature to account for birthplace endogamy and language endogamy when estimating the likelihood of panethnic intermarriage, as well as age and educational differences between partners.
 
 I account for language and birthplace endogamy with simple dummy variables indicating whether the two potential partners share the same primary language or birthplace, respectively. Primary language is determined by what language the respondent reported speaking at home. Because this variable is measured after a marriage has occurred, it may somewhat overestimate language endogamy among respondents. Some partners who spoke different languages when they met may have shifted the language spoken at home after marriage.
 
@@ -637,9 +681,11 @@ Figure \@ref(fig:changes-intermar) also documents that the lowest likelihood of 
 
 ## Group-Specific Affinities
 
+==REWORK HOW I INTRODUCE THIS==
+
 The preceding models used a single ethnic exogamy term for each panethnic category such that the odds of ethnic exogamy are assumed to be the same regardless of which specific groups are paired. For example, the odds of ethnic exogamy into a Japanese-Korean union would be the same as those for a Japanese-Filipino union. I now turn to models of the ACS data that relax this assumption and allow the estimation of specific affinities within the matrix of ethnic groups that make up the three panethnic categories.
 
-If I considered every possible combination within panethnic categories in the ACS data, I would need to replace my three ethnic exogamy terms with 243 group specific parameters. Given that some of these groups are quite small in the dataset, models could not be fit to this fully expanded set, due to issues with sparseness and model convergence. I experimented with the largest possible set of ethnic groups for which I could reliably fit data and found that this model included the five East/Southeast Asian ethnic groups available in the Census 1980 data (Chinese, Filipino, Vietnamese, Korean, and Japanese) and the ten largest Latino groups, with the exception of Hondurans. I could not fit ethnicity specific models for South Asians because of the small size of non-Asian Indian groups in the South Asian category .
+==PUT PARAGRAPH ELSEWHERE SO BETTER TRANSITION NEEDED==
 
 In addition to separate parameters for each specific pairing of ethnic exogamy, I also include ethnic group specific parameters for intermarriage with Whites and Blacks. These parameters allow me to examine variation for each specific ethnic group in the tendency to intermarry with Whites and Blacks. 
 
