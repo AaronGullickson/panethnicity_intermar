@@ -72,8 +72,7 @@ code_census_variables <- function(census) {
   #combined state and metro area id to get marriage market. Replace state id
   #with metro id for cases where it is not zero. Multiply by 100 to avoid id
   #collision
-  census$mar_market <- ifelse(census$metarea==0, census$statefip, 
-                              census$metarea*100)
+  census$mar_market <- census$statefip
   
   return(census)
 }
