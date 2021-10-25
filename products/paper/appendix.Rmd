@@ -17,6 +17,9 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
 library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
+load(here("analysis","output","models_sensivity_mar_market.RData"))
+models_census_pentagon_state <- models_census_pentagon
+models_acs1980_pentagon_state <- models_acs1980_pentagon
 load(here("analysis","output","models.RData"))
 ```
 
@@ -180,6 +183,20 @@ knitreg(lapply(models_acsres_extended, convertModel),
         caption="Log-odds ratios from counterfactual marriage model predicting union formation on ACS 2014-18 data using ethnic-group specific terms and largest available Asian and Latino ethnic groups",
         caption.above=TRUE,
         custom.model.names=c("baseline","+birthplace","+language","+both"), 
+        custom.coef.map=coef_map,
+        dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
+```
+
+```{r model-comparison, results="asis"}
+knitreg(lapply(list(models_census_pentagon$both, 
+                    models_census_pentagon_state$both,
+                    models_acs1980_pentagon$both, 
+                    models_acs1980_pentagon_state$both), convertModel),
+        digits=2,
+        caption="Comparison of log-odds ratios from counterfactual marriage models predicting union formation on Census 1980 and ACS 2014-18 data using single ethnic exogamy term and limited to Asian and Latino ethnic groups available in 1980 under different specifications of the marriage market.",
+        caption.above=TRUE,
+        custom.model.names=c("MSA+State 1980", "State 1980",
+                             "MSA+State, 2014-18", "State, 2014-18"), 
         custom.coef.map=coef_map,
         dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
 ```
