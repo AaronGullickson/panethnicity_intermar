@@ -625,7 +625,7 @@ coefs_pent %>%
   scale_color_manual(values=my_palette)+
   scale_x_continuous(limits = c(0,1))+
   labs(y=NULL, 
-       x="Odds ratio of ethnic intermarriage relative to ethnic endogamy",
+       x="Odds ratio of ethnic exogamy relative to ethnic endogamy",
        color="Data source")+
   facet_wrap(~variable)+
   theme_mine()+
@@ -670,7 +670,7 @@ coefs_pent %>%
   scale_color_manual(values = my_palette)+
   scale_shape_manual(values = c(16,16,17))+
   labs(x=NULL, 
-       y="Odds ratio of exogamy relative to ethnoracial endogamy",
+       y="Odds ratio of ethnoracial exogamy relative to ethnoracial endogamy",
        title=NULL,
        color="Data source", shape="Data source")+
   theme_mine()+
@@ -770,7 +770,7 @@ Affinities between Latino ethnic groups tend to cluster by region, with higher o
 
 Figure \@ref(fig:racial-exogamy) shows the odds of intermarriage with Whites and Blacks for each of the East/Southeast Asian and Latino ethnic groups. For comparison, all of the ethnic exogamy odds ratios for a given ethnic group are also shown with small grey dots. 
 
-```{r racial-exogamy, fig.cap="Odds of interracial marriage with Whites and Blacks for major Latino and East/Southeast Asian ethnic groups. For reference, odds of ethnic exogamy to other major ethnic groups are shown by small grey dots. Models are sorted based on the odds ratio of intermarriage with Whites. All models control for age differences, education differences, and language and birthplace endogamy."}
+```{r racial-exogamy, fig.cap="Odds of exogamy with Whites and Blacks for major Latino and East/Southeast Asian ethnic groups. For reference, odds of ethnic exogamy to major ethnic groups within the same category are shown by small grey dots. Models are sorted based on the odds ratio of exogamy with Whites. All models control for age differences, education differences, and language and birthplace endogamy."}
 panethnic <- coefs_extended %>%
   filter(grepl(paste(c(latino_groups,asian_groups),collapse="|"), variable) & 
            !grepl("Black|White", variable) & 
@@ -808,7 +808,7 @@ ggplot(intermar,
   scale_x_continuous(limits=c(0,1.2))+
   facet_wrap(~group, scales = "free_y")+
   labs(y=NULL, 
-       x="Odds ratio of interracial marriage relative to ethnic endogamy",
+       x="Odds ratio of ethnoracial exogamy relative to ethnic endogamy",
        color="Interracial partner")+
   theme_mine()+
   theme(legend.position = "bottom")
