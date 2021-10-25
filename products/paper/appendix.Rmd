@@ -217,7 +217,7 @@ knitreg(lapply(list(models_census_pentagon$both,
         dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
 ```
 
-```{r fig.cap="Odds of ethnoracial exogamy relative to endogamy across two time periods. The panels compare the cases where marriage markets are defined either by a combination of MSA and state or by state alone. Results are based on models that control for age differences, educational differences, and birthplace and language endogamy. Values are sorted by ethnoracial exogamy in 1980. Arrows show the change across the two time periods based on comparable sets of ethnic groups. Results for American Indian/Alaska Native intermarriage are excluded due to sampling variability."}
+```{r compare-time, fig.cap="Odds of ethnoracial exogamy relative to endogamy across two time periods. The panels compare the cases where marriage markets are defined either by a combination of MSA and state or by state alone. Results are based on models that control for age differences, educational differences, and birthplace and language endogamy. Values are sorted by ethnoracial exogamy in 1980. Arrows show the change across the two time periods based on comparable sets of ethnic groups. Results for American Indian/Alaska Native intermarriage are excluded due to sampling variability."}
 bind_models <- function(models_summary) {
   temp <- lapply(models_summary, get_coefs) %>%
     bind_rows(.id="model") %>%
