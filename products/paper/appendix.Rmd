@@ -21,8 +21,24 @@ load(here("analysis","output","models_sensivity_mar_market.RData"))
 models_census_pentagon_state <- models_census_pentagon
 models_acs1980_pentagon_state <- models_acs1980_pentagon
 load(here("analysis","output","models.RData"))
+library(ggtext)
+
+my_palette <- c("#7b3294","#008837","#a6dba0")
 ```
 
+
+```{r theme, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, include=FALSE}
+theme_mine <- function() {
+  theme_bw()+
+    theme(axis.title = element_text(size=10), 
+          axis.text = element_text(size=8),
+          legend.text=element_text(size=7),
+          legend.title=element_text(size=8),
+          legend.key.size = unit(0.8,"line"),
+          strip.text = element_text(size=9),
+          legend.position = "bottom")
+}
+```
 
 ```{r create-coef-map}
 coef_map <- list("agediff"="age difference",
@@ -199,4 +215,105 @@ knitreg(lapply(list(models_census_pentagon$both,
                              "MSA+State, 2014-18", "State, 2014-18"), 
         custom.coef.map=coef_map,
         dcolumn=TRUE, booktabs=TRUE, longtable=TRUE, threeparttable=TRUE)
+```
+
+```{r fig.cap="Odds of ethnoracial exogamy relative to endogamy across two time periods. The panels compare the cases where marriage markets are defined either by a combination of MSA and state or by state alone. Results are based on models that control for age differences, educational differences, and birthplace and language endogamy. Values are sorted by ethnoracial exogamy in 1980. Arrows show the change across the two time periods based on comparable sets of ethnic groups. Results for American Indian/Alaska Native intermarriage are excluded due to sampling variability."}
+bind_models <- function(models_summary) {
+  temp <- lapply(models_summary, get_coefs) %>%
+    bind_rows(.id="model") %>%
+    filter(grepl("race_exog", variable))
+  return(temp)
+}
+
+get_coefs <- function(x) {
+  temp <- coef(x)[,c(1,2)]
+  return(tibble(variable=rownames(temp), coef=temp[,1], se=temp[,2]))
+}
+
+coefs_pent <- list(census=models_census_pentagon,
+                         acs_1980basis=models_acs1980_pentagon) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline model", "+ birthplace\nendogamy",
+                               "+ language\nendogamy", "+ birthplace and\nlanguage endogamy")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+arrows_pent <- coefs_pent %>%
+  filter(model=="+ birthplace and\nlanguage endogamy" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, all ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`)
+
+coefs_pent_state <- list(census=models_census_pentagon_state,
+                         acs_1980basis=models_acs1980_pentagon_state) %>%
+  lapply(bind_models) %>%
+  bind_rows(.id="data") %>%
+  mutate(variable=convert_intermar_names(variable, "race_exog_pent"),
+         model=factor(model,
+                      levels=c("base","bendog","lendog","both"),
+                      labels=c("Baseline model", "+ birthplace\nendogamy",
+                               "+ language\nendogamy", "+ birthplace and\nlanguage endogamy")),
+         data=factor(data,
+                     levels=c("census","acs_1980basis"),
+                     labels=c("Census 1980", 
+                              "ACS 2014-18, 1980 ethnic groups"))) %>%
+  order_variables("Census 1980", "+ both")
+
+arrows_pent_state <- coefs_pent_state %>%
+  filter(model=="+ birthplace and\nlanguage endogamy" & 
+           variable!="South Asian ethnic exogamy" &
+           data!="ACS 2014-18, all ethnic groups") %>%
+  select(variable, coef, data) %>% 
+  pivot_wider(names_from=data, values_from=coef) %>%
+  rename(coef.census=`Census 1980`, 
+         coef.acs=`ACS 2014-18, 1980 ethnic groups`)
+
+coefs_pent$sensitive <- "MSA+State"
+coefs_pent_state$sensitive <- "State"
+coefs_pent <- rbind(coefs_pent, coefs_pent_state)
+
+arrows_pent$sensitive <- "MSA+State"
+arrows_pent_state$sensitive <- "State"
+arrows_pent <- rbind(arrows_pent, arrows_pent_state)
+
+
+coefs_pent %>%
+  filter(model=="+ birthplace and\nlanguage endogamy" & 
+           !grepl("South Asian ethnic exogamy", variable) & 
+           !grepl("AIAN", variable)) %>%
+  left_join(arrows_pent) %>%
+  mutate(variable=str_replace(variable, "/", "-"),
+         variable=str_replace(variable, "&","/"),
+         variable=str_replace(variable, "E/SE Asian ethnic exogamy", "**E/SE Asian ethnic exogamy**"),
+         variable=str_replace(variable, "Latino ethnic exogamy", "**Latino ethnic exogamy**"),
+         coef=ifelse(data=="ACS 2014-18, all ethnic groups" & variable=="White/Black", NA, coef)) %>%
+  order_variables("Census 1980", "+ birthplace and\nlanguage endogamy") %>%
+  ggplot(aes(x=variable, y=exp(coef)))+
+  geom_hline(yintercept = 1, linetype=3, size=1)+
+  geom_point(aes(color=data, shape=data), alpha=1, size=3)+
+  geom_segment(aes(x=variable, xend=variable,
+                   y=exp(coef.census), yend=exp(coef.acs)),
+               color="grey30",
+               arrow = arrow(length = unit(0.03, "npc")))+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,1.1), expand=c(0.01,0))+
+  scale_color_manual(values = my_palette)+
+  scale_shape_manual(values = c(16,16,17))+
+  facet_grid(sensitive~.)+
+  labs(x=NULL, 
+       y="Odds ratio of exogamy relative to ethnoracial endogamy",
+       title=NULL,
+       color="Data source", shape="Data source")+
+  theme_mine()+
+  theme(axis.text.y=element_markdown())
 ```
