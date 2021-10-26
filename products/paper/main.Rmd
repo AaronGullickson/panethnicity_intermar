@@ -601,9 +601,9 @@ In the results below, I use graphical visualizations to present important result
 
 # Results
 
-==OUTLINE OF WHAT I WILL DO==
+I begin the results section by illustrating the results from the more parsimonious models which use a single ethnic exogamy term for each panethnic group. I show how the strength of these ethnic exogamy terms changes with the inclusion of controls for birthplace and language endogamy, followed by an examination of how the strength of panethnicity has changed over time and in relation to other forms of ethnoracial exogamy. I then move to an analysis of less parsimonious models that examine heterogeneity in panethnicity among ethnic groups belonging to the same panethnic category. These models can reveal nuances ignored by the more parsimonious approach.
 
-## Modeling Panethnicity
+## The Strength of Panethnicity
 
 Figure \@ref(fig:exog-lolly) shows the estimated odds of ethnic exogamy relative to ethnic endogamy for all three panethnic categories in both time periods. As these odds ratios approach one, the odds of ethnic exogamy (e.g. a Chinese person marrying a Japanese person) increase relative to ethnic endogamy (e.g. a Japanese person marrying a Japanese person).
 
@@ -676,23 +676,15 @@ coefs_pent %>%
   theme(axis.text.y=element_markdown())
 ```
 
-
 Figure \@ref(fig:changes-intermar) also shows the results for South Asian interracial marriage over time. The results show significant declines in South Asian interracial marriage with all other groups over the time period. These results, however, should probably be viewed with caution. In the earlier time period, the only South Asian group available was "Asian Indian" and research has shown that respondents sometimes confuse the categories of "Asian Indian" and "American Indian" in race responses [@liebler_american_2004]. Given the novel character of the "Asian Indian" category in 1980, it is likely that such misreporting has gone down over time. This may contribute to the overall decline in interracial marriage over time, if American Indians are less endogamous, on average, than Asian Indians.^[Although not shown here, I also found that the odds of intermarriage between American Indian/Alaska Natives and South Asians was roughly 1.9 to 1 in 1980 but declined to 0.103 to 1 in the later ACS data. This result suggests that such race reporting errors played a greater role in 1980 than the later data.] Nonetheless, the results here show a relatively low odds of intermarriage between South Asians and East/Southeast Asians in both time periods, suggesting that Asian panethnicity occurs within two separate "melting pots" for South Asians and all other Asian ethnic groups.
 
 Figure \@ref(fig:changes-intermar) also documents that the lowest likelihood of intermarriage in both time periods is that between Blacks and all other groups, despite some substantial increases in these odds. These results highlight the enduring strength of the Black/non-Black boundary in the US despite increasing diversity in the overall population.
 
-## Group-Specific Affinities
+## Heterogeneity in Panethnicity across Groups
 
-==REWORK HOW I INTRODUCE THIS==
+The preceding models used a single ethnic exogamy term for each panethnic category such that the odds of ethnic exogamy are assumed to be the same regardless of which specific groups are paired. For example, the odds of ethnic exogamy into a Japanese-Korean union would be the same as those for a Japanese-Filipino union. I now turn to models of the ACS data that relax this assumption and fit terms specific to each combination of ethnic groups within the matrix of ethnic groups that make up the three panethnic categories. Additionally, these models also include ethnic group specific parameters for intermarriage with Whites and Blacks. By necessity, these models are limited to the largest ethnic groups within each panethnic category.
 
-The preceding models used a single ethnic exogamy term for each panethnic category such that the odds of ethnic exogamy are assumed to be the same regardless of which specific groups are paired. For example, the odds of ethnic exogamy into a Japanese-Korean union would be the same as those for a Japanese-Filipino union. I now turn to models of the ACS data that relax this assumption and allow the estimation of specific affinities within the matrix of ethnic groups that make up the three panethnic categories.
-
-==PUT PARAGRAPH ELSEWHERE SO BETTER TRANSITION NEEDED==
-
-In addition to separate parameters for each specific pairing of ethnic exogamy, I also include ethnic group specific parameters for intermarriage with Whites and Blacks. These parameters allow me to examine variation for each specific ethnic group in the tendency to intermarry with Whites and Blacks. 
-
-Figure \@ref(fig:ethnic-heat-map) shows the group-specific odds of ethnic exogamy for the five East/Southeast Asian ethnic groups and the nine Latino ethnic groups, based on these models. I also provide a dendrogram that indicates the relative distance between each of these ethnic groups based on a tree diagram. The dendrogram is calculated by treating the inverse of the odds ratio as a measure of distance and measuring unweighted average distances.
-
+Figure \@ref(fig:ethnic-heat-map) shows the group-specific odds of ethnic exogamy for the five East/Southeast Asian ethnic groups and the nine Latino ethnic groups for which I could fit models. I also provide a dendrogram that indicates the relative distance between each of these ethnic groups based on a tree diagram. The dendrogram is calculated by treating the inverse of the odds ratio as a measure of distance and measuring unweighted average distances.
 
 ```{r ethnic-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between ethnic groups in ACS 2014-2018 data. The upper panel shows East/Southeast Asian ethnic groups and the lower panel shows Latino ethnic groups. Dendrograms on the right are based on hierarchical clustering using unweighted average distances where distance was measured by the inverse of these odds ratios. Results are based on models that control for age differences, education differences, and language and birthplace endogamy.", fig.height=7}
 asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
