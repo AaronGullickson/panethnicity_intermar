@@ -601,7 +601,7 @@ In the results below, I use graphical visualizations to present important result
 
 # Results
 
-I begin the results section by illustrating the results from the more parsimonious models which use a single ethnic exogamy term for each panethnic group. I show how the strength of these ethnic exogamy terms changes with the inclusion of controls for birthplace and language endogamy, followed by an examination of how the strength of panethnicity has changed over time and in relation to other forms of ethnoracial exogamy. I then move to an analysis of less parsimonious models that examine heterogeneity in panethnicity among ethnic groups belonging to the same panethnic category. These models can reveal nuances ignored by the more parsimonious approach.
+I begin the results section by illustrating the results from the more parsimonious models which use a single ethnic exogamy term for each panethnic group. I show how the strength of these ethnic exogamy terms changes with the inclusion of controls for birthplace and language endogamy, followed by an examination of how the strength of panethnicity has changed over time and in relation to other forms of ethnoracial exogamy.^[The analysis of change over time relies upon two time points where the data are sufficient to identify new marriages. It is possible that patterns of ethnoracial exogamy changed in non-linear ways in the interim between these periods that I cannot capture with this data.] I then move to an analysis of less parsimonious models that examine heterogeneity in panethnicity among ethnic groups belonging to the same panethnic category for the later time period. These models can reveal nuances ignored by the more parsimonious approach.
 
 ## The Strength of Panethnicity
 
