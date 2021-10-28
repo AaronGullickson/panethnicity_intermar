@@ -158,12 +158,17 @@ temp <- alternates_census %>%
     group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
 
 diversity_ethnic <- temp %>%
+  count(race, group) %>%
+  group_by(race, group)
+
+diversity_ethnic <- temp %>%
   count(race, group, bpld) %>%
   group_by(race, group) %>%
   mutate(p=prop.table(n)) %>%
   summarize(diversity_bpl=1-sum(p^2)) %>% 
   ungroup() %>%
-  mutate(data="Census 1980")
+  mutate(data="Census 1980") %>%
+  full_join(diversity_ethnic)
 
 diversity_ethnic <- temp %>%
   count(race, group, lang) %>%
@@ -206,13 +211,18 @@ temp <- alternates_acs %>%
                 "Uruguayan","Venezuelan","Dominican") ~ "Latino"),
     group=factor(group, levels=c("E&SE Asian","South Asian","Latino")))
 
+counts <- temp %>%
+  count(race, group) %>%
+  group_by(race, group)
+
 temp2 <- temp %>%
   count(race, group, bpld) %>%
   group_by(race, group) %>%
   mutate(p=prop.table(n)) %>%
   summarize(diversity_bpl=1-sum(p^2)) %>% 
   ungroup() %>%
-  mutate(data="ACS 2014-18")
+  mutate(data="ACS 2014-18")%>%
+  full_join(counts)
 
 diversity_ethnic <- temp %>%
   count(race, group, lang) %>%
@@ -223,7 +233,7 @@ diversity_ethnic <- temp %>%
   mutate(data="ACS 2014-18") %>%
   full_join(temp2) %>%
   bind_rows(diversity_ethnic) %>%
-  select(race, group, data, diversity_bpl, diversity_lang)
+  select(race, group, data, diversity_bpl, diversity_lang, n)
 
 temp2 <- temp %>%
   count(group, bpld) %>%
@@ -277,8 +287,8 @@ temp2 <- diversity_ethnic %>%
 diversity_pan <- diversity_ethnic %>%
   filter(race %in% races1980 & data=="ACS 2014-18") %>%
   group_by(group, data) %>%
-  summarize(diversity_bpl=mean(diversity_bpl),
-            diversity_lang=mean(diversity_lang)) %>%
+  summarize(diversity_bpl=weighted.mean(diversity_bpl, n),
+            diversity_lang=weighted.mean(diversity_lang, n)) %>%
   ungroup() %>%
   mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
   bind_rows(temp2)  %>%
@@ -361,9 +371,9 @@ diversity_pan %>%
   theme(panel.grid.major.y = element_blank())
 ```
 
-Figure \@ref(fig:diversity-pan-bar) shows the Blau index for language and birthplace across East/Southeast Asian, South Asian, and Latino ethnic and panethnic categories in the two time periods. To simplify presentation, I compare the mean diversity ==POP WEIGHTED?== within each specific ethnic group to the diversity across the panethnic category as a whole. The likelihood of panethnic intermarriage will be reduced in cases where panethnic diversity is greater than average diversity within ethnic groups.
+Figure \@ref(fig:diversity-pan-bar) shows the Blau index for language and birthplace across East/Southeast Asian, South Asian, and Latino ethnic and panethnic categories in the two time periods. To simplify presentation, I compare the diversity across the panethnic category to the mean diversity within each specific ethnic group (weighted by group size). The likelihood of panethnic intermarriage will be reduced in cases where panethnic diversity is greater than average diversity within ethnic groups.
 
-Significant language and birthplace diversity is observable within specific ethnic groups. For example, the average diversity in birthplace within specific Latino ethnic groups in the ACS data is nearly 60% ==CHECK THIS NUMBER==, indicating that two randomly determined members of the same Latino ethnic group would not share the same birthplace about 60% of the time.
+Significant language and birthplace diversity is observable within specific ethnic groups. For example, the average diversity in birthplace within specific Latino ethnic groups in the full ACS data is about 50%, indicating that two randomly determined members of the same Latino ethnic group would not share the same birthplace about 50% of the time.
 
 Although within ethnic group diversity is substantial, panethnic diversity in language and birthplace is greater than within ethnic group diversity for all three panethnic categories in both time periods. However, these differences are small for Latinos, while they are quite large for Asians. What differences exist among Latino ethnic groups have also diminished over time, whereas they have grown for East/Southeast Asians.
 
