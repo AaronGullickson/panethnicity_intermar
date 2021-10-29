@@ -5,21 +5,22 @@ author:
   name: Aaron Gullickson
 keywords: panethnicity; intermarriage; assortative mating, ethnic exogamy; immigration
 #thanks: Thanks to people and stuff
-abstract: Intermarriage among ethnic groups belonging to the same panethnic category (e.g. Asian, Latino) is an important indicator of the strength of panethnicity. Yet, most of the work on panethnic intermarriage uses older samples with significant data limitations. In this article, I use data on recently married couples from Census 1980 and the American Community Survey 2014-18 to analyze the likelihood of ethnic exogamy within the panethnic categories of Latino, East/Southeast Asian, and South Asian. I utilize a counterfactual marriage model that accounts for group size within local marriage markets, eliminates immigrants married abroad from analysis, and controls for birthplace and language endogamy. The results show that birthplace and language diversity are significant barriers to ethnic exogamy among Asians but not Latinos. Once birthplace and language endogamy are held constant, panethnic intermarriage is far more likely among Asians than among Latinos. East/Southeast Asian ethnic exogamy has increased over time, while Latino ethnic exogamy has not. Furthermore, East/Southeast Asian and South Asian intermarriage remains rare, suggesting that panethnic intermarriage among Asians occurs within two separate melting pots. 
+abstract: Intermarriage among ethnic groups belonging to the same panethnic category (e.g. Asian, Latino) is an important indicator of the strength of panethnicity. Yet, most of the work on panethnic intermarriage uses older samples with significant data limitations. In this article, I use data on recently married couples from the American Community Survey 2014-18 and Census 1980 to analyze the likelihood of ethnic exogamy within the panethnic categories of Latino, East/Southeast Asian, and South Asian. I utilize a counterfactual marriage model that accounts for group size within local marriage markets, eliminates immigrants married abroad from analysis, and controls for birthplace and language endogamy. The results show that birthplace and language diversity are significant barriers to ethnic exogamy among Asians but not Latinos. Once birthplace and language endogamy are held constant, panethnic intermarriage is far more likely among Asians than among Latinos. East/Southeast Asian ethnic exogamy has increased over time, while Latino ethnic exogamy has not. Furthermore, East/Southeast Asian and South Asian intermarriage remains rare, suggesting that panethnic intermarriage among Asians occurs within two separate melting pots. 
 output:
   bookdown::pdf_document2: 
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: no
+    keep_tex: yes
     toc: false
   word_document:
     reference_docx: ./resources/aog_word_style.docx
 fontfamily: mathpazo
 fontsize: 11pt
-anonymous: false #anonymize, double-space, and ragged right
+always_allow_html: true
+anonymous: true #anonymize, double-space, and ragged right
 endnotes: false #make footnotes endnotes
-endfloat: false #move table and figures to the end
+endfloat: true #move table and figures to the end
 bibliography: ../project.bib
 biblio-style: ./resources/ajs.bst
 ---
@@ -320,7 +321,7 @@ Panethnicity is defined by @okamoto_panethnicity_2014a as "the construction of a
 
 The earliest work on panethnicity focused on collaboration among ethnically based organizations and movements [@lopez_panethnicity_1990; @okamoto_theory_2003]. However, these authors also noted the importance of examining patterns of marriage to better understand "interpersonal" panethnicity [@espiritu_asian_1993, pp. 167-168]. Early attempts to address this research question looked at outmarriage percentages which generally show the effects of group size more than underlying affinity [@shinagawa_asian_1996]. However, shortly after the turn of the century, several more sophisticated studies were published that generally found stronger evidence of panethnicity among Asians than Latinos [@qian_asian_2001; @rosenfeld_salience_2001; @qian_latinos_2004;  @fu_how_2007a;  @qian_crossing_2012]. 
 
-This prior work on intermarriage has contributed greatly to our understanding of the phenomenon of panethnicity, but is also considerably out of date. Prior work primarily used data from Census 1980, 1990, or 2000. The two later data sources have no information on marriage timing which limits researchers' ability to exclude immigrants married abroad from analysis. Furthermore, much of this work relies upon an examination of panethnicity among the relatively few Asian and Latino groups that were numerically large enough in historical data to sustain an analysis. Most prior work has excluded South Asians entirely. Diversification in country of origin among Asian and Latino immigrants makes possible a broader analysis using contemporary data.
+This prior work on intermarriage has contributed greatly to our understanding of the phenomenon of panethnicity, but is also considerably out of date. Prior work primarily used data from Census 1980, 1990, or 2000. The two later data sources have no information on marriage timing which limits researchers' ability to exclude immigrants married abroad from analysis. Furthermore, much of this work relies upon an examination of panethnicity among the relatively few Asian and Latino groups that were numerically large enough in historical data to sustain an analysis. Most prior work has either excluded South Asians entirely or only included a single South Asian ethnonational group. Diversification in country of origin among Asian and Latino immigrants makes possible a broader analysis using contemporary data.
 
 Furthermore, prior research has paid insufficient attention to the role of birthplace and language endogamy in shaping patterns of panethnic intermarriage. Generally, individuals prefer partners from the same birthplace and who speak the same language. The considerable diversity in birthplace and language both within and between Asian and Latino ethnic groups has complex effects on the tendency toward panethnic intermarriage. Prior work has largely tried to address this issue indirectly by including an immigrant-native comparison, but this comparison does not adequately capture the complexity of birthplace and language diversity.
 
@@ -352,7 +353,7 @@ However, the actual effect of birthplace and language endogamy on panethnic inte
 
 In general, in order for language and birthplace endogamy to serve as a barrier to panethnic intermarriage, the diversity in language and birthplace must be greater within the panethnic category than within the corresponding ethnic group. The strength of the barrier will depend on how much more diverse the panethnic category is than the ethnic group. To illustrate this issue, I calculate a measure of language/birthplace diversity for unmarried and recently married members of each Asian and Latino ethnic group in the Census 1980 and American Community Survey detailed below. Specifically, I use the Blau index [@blau_inequality_1977] to measure language/birthplace diversity within each Asian and Latino ethnic group and to measure this same diversity within each panethnic category. The Blau index of diversity ($D$) is calculated as: $$D=1-\sum_{i=1}^R p_i^2$$ where $p_i$ is the proportion of the total population belonging to group $i$ and $R$ is the total number of groups. The Blau index has an intuitive interpretation as the probability that two randomly drawn members from the population belong to the same group.
 
-```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups and panethnic categories. Diversity is measured by the Blau index which gives the probability that two randomly selected members of the group do not share the same birthplace/language. Results are based upon alternate partners from each data source."}
+```{r diversity-pan-bar, fig.cap="Birthplace and language diversity within Asian and Latino ethnic groups and panethnic categories. Diversity is measured by the Blau index which gives the probability that two randomly selected members of the group do not share the same birthplace/language. Results are based upon alternate partners from each data source. Diversity among South Asian is only measurable in the later data source due to data limitations."}
 diversity_pan %>%
   mutate(group=factor(ifelse(group=="E&SE Asian", "East/Southeast Asian", 
                              as.character(group)),
@@ -549,7 +550,7 @@ Each odds ratio is also unaffected by the degree of ethnoracial exogamy to other
 
 ## Additional Variables
 
-The model used here allows for the easy incorporation of a variety of quantitative and categorical variables. I utilize that feature to account for birthplace endogamy and language endogamy when estimating the likelihood of panethnic intermarriage, as well as age and educational differences between partners.
+The model used here allows for the easy incorporation of a variety of quantitative and categorical variables. I utilize that feature to account for birthplace and language endogamy when estimating the likelihood of panethnic intermarriage, as well as age and educational differences between partners.
 
 I account for language and birthplace endogamy with simple dummy variables indicating whether the two potential partners share the same primary language or birthplace, respectively. Primary language is determined by what language the respondent reported speaking at home. Because this variable is measured after a marriage occurred, it may somewhat overestimate language endogamy among respondents.
 
@@ -636,7 +637,7 @@ coefs_pent %>%
   theme(panel.spacing = unit(0.6, "lines"))
 ```
 
-The baseline model only adjust for age and educational differences between potential partners. I then add birthplace and language endogamy separately and together to determine the effects of these variables on the odds of ethnic exogamy.
+The baseline model only adjusts for age and educational differences between potential partners. I then add birthplace and language endogamy separately and together to determine the effects of these variables on the odds of ethnic exogamy.
 
 In the baseline model, the odds of ethnic exogamy are similar for all three groups. Ethnic exogamy is about 25% as likely as ethnic endogamy. The results also show a very slight decline in the odds of ethnic exogamy from 1980 to 2014-2018 when restricted to ethnic groups that were available in the 1980 data.
 
@@ -808,7 +809,7 @@ ggplot(intermar,
   theme(legend.position = "bottom")
 ```
 
-Variation in the likelihood of interracial marriage across ethnic groups is more pronounced for Latino ethnic groups than for East/Southeast Asian groups. Among Latinos, Peruvians and Colombians are the most likely to intermarry with Whites with an odds about 60% as high as ethnic endogamy. At the other end of the spectrum the odds ratio of Dominican-White intermarriage is just under 25%. For the five East/Southeast Asian groups, the odds ratios range from 25% to 42%.  
+Variation in the likelihood of interracial marriage across ethnic groups is more pronounced for Latino ethnic groups than for East/Southeast Asian groups. Among Latinos, Peruvians and Colombians are the most likely to intermarry with Whites with an odds about 60% as high as ethnic endogamy. At the other end of the spectrum, the odds ratio of Dominican-White intermarriage is just under 25%. For the five East/Southeast Asian groups, the odds ratios range from 25% to 42%.  
 
 For all East/Southeast Asian and Latino ethnic groups, intermarriage with Whites is more likely than intermarriage with Blacks. The odds of intermarriage with Blacks are uniformly low for all five East/Southeast Asian groups. The odds of intermarriage are also low for most Latino groups, with the exception of Dominicans and Puerto Ricans. For Dominicans, the odds of intermarriage with Blacks are almost identical to the odds of intermarriage with Whites. For Puerto Ricans, the odds of intermarriage with Blacks are the highest of any Latino ethnic group and only slightly less likely than the odds of intermarriage with Whites. These differences likely reflect the higher prevalence of Afrodescent in Puerto Rican and Dominican populations and the racialization of members of these populations as Black within the US.
 
