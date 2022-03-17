@@ -11,16 +11,16 @@ output:
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: no
+    keep_tex: yes
     toc: false
   word_document:
     reference_docx: ./resources/aog_word_style.docx
 fontfamily: mathpazo
 fontsize: 11pt
 always_allow_html: true
-anonymous: false #anonymize, double-space, and ragged right
+anonymous: true #anonymize, double-space, and ragged right
 endnotes: false #make footnotes endnotes
-endfloat: false #move table and figures to the end
+endfloat: true #move table and figures to the end
 bibliography: ../project.bib
 biblio-style: ./resources/ajs.bst
 ---
