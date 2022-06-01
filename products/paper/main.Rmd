@@ -5,14 +5,14 @@ author:
   name: Aaron Gullickson
 keywords: panethnicity; intermarriage; assortative mating, ethnic exogamy; immigration
 output:
+  word_document:
+    reference_docx: ./resources/aog_word_style.docx
   bookdown::pdf_document2:
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: no
+    keep_tex: yes
     toc: no
-  word_document:
-    reference_docx: ./resources/aog_word_style.docx
 abstract: Intermarriage among ethnic groups belonging to the same panethnic category
   (e.g. Asian, Latino) is an important indicator of the strength of panethnicity.
   Yet, most of the work on panethnic intermarriage uses older samples with significant
@@ -35,7 +35,8 @@ anonymous: no
 endnotes: no
 endfloat: no
 bibliography: ../project.bib
-biblio-style: ./resources/ajs.bst
+#biblio-style: ./resources/ajs.bst
+csl: resources/apa.csl
 ---
 
 ```{r setup, include=FALSE}
