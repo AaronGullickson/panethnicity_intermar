@@ -1,4 +1,4 @@
-# analysis directory
+# Analysis Documentation
 
 This is the main directory for the analysis. All of the scripts necessary to run the analysis are present in this directory. All raw datasets are in the `input` subdirectory and all constructed analytical data is placed in the `output` subdirectory. 
 
