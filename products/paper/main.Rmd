@@ -3,16 +3,17 @@ title: "Patterns of Panethnic Intermarriage in the United States, 1980-2018"
 author:
 - affiliation: University of Oregon, Sociology
   name: Aaron Gullickson
+thanks: A replication package containing code and data for this article is available at [https://doi.org/10.17605/OSF.IO/HZJ4Q](https://doi.org/10.17605/OSF.IO/HZJ4Q) or on [GitHub](https://github.com/AaronGullickson/panethnicity_intermar).
 keywords: panethnicity; intermarriage; assortative mating, ethnic exogamy; immigration
 output:
-  word_document:
-    reference_docx: ./resources/aog_word_style.docx
   bookdown::pdf_document2:
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: yes
+    keep_tex: no
     toc: no
+  word_document:
+    reference_docx: ./resources/aog_word_style.docx
 abstract: Intermarriage among ethnic groups belonging to the same panethnic category
   (e.g. Asian, Latino) is an important indicator of the strength of panethnicity.
   Yet, most of the work on panethnic intermarriage uses older samples with significant
