@@ -7,7 +7,7 @@
 
 #add new packages to the chain here
 packages = c("here","readr","ggplot2","texreg","devtools","dplyr","tibble",
-             "reshape2", "survival","knitr","ggstance", "parallel",
+             "reshape2", "survival","knitr","ggstance", "parallel", "flextable",
              "ggdendro","grid","tidyr","tibble","RColorBrewer","forcats",
              "knitr","stringr","tigris","USAboundaries","tmap","tmaptools",
              "grid","sf")

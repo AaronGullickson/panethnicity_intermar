@@ -1,0 +1,125 @@
+---
+title: "Word Tables"
+author: "Aaron Gullickson"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, 
+                      warning = FALSE, eval = TRUE,
+                      fig.height=3.5)
+library(here)
+source(here("analysis","check_packages.R"))
+source(here("analysis","useful_functions.R"))
+#load(here("analysis","output","models.RData"))
+load(here("analysis","output","alternates.RData"))
+load(here("analysis","output","models_bendog.RData"))
+
+my_palette <- c("#7b3294","#008837","#a6dba0")
+
+#instead of loading markets, which takes forever, hardcoding sample
+#sizes but be sure to adjust if this changes
+#load(here("analysis","output","markets_census.RData"))
+#load(here("analysis","output","markets_acs_full.RData"))
+#census_n <- sum(markets_census[[1]]$choice)
+#acs_n <- sum(markets_acs_full[[1]]$choice)
+census_n <- 285523
+acs_n <- 503348
+
+```
+
+```{r sample-size-table}
+
+temp <- c(table(alternates_acs$race)) %>% enframe()
+tab_samp <- c(table(alternates_census$race)) %>% 
+  enframe() %>%
+  right_join(temp, by="name") %>%
+  rename(ethnorace=name, census=value.x, acs=value.y) %>%
+  mutate(
+    ethnorace=ifelse(ethnorace=="AIAN","American Indian/Alaska Native",
+                     ethnorace),
+    race_big=case_when(
+    ethnorace=="Chinese" ~ "East and Southeast Asian",
+    ethnorace=="Japanese" ~ "East and Southeast Asian",
+    ethnorace=="Korean" ~ "East and Southeast Asian",
+    ethnorace=="Filipino" ~ "East and Southeast Asian",
+    ethnorace=="Vietnamese" ~ "East and Southeast Asian",
+    ethnorace=="Cambodian" ~ "East and Southeast Asian",
+    ethnorace=="Hmong" ~ "East and Southeast Asian",
+    ethnorace=="Laotian" ~ "East and Southeast Asian",
+    ethnorace=="Thai" ~ "East and Southeast Asian",
+    ethnorace=="Burmese" ~ "East and Southeast Asian",
+    ethnorace=="Indonesian" ~ "East and Southeast Asian",
+    ethnorace=="Malaysian" ~ "East and Southeast Asian",
+    ethnorace=="Bhutanese" ~ "East and Southeast Asian",
+    ethnorace=="Nepalese" ~ "East and Southeast Asian",
+    ethnorace=="Asian Indian"  ~ "South Asian",
+    ethnorace=="Pakistani" ~ "South Asian",
+    ethnorace=="Bangladeshi" ~ "South Asian",
+    ethnorace=="Sri Lankan" ~ "South Asian",
+    ethnorace=="Mexican" ~ "Latino", 
+    ethnorace=="Cuban" ~ "Latino", 
+    ethnorace=="Puerto Rican" ~ "Latino", 
+    ethnorace=="Guatemalan" ~ "Latino", 
+    ethnorace=="Salvadorian" ~ "Latino", 
+    ethnorace=="Dominican" ~ "Latino", 
+    ethnorace=="Colombian" ~ "Latino", 
+    ethnorace=="Costa Rican" ~ "Latino", 
+    ethnorace=="Honduran" ~ "Latino", 
+    ethnorace=="Nicaraguan" ~ "Latino", 
+    ethnorace=="Panamanian" ~ "Latino", 
+    ethnorace=="Argentinian" ~ "Latino", 
+    ethnorace=="Bolivian" ~ "Latino", 
+    ethnorace=="Chilean" ~ "Latino", 
+    ethnorace=="Ecuadorian" ~ "Latino", 
+    ethnorace=="Peruvian" ~ "Latino", 
+    ethnorace=="Venezuelan" ~ "Latino", 
+    ethnorace=="Paraguayan" ~ "Latino", 
+    ethnorace=="Uruguayan"  ~ "Latino"
+  ))
+
+temp <- tab_samp %>% group_by(race_big) %>%
+  summarize(census=sum(census, na.rm=TRUE), acs=sum(acs, na.rm=TRUE)) %>%
+  na.omit() %>%
+  rename(ethnorace=race_big)
+
+tab_samp <- tab_samp %>% select(ethnorace, census, acs) %>%
+  bind_rows(temp)
+
+temp <- tibble(ethnorace="Marriages in the previous five years",
+               census=census_n, acs=acs_n)
+
+tab_samp <- tab_samp %>% 
+  bind_rows(temp)
+                    
+ord <- c("Marriages in the previous five years",
+         "White","Black","American Indian/Alaska Native","Latino",
+         "Mexican","Puerto Rican","Cuban","Salvadorian","Dominican","Guatemalan",
+         "Colombian","Honduran","Peruvian","Ecuadorian","Nicaraguan","Argentinian",
+         "Venezuelan","Panamanian","Chilean","Costa Rican","Bolivian",
+         "Uruguayan","Paraguayan",
+         "East and Southeast Asian",
+         "Chinese","Filipino","Vietnamese","Korean","Japanese","Cambodian",
+         "Hmong","Laotian","Thai","Burmese","Indonesian","Malaysian",
+         "South Asian",
+         "Asian Indian","Pakistani","Bangladeshi","Sri Lankan")
+
+tab_samp <- as.data.frame(tab_samp)
+rownames(tab_samp) <- tab_samp$ethnorace
+tab_samp <- tab_samp[ord,]
+rownames(tab_samp) <- NULL
+
+tab_samp <- tab_samp %>%
+  tibble() %>%
+  add_row(ethnorace="Marriages",census=NA,acs=NA, .before=1) %>%
+  add_row(ethnorace="Alternate Partners",census=NA,acs=NA, .before=3)
+
+tab_samp %>%
+  flextable() %>%
+  set_caption(caption = "Sample size of marriages and alternate partners by data source and ethnoracial category.") %>%
+  set_header_labels(ethnorace="Category",census="Census 1980",acs="ACS 2014-18") %>%
+  bold(i=c(1,3), j=1) %>%
+  padding(i=c(2,4:7,27,40), j=1, padding.left=20) %>%
+  padding(i=c(8:26,28:39,41:44), j=1, padding.left=40) %>%
+  set_table_properties(layout = "autofit")
+```
