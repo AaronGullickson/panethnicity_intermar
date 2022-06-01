@@ -28,6 +28,6 @@ Rscript -e "rmarkdown::render('run_models.R',output_file='run_models.html',outpu
 Rscript -e "rmarkdown::render('test_bendog_models.R',output_file='test_bendog_models.html',output_dir='logs')"
 
 # Run the main analysis
-#Rscript -e "rmarkdown::render('analysis.Rmd')"
+Rscript -e "rmarkdown::render('analysis.Rmd')"
 
 date
