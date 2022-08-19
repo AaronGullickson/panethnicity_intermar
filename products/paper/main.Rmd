@@ -6,14 +6,14 @@ author:
 thanks: A replication package containing code and data for this article is available at [https://doi.org/10.17605/OSF.IO/HZJ4Q](https://doi.org/10.17605/OSF.IO/HZJ4Q) or on [GitHub](https://github.com/AaronGullickson/panethnicity_intermar).
 keywords: panethnicity; intermarriage; assortative mating, ethnic exogamy; immigration
 output:
-  word_document:
-    reference_docx: ./resources/aog_word_style.docx
   bookdown::pdf_document2:
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
     keep_tex: yes
     toc: no
+  word_document:
+    reference_docx: ./resources/aog_word_style.docx
 abstract: Intermarriage among ethnic groups belonging to the same panethnic category
   (e.g. Asian, Latino) is an important indicator of the strength of panethnicity.
   Yet, most of the work on panethnic intermarriage uses older samples with significant
@@ -73,12 +73,12 @@ acs_n <- 503348
 ```{r theme, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, include=FALSE}
 theme_mine <- function() {
   theme_bw()+
-    theme(axis.title = element_text(size=10, face="bold"), 
+    theme(axis.title = element_text(size=9, face="bold"), 
           axis.text = element_text(size=8, color="black"),
           legend.text=element_text(size=7),
           legend.title=element_text(size=8),
           legend.key.size = unit(0.8,"line"),
-          strip.text = element_text(size=9, face="bold"),
+          strip.text = element_text(size=6, face="bold"),
           legend.position = "bottom")
 }
 ```
@@ -111,8 +111,8 @@ coefs_pent <- list(census=models_census_pentagon,
          data=factor(data,
                      levels=c("census","acs_1980basis","acs_full"),
                      labels=c("Census 1980", 
-                              "ACS 2014-18, 1980 ethnic groups",
-                              "ACS 2014-18, all ethnic groups"))) %>%
+                              "ACS 2014-2018, 1980 ethnic groups",
+                              "ACS 2014-2018, all ethnic groups"))) %>%
   order_variables("Census 1980", "+ both")
 
 #create a dataset that can be used for the arrows in the graph
@@ -120,11 +120,11 @@ coefs_pent <- list(census=models_census_pentagon,
 arrows_pent <- coefs_pent %>%
   filter(model=="+ birthplace and\nlanguage endogamy" & 
            variable!="South Asian ethnic exogamy" &
-           data!="ACS 2014-18, all ethnic groups") %>%
+           data!="ACS 2014–2018, all ethnic groups") %>%
   select(variable, coef, data) %>% 
   pivot_wider(names_from=data, values_from=coef) %>%
   rename(coef.census=`Census 1980`, 
-         coef.acs=`ACS 2014-18, 1980 ethnic groups`)# %>%
+         coef.acs=`ACS 2014-2018, 1980 ethnic groups`)# %>%
   #filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 
 ## Extended Models ##
@@ -141,8 +141,8 @@ coefs_extended <- list(census=models_census_extended,
          data=factor(data,
                      levels=c("census","acs_1980basis","acs_full"),
                      labels=c("Census 1980", 
-                              "ACS 2014-18, 1980 ethnic groups",
-                              "ACS 2014-18, expanded ethnic groups"))) %>%
+                              "ACS 2014–2018, 1980 ethnic groups",
+                              "ACS 2014-2018, expanded ethnic groups"))) %>%
   order_variables("Census 1980", "+ both")
 
 #arrows
@@ -153,7 +153,7 @@ arrows_extended <- coefs_extended %>%
   select(variable, coef, data) %>% 
   pivot_wider(names_from=data, values_from=coef) %>%
   rename(coef.census=`Census 1980`, 
-         coef.acs=`ACS 2014-18, 1980 ethnic groups`) %>%
+         coef.acs=`ACS 2014–2018, 1980 ethnic groups`) %>%
   filter(abs(exp(coef.census)-exp(coef.acs))>0.05)
 ```
 
@@ -257,7 +257,7 @@ temp2 <- temp %>%
   mutate(p=prop.table(n)) %>%
   summarize(diversity_bpl=1-sum(p^2)) %>% 
   ungroup() %>%
-  mutate(data="ACS 2014-18\nall ethnic groups")
+  mutate(data="ACS 2014-2018, all ethnic groups")
 
 diversity_pan <- temp %>%
   count(group, lang) %>%
@@ -265,7 +265,7 @@ diversity_pan <- temp %>%
   mutate(p=prop.table(n)) %>%
   summarize(diversity_lang=1-sum(p^2)) %>% 
   ungroup() %>%
-  mutate(data="ACS 2014-18\nall ethnic groups") %>%
+  mutate(data="ACS 2014-2018, all ethnic groups") %>%
   full_join(temp2) %>%
   bind_rows(diversity_pan)
 
@@ -278,7 +278,7 @@ temp2 <- temp %>%
   mutate(p=prop.table(n)) %>%
   summarize(diversity_bpl=1-sum(p^2)) %>% 
   ungroup() %>%
-  mutate(data="ACS 2014-18\n1980 ethnic groups")
+  mutate(data="ACS 2014-2018, 1980 ethnic groups")
 
 diversity_pan <- temp %>%
   filter(race %in% races1980) %>%
@@ -287,7 +287,7 @@ diversity_pan <- temp %>%
   mutate(p=prop.table(n)) %>%
   summarize(diversity_lang=1-sum(p^2)) %>% 
   ungroup() %>%
-  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  mutate(data="ACS 2014-2018, 1980 ethnic groups") %>%
   full_join(temp2) %>%
   bind_rows(diversity_pan)  %>%
   mutate(type="panethnic category diversity")
@@ -297,7 +297,7 @@ temp2 <- diversity_ethnic %>%
   summarize(diversity_bpl=mean(diversity_bpl),
             diversity_lang=mean(diversity_lang)) %>%
   ungroup() %>%
-  mutate(data=ifelse(data=="ACS 2014-18", "ACS 2014-18\nall ethnic groups",
+  mutate(data=ifelse(data=="ACS 2014-18", "ACS 2014-2018, all ethnic groups",
                      data))
 
 diversity_pan <- diversity_ethnic %>%
@@ -306,7 +306,7 @@ diversity_pan <- diversity_ethnic %>%
   summarize(diversity_bpl=weighted.mean(diversity_bpl, n),
             diversity_lang=weighted.mean(diversity_lang, n)) %>%
   ungroup() %>%
-  mutate(data="ACS 2014-18\n1980 ethnic groups") %>%
+  mutate(data="ACS 2014-2018, 1980 ethnic groups") %>%
   bind_rows(temp2)  %>%
   mutate(type="mean of within ethnic group diversity") %>%
   bind_rows(diversity_pan) %>%
@@ -316,12 +316,12 @@ diversity_pan <- diversity_ethnic %>%
                      "Birthplace",
                      "Language"),
          diversity=ifelse(group=="South Asian" & 
-                            data!="ACS 2014-18\nall ethnic groups",
+                            data!="ACS 2014-2018, all ethnic groups",
                           NA, diversity),
          data=factor(data,
                      levels=c("Census 1980", 
-                              "ACS 2014-18\n1980 ethnic groups",
-                              "ACS 2014-18\nall ethnic groups")),
+                              "ACS 2014-2018, 1980 ethnic groups",
+                              "ACS 2014-2018, all ethnic groups")),
          group=factor(group, 
                       levels=c("E&SE Asian", "Latino","South Asian")))
 ```
@@ -689,7 +689,7 @@ coefs_pent %>%
          variable=str_replace(variable, "&","/"),
          variable=str_replace(variable, "E/SE Asian ethnic exogamy", "**E/SE Asian ethnic exogamy**"),
          variable=str_replace(variable, "Latino ethnic exogamy", "**Latino ethnic exogamy**"),
-         coef=ifelse(data=="ACS 2014-18, all ethnic groups" & variable=="White/Black", NA, coef)) %>%
+         coef=ifelse(data=="ACS 2014–2018, all ethnic groups" & variable=="White/Black", NA, coef)) %>%
   order_variables("Census 1980", "+ birthplace and\nlanguage endogamy") %>%
   ggplot(aes(x=variable, y=exp(coef)))+
   geom_hline(yintercept = 1, linetype=3, size=1)+
@@ -721,7 +721,7 @@ Figure \@ref(fig:ethnic-heat-map) shows the group-specific odds of ethnic exogam
 ```{r ethnic-heat-map, fig.cap="Odds of ethnic exogamy relative to ethnic endogamy between ethnic groups in ACS 2014-2018 data. The upper panel shows East/Southeast Asian ethnic groups and the lower panel shows Latino ethnic groups. Dendrograms on the right are based on hierarchical clustering using unweighted average distances where distance was measured by the inverse of these odds ratios. Results are based on models that control for age differences, education differences, and language and birthplace endogamy.", fig.height=7}
 asian_groups <- c("Chinese","Korean","Japanese","Vietnamese","Filipino")
 or_asian <- coefs_extended %>%
-  filter(data=="ACS 2014-18, expanded ethnic groups" &
+  filter(data=="ACS 2014-2018, expanded ethnic groups" &
            model=="+ both" &
            grepl(paste(asian_groups,collapse="|"), variable) &
            !grepl("Black|White", variable)) %>% #ugly hack, FIXME
@@ -752,7 +752,7 @@ latino_groups <- c("Mexican","Puerto Rican","Cuban","Guatemalan",
             "Salvadorian","Colombian","Ecuadorian","Peruvian",
             "Dominican")
 or_latino <- coefs_extended %>%
-  filter(data=="ACS 2014-18, expanded ethnic groups" &
+  filter(data=="ACS 2014-2018, expanded ethnic groups" &
            model=="+ both" &
            grepl(paste(latino_groups,collapse="|"), variable) &
            !grepl("Black|White", variable)) %>% #ugly hack, FIXME
@@ -800,7 +800,7 @@ panethnic <- coefs_extended %>%
   filter(grepl(paste(c(latino_groups,asian_groups),collapse="|"), variable) & 
            !grepl("Black|White", variable) & 
            model=="+ both" & 
-           data=="ACS 2014-18, expanded ethnic groups") %>%
+           data=="ACS 2014-2018, expanded ethnic groups") %>%
   select(variable, coef)
 
 #convert this to simple dataframe of all the coefs for each ethnic group
@@ -815,7 +815,7 @@ intermar <- coefs_extended %>%
   filter(grepl(paste(c(latino_groups,asian_groups), collapse="|"), variable) & 
            grepl("Black|White", variable) & 
            model=="+ both" & 
-           data=="ACS 2014-18, expanded ethnic groups") %>%
+           data=="ACS 2014-2018, expanded ethnic groups") %>%
   mutate(ethnicity=str_remove(variable, "Black\\/|\\/White"),
          race=factor(str_detect(variable, "Black\\/"),
                      level=c(FALSE,TRUE), labels=c("White","Black")),
