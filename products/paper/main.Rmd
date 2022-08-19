@@ -6,14 +6,14 @@ author:
 thanks: A replication package containing code and data for this article is available at [https://doi.org/10.17605/OSF.IO/HZJ4Q](https://doi.org/10.17605/OSF.IO/HZJ4Q) or on [GitHub](https://github.com/AaronGullickson/panethnicity_intermar).
 keywords: panethnicity; intermarriage; assortative mating, ethnic exogamy; immigration
 output:
+  word_document:
+    reference_docx: ./resources/aog_word_style.docx
   bookdown::pdf_document2:
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: no
+    keep_tex: yes
     toc: no
-  word_document:
-    reference_docx: ./resources/aog_word_style.docx
 abstract: Intermarriage among ethnic groups belonging to the same panethnic category
   (e.g. Asian, Latino) is an important indicator of the strength of panethnicity.
   Yet, most of the work on panethnic intermarriage uses older samples with significant
@@ -32,9 +32,9 @@ abstract: Intermarriage among ethnic groups belonging to the same panethnic cate
 fontfamily: mathpazo
 fontsize: 11pt
 always_allow_html: yes
-anonymous: no
+anonymous: yes
 endnotes: no
-endfloat: no
+endfloat: yes
 bibliography: ../project.bib
 #biblio-style: ./resources/ajs.bst
 csl: resources/apa.csl
@@ -73,12 +73,12 @@ acs_n <- 503348
 ```{r theme, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, include=FALSE}
 theme_mine <- function() {
   theme_bw()+
-    theme(axis.title = element_text(size=10), 
-          axis.text = element_text(size=8),
+    theme(axis.title = element_text(size=10, face="bold"), 
+          axis.text = element_text(size=8, color="black"),
           legend.text=element_text(size=7),
           legend.title=element_text(size=8),
           legend.key.size = unit(0.8,"line"),
-          strip.text = element_text(size=9),
+          strip.text = element_text(size=9, face="bold"),
           legend.position = "bottom")
 }
 ```
@@ -384,8 +384,8 @@ diversity_pan %>%
   facet_grid(variable~data)+
   scale_x_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75))+
   scale_color_manual(values = my_palette[1:2])+
-  labs(y=NULL, x="Probability two members do not share the same birthplace/language",
-       fill="type of diversity")+
+  labs(y=NULL, x="Probability of Not Sharing the Same Birthplace/Language",
+       color=NULL)+
   theme_mine()+
   theme(panel.grid.major.y = element_blank())
 ```
@@ -658,8 +658,8 @@ coefs_pent %>%
   scale_color_manual(values=my_palette)+
   scale_x_continuous(limits = c(0,1))+
   labs(y=NULL, 
-       x="Odds ratio of ethnic exogamy relative to ethnic endogamy",
-       color="Data source")+
+       x="Odds Ratio of Ethnic Exogamy Relative to Ethnic Endogamy",
+       color=NULL)+
   facet_wrap(~variable)+
   theme_mine()+
   theme(panel.spacing = unit(0.6, "lines"))
@@ -703,9 +703,9 @@ coefs_pent %>%
   scale_color_manual(values = my_palette)+
   scale_shape_manual(values = c(16,16,17))+
   labs(x=NULL, 
-       y="Odds ratio of ethnoracial exogamy relative to ethnoracial endogamy",
+       y="Odds Ratio of Ethnoracial Exogamy Relative to Ethnoracial Endogamy",
        title=NULL,
-       color="Data source", shape="Data source")+
+       color=NULL, shape=NULL)+
   theme_mine()+
   theme(axis.text.y=element_markdown())
 ```
@@ -733,13 +733,14 @@ gg.heat.asian <- ggplot(melt(1/or_asian, na.rm=TRUE), aes(Var2, Var1, fill = val
   geom_tile(color = NA)+
   scale_fill_gradient2(low = "#7b3294", high = "#008837", mid = "#f7f7f7", 
                        midpoint = 1, limit = c(0, 1.25),
-                       name="odds ratio")+
-  geom_text(aes(label=paste(round(1/or_asian,2))))+
+                       name="Odds ratio")+
+  geom_text(aes(label=c(format(round(1/or_asian,2), nsmall = 2))))+
   labs(x=NULL, y=NULL)+
   theme_minimal()+
   theme(legend.position = "left", 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
+        axis.text = element_text(color="black"),
         axis.text.x = element_text(angle = 30, hjust = 1))
 
 dendro_asian <- as.dendrogram(hc_asian)
@@ -763,13 +764,14 @@ gg.heat.latino <- ggplot(melt(1/or_latino, na.rm=TRUE), aes(Var2, Var1, fill = v
   geom_tile(color = NA)+
   scale_fill_gradient2(low = "#7b3294", high = "#008837", mid = "#f7f7f7", 
                        midpoint = 1, limit = c(0, 1.25),
-                       name="odds ratio")+
-  geom_text(aes(label=paste(round(1/or_latino,2))), size=2.5)+
+                       name="Odds ratio")+
+  geom_text(aes(label=c(format(round(1/or_latino,2), nsmall = 2))), size=2.5)+
   labs(x=NULL, y=NULL)+
   theme_minimal()+
   theme(legend.position = "left", 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
+        axis.text = element_text(color="black"),
         axis.text.x = element_text(angle = 30, hjust = 1))
 
 dendro_latino <- as.dendrogram(hc_latino)
@@ -831,10 +833,11 @@ ggplot(intermar,
   scale_x_continuous(limits=c(0,1.2))+
   facet_wrap(~group, scales = "free_y")+
   labs(y=NULL, 
-       x="Odds ratio of ethnoracial exogamy relative to ethnic endogamy",
-       color="Interracial partner")+
+       x="Odds Ratio of Ethnoracial Exogamy Relative to Ethnic Endogamy",
+       color=NULL)+
   theme_mine()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", 
+        plot.margin = margin(5,15,5,5))
 ```
 
 Variation in the likelihood of interracial marriage across ethnic groups is more pronounced for Latino ethnic groups than for East/Southeast Asian groups. Among Latinos, Peruvians and Colombians are the most likely to intermarry with Whites with an odds about 60% as high as ethnic endogamy. At the other end of the spectrum, the odds ratio of Dominican-White intermarriage is just under 25%. For the five East/Southeast Asian groups, the odds ratios range from 25% to 42%.  
